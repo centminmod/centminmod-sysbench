@@ -17,7 +17,7 @@ chmod +x sysbench.sh
 ./sysbench.sh install
 ```
 
-# sysbench update
+## sysbench update
 
 ```
 mkdir -p /root/tools/sysbench
