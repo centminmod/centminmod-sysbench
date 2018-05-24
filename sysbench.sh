@@ -76,6 +76,9 @@ sysbench_install() {
 }
 
 sysbench_cpu() {
+  if [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
+    sysbench_install
+  fi
   echo
   cd "$SYSBENCH_DIR"
   echo "threads: 1";
@@ -91,6 +94,9 @@ sysbench_cpu() {
 }
 
 sysbench_mem() {
+  if [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
+    sysbench_install
+  fi
   echo
   cd "$SYSBENCH_DIR"
   echo "threads: 1";
@@ -106,6 +112,9 @@ sysbench_mem() {
 }
 
 sysbench_fileio() {
+  if [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
+    sysbench_install
+  fi
   tt_ram=$(awk '/MemTotal:/ {print $2}' /proc/meminfo)
   tt_swap=$(awk '/SwapTotal:/ {print $2}' /proc/meminfo)
   fileio_filesize=$(((($tt_ram+$tt_swap)*11)/10))
