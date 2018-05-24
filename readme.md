@@ -165,47 +165,6 @@ max: 0.02
 ## sysbench fileio
 
 ```
-./sysbench.sh mem                     
-
-sysbench memory --threads=1 --memory-block-size=1K --memory-scope=global --memory-total-size=1G --memory-oper=read run
-sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
-threads: 1
-block-size: 1KiB
-total-size: 1024MiB
-operation: read
-scope: global
-total-ops: 1048576 (8193012.99 per second)
-transferred (8000.99 MiB/sec)
-time: 0.1268s
-min: 0.00
-avg: 0.00
-max: 0.00
-95th: 0.00
-
-| memory sysbench | sysbench | threads: | block-size: | total-size: | operation: | total-ops: | transferred | time: | min: | avg: | max: | 95th: |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| memory | 1.0.14 | 1 | 1KiB | 1024MiB | read | 1048576 | 8000.99 | 0.1268s | 0.00 | 0.00 | 0.00 | 0.00 |
-
-sysbench memory --threads=8 --memory-block-size=1K --memory-scope=global --memory-total-size=1G --memory-oper=read run
-sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
-threads: 8
-block-size: 1KiB
-total-size: 1024MiB
-operation: read
-scope: global
-total-ops: 1048576 (27987063.52 per second)
-transferred (27331.12 MiB/sec)
-time: 0.0363s
-min: 0.00
-avg: 0.00
-max: 0.01
-95th: 0.00
-
-| memory sysbench | sysbench | threads: | block-size: | total-size: | operation: | total-ops: | transferred | time: | min: | avg: | max: | 95th: |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| memory | 1.0.14 | 8 | 1KiB | 1024MiB | read | 1048576 | 27331.12 | 0.0363s | 0.00 | 0.00 | 0.01 | 0.00 |
-
-```
 ./sysbench.sh file
 
 sysbench fileio prepare
