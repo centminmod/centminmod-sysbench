@@ -49,6 +49,19 @@ if [ -f /usr/bin/sysbench ]; then
   SYSBENCH_GETVER=$(sysbench --version | awk '{print $2}' | cut -d . -f1,3 | sed -e 's|\.||g')
 fi
 
+sysbench_update() {
+  echo
+  echo "update sysbench from yum repo"
+  if [ -f /etc/yum.repos.d/epel.repo ]; then
+    echo "yum -y update sysbench --disablerepo=epel"
+    yum -y update sysbench --disablerepo=epel
+  else
+    echo "yum -y update sysbench"
+    yum -y update sysbench
+  fi
+  echo
+}
+
 sysbench_install() {
   if [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
     echo
@@ -63,8 +76,10 @@ sysbench_install() {
     fi
     curl -s https://packagecloud.io/install/repositories/akopytov/sysbench/script.rpm.sh | bash
     if [ -f /etc/yum.repos.d/epel.repo ]; then
+      echo "yum -y install sysbench --disablerepo=epel"
       yum -y install sysbench --disablerepo=epel
     else
+      echo "yum -y install sysbench"
       yum -y install sysbench
     fi
     echo
@@ -200,6 +215,9 @@ case "$1" in
   install )
     sysbench_install
     ;;
+  update )
+    sysbench_update
+    ;;
   cpu )
     sysbench_cpu
     ;;
@@ -214,7 +232,7 @@ case "$1" in
   * )
     echo
     echo "Usage:"
-    echo "$0 {install|cpu|mem|file|mysql}"
+    echo "$0 {install|update|cpu|mem|file|mysql}"
     echo
     ;;
 esac

@@ -17,11 +17,21 @@ chmod +x sysbench.sh
 ./sysbench.sh install
 ```
 
+# sysbench update
+
+```
+mkdir -p /root/tools/sysbench
+cd /root/tools/sysbench
+wget -O /root/tools/sysbench/sysbench.sh https://github.com/centminmod/centminmod-sysbench/raw/master/sysbench.sh
+chmod +x sysbench.sh
+./sysbench.sh update
+```
+
 ## sysbench usage
 
 ```
 Usage:
-./sysbench.sh {install|cpu|mem|file|mysql}
+./sysbench.sh {install|update|cpu|mem|file|mysql}
 ```
 
 ## sysbench cpu
