@@ -1,6 +1,6 @@
 # sysbench.sh tool
 
-`sysbench.sh` benchmark tool written specificy for [Centmin Mod LEMP stack](https://centminmod.com/) testing.
+`sysbench.sh` benchmark tool written specifically for [Centmin Mod LEMP stack](https://centminmod.com/) testing.
 
 ```
 sysbench --version
