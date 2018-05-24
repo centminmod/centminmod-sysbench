@@ -108,6 +108,8 @@ max: 31.49
 | 1.0.14 | 8 | 3230.55 | 10.0023s | 1.90 | 2.47 | 31.49 | 2.48 |
 ```
 
+Markdown results table
+
 | cpu sysbench | threads: | events/s: | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1.0.14 | 1 | 525.26 | 10.0015s | 1.90 | 1.90 | 2.37 | 1.89 |
@@ -156,6 +158,8 @@ max: 0.02
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | memory | 1.0.14 | 8 | 1KiB | 1024MiB | read | 1048576 | 26655.23 | 0.0372s | 0.00 | 0.00 | 0.02 | 0.00 |
 ```
+
+Markdown results table
 
 | memory sysbench | sysbench | threads: | block-size: | total-size: | operation: | total-ops: | transferred | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -432,6 +436,8 @@ sysbench fileio cleanup
 sysbench fileio --file-total-size=38320634 cleanup
 ```
 
+Parsing sysbench fileio for markdown table
+
 ```
 ls -rt /home/sysbench/  | grep 'sysbench-fileio' | grep 'markdown' | while read f; do echo -n '|'; grep 'fileio' /home/sysbench/$f; done
 |fileio | 1.0.14 | 1 | 4KiB | I/O | read | 1234307.50 | 0.00 | 0.00 | 4762.26 | 0.00 | 10.0000s | 0.00 | 0.00 | 0.01 | 0.00 |
@@ -447,6 +453,8 @@ ls -rt /home/sysbench/  | grep 'sysbench-fileio' | grep 'markdown' | while read 
 |fileio | 1.0.14 | 8 | 4KiB | I/O | write | 0.00 | 17947.42 | 22966.20 | 0.00 | 69.64 | 10.0002s | 0.00 | 0.20 | 12.73 | 0.90 |
 |fileio | 1.0.14 | 8 | 4KiB | I/O | r/w | 14007.73 | 9338.65 | 29872.27 | 54.36 | 36.24 | 10.0003s | 0.00 | 0.15 | 11.08 | 0.70 |
 ```
+
+Markdown results table
 
 | fileio sysbench | sysbench | threads: | Block-size | synchronous | sequential | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
