@@ -7,6 +7,30 @@ sysbench --version
 sysbench 1.0.14
 ```
 
+each `sysbench.sh` test option saves results into temporary log file in `/home/sysbench/` directory which gets overwritten after each script run.
+
+```
+ls -lh /home/sysbench/ 
+total 68K
+drwxr-xr-x 2 root root 4.0K May 24 04:24 fileio
+-rw-r--r-- 1 root root  148 May 24 04:22 sysbench-cpu-threads-1.log
+-rw-r--r-- 1 root root  150 May 24 04:22 sysbench-cpu-threads-8.log
+-rw-r--r-- 1 root root  324 May 24 04:23 sysbench-fileio-rndrd-threads-1.log
+-rw-r--r-- 1 root root  326 May 24 04:24 sysbench-fileio-rndrd-threads-8.log
+-rw-r--r-- 1 root root  328 May 24 04:23 sysbench-fileio-rndrw-threads-1.log
+-rw-r--r-- 1 root root  329 May 24 04:24 sysbench-fileio-rndrw-threads-8.log
+-rw-r--r-- 1 root root  326 May 24 04:23 sysbench-fileio-rndwr-threads-1.log
+-rw-r--r-- 1 root root  327 May 24 04:24 sysbench-fileio-rndwr-threads-8.log
+-rw-r--r-- 1 root root  278 May 24 04:22 sysbench-fileio-seqrd-threads-1.log
+-rw-r--r-- 1 root root  279 May 24 04:23 sysbench-fileio-seqrd-threads-8.log
+-rw-r--r-- 1 root root  281 May 24 04:23 sysbench-fileio-seqrewr-threads-1.log
+-rw-r--r-- 1 root root  282 May 24 04:24 sysbench-fileio-seqrewr-threads-8.log
+-rw-r--r-- 1 root root  291 May 24 04:23 sysbench-fileio-seqwr-threads-1.log
+-rw-r--r-- 1 root root  291 May 24 04:24 sysbench-fileio-seqwr-threads-8.log
+-rw-r--r-- 1 root root  257 May 24 04:22 sysbench-mem-threads-1.log
+-rw-r--r-- 1 root root  259 May 24 04:22 sysbench-mem-threads-8.log
+```
+
 ## sysbench install
 
 ```
