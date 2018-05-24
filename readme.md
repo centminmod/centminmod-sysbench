@@ -531,3 +531,130 @@ Markdown results table - random
 |fileio | 1.0.14 | 8 | 4KiB | I/O | read | 2473427.76 | 0.00 | 0.00 | 9597.80 | 0.00 | 10.0000s | 0.00 | 0.00 | 5.12 | 0.00 |
 |fileio | 1.0.14 | 8 | 4KiB | I/O | write | 0.00 | 17927.45 | 22945.14 | 0.00 | 69.57 | 10.0002s | 0.00 | 0.20 | 12.57 | 0.90 |
 |fileio | 1.0.14 | 8 | 4KiB | I/O | r/w | 14031.84 | 9354.73 | 29925.61 | 54.45 | 36.29 | 10.0002s | 0.00 | 0.15 | 11.02 | 0.70 |
+
+## sysbench mysql
+
+```
+./sysbench.sh mysql
+
+setup sbt database & user
+mysqladmin create database: sbt
+
+sysbench prepare database: sbt
+sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --time=15 --threads=2 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql prepare
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+
+Creating table 'sbtest1'...
+Inserting 100000 records into 'sbtest1'
+Creating secondary indexes on 'sbtest1'...
+Creating table 'sbtest2'...
+Inserting 100000 records into 'sbtest2'
+Creating secondary indexes on 'sbtest2'...
+Creating table 'sbtest3'...
+Inserting 100000 records into 'sbtest3'
+Creating secondary indexes on 'sbtest3'...
+Creating table 'sbtest4'...
+Inserting 100000 records into 'sbtest4'
+Creating secondary indexes on 'sbtest4'...
+
++-------------+----------------+----------------+-----------+------------+---------+------------+-----------------+
+| Table Name  | Number of Rows | Storage Engine | Data Size | Index Size | Total   | ROW_FORMAT | TABLE_COLLATION |
++-------------+----------------+----------------+-----------+------------+---------+------------+-----------------+
+| sbt.sbtest1 | 100000 Rows    | InnoDB         | 0.02MB    | 0.00MB     | 0.02MB  | Dynamic    | utf8_general_ci |
+| sbt.sbtest2 | 98712 Rows     | InnoDB         | 21.55MB   | 1.52MB     | 23.06MB | Dynamic    | utf8_general_ci |
+| sbt.sbtest3 | 100000 Rows    | InnoDB         | 0.02MB    | 0.00MB     | 0.02MB  | Dynamic    | utf8_general_ci |
+| sbt.sbtest4 | 100000 Rows    | InnoDB         | 0.02MB    | 0.00MB     | 0.02MB  | Dynamic    | utf8_general_ci |
++-------------+----------------+----------------+-----------+------------+---------+------------+-----------------+
+
+sysbench mysql benchmark:
+sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --time=15 --threads=2 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql run
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+
+Running the test with following options:
+Number of threads: 2
+Report intermediate results every 1 second(s)
+Initializing random number generator from current time
+
+
+Initializing worker threads...
+
+Threads started!
+
+[ 1s ] thds: 2 tps: 452.65 qps: 9079.00 (r/w/o: 6357.10/1814.60/907.30) lat (ms,95%): 8.58 err/s: 0.00 reconn/s: 0.00
+[ 2s ] thds: 2 tps: 431.04 qps: 8620.73 (r/w/o: 6038.51/1720.15/862.07) lat (ms,95%): 9.91 err/s: 0.00 reconn/s: 0.00
+[ 3s ] thds: 2 tps: 506.03 qps: 10110.58 (r/w/o: 7074.41/2024.12/1012.06) lat (ms,95%): 6.67 err/s: 0.00 reconn/s: 0.00
+[ 4s ] thds: 2 tps: 534.08 qps: 10690.61 (r/w/o: 7486.13/2136.32/1068.16) lat (ms,95%): 6.43 err/s: 0.00 reconn/s: 0.00
+[ 5s ] thds: 2 tps: 505.84 qps: 10111.89 (r/w/o: 7076.83/2023.38/1011.69) lat (ms,95%): 6.43 err/s: 0.00 reconn/s: 0.00
+[ 6s ] thds: 2 tps: 490.08 qps: 9813.67 (r/w/o: 6869.17/1964.33/980.17) lat (ms,95%): 7.30 err/s: 0.00 reconn/s: 0.00
+[ 7s ] thds: 2 tps: 492.01 qps: 9834.13 (r/w/o: 6882.09/1968.03/984.01) lat (ms,95%): 8.13 err/s: 0.00 reconn/s: 0.00
+[ 8s ] thds: 2 tps: 517.99 qps: 10350.71 (r/w/o: 7246.80/2067.94/1035.97) lat (ms,95%): 6.79 err/s: 0.00 reconn/s: 0.00
+[ 9s ] thds: 2 tps: 491.02 qps: 9828.46 (r/w/o: 6882.32/1964.09/982.05) lat (ms,95%): 7.17 err/s: 0.00 reconn/s: 0.00
+[ 10s ] thds: 2 tps: 503.03 qps: 10071.64 (r/w/o: 7047.45/2018.13/1006.06) lat (ms,95%): 6.55 err/s: 0.00 reconn/s: 0.00
+[ 11s ] thds: 2 tps: 539.03 qps: 10765.50 (r/w/o: 7537.35/2150.10/1078.05) lat (ms,95%): 6.21 err/s: 0.00 reconn/s: 0.00
+[ 12s ] thds: 2 tps: 532.91 qps: 10663.23 (r/w/o: 7465.76/2131.65/1065.82) lat (ms,95%): 6.55 err/s: 0.00 reconn/s: 0.00
+[ 13s ] thds: 2 tps: 521.00 qps: 10425.08 (r/w/o: 7297.06/2086.02/1042.01) lat (ms,95%): 6.67 err/s: 0.00 reconn/s: 0.00
+[ 14s ] thds: 2 tps: 548.08 qps: 10941.65 (r/w/o: 7655.15/2190.33/1096.17) lat (ms,95%): 6.09 err/s: 0.00 reconn/s: 0.00
+[ 15s ] thds: 2 tps: 497.00 qps: 9952.91 (r/w/o: 6970.94/1987.98/993.99) lat (ms,95%): 8.43 err/s: 0.00 reconn/s: 0.00
+SQL statistics:
+    queries performed:
+        read:                            105910
+        write:                           30260
+        other:                           15130
+        total:                           151300
+    transactions:                        7565   (504.13 per sec.)
+    queries:                             151300 (10082.64 per sec.)
+    ignored errors:                      0      (0.00 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          15.0039s
+    total number of events:              7565
+
+Latency (ms):
+         min:                                    2.79
+         avg:                                    3.96
+         max:                                  102.68
+         95th percentile:                        7.04
+         sum:                                29978.92
+
+Threads fairness:
+    events (avg/stddev):           3782.5000/13.50
+    execution time (avg/stddev):   14.9895/0.00
+
+
+sysbench mysql summary:
+sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --time=15 --threads=2 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql run
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+threads: 2
+read: 105910
+write: 30260
+other: 15130
+total: 151300
+transactions: 7565 (504.13 per sec.)
+queries: 151300 (10082.64 per sec.)
+time: 15.0039s
+min: 2.79
+avg: 3.96
+max: 102.68
+95th: 7.04
+
+| mysql sysbench | sysbench | threads: | read: | write: | other: | total: | transactions: | queries: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| oltp.lua | 1.0.14 | 2 | 105910 | 30260 | 15130 | 151300 | 7565 | 151300 | 15.0039s | 2.79 | 3.96 | 102.68 | 7.04 |
+
+sysbench,sysbench,threads,read,write,other,total,transactions,queries,time,min,avg,max,95th 
+oltp.lua,1.0.14,2,105910,30260,15130,151300,7565,151300,15.0039s,2.79,3.96,102.68,7.04 
+
+sysbench mysql cleanup database: sbt
+sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --time=15 --threads=2 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql cleanup
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+
+Dropping table 'sbtest1'...
+Dropping table 'sbtest2'...
+Dropping table 'sbtest3'...
+Dropping table 'sbtest4'...
+```
+
+| mysql sysbench | sysbench | threads: | read: | write: | other: | total: | transactions: | queries: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| oltp.lua | 1.0.14 | 2 | 105910 | 30260 | 15130 | 151300 | 7565 | 151300 | 15.0039s | 2.79 | 3.96 | 102.68 | 7.04 |
