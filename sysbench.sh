@@ -57,7 +57,7 @@ sysbench_install() {
     if [[ -f /usr/bin/sysbench  && "$SYSBENCH_GETVER" -lt '100' ]]; then
       yum -y -q remove sysbench
     fi
-    if [[ ! "$(grep sysbench /etc/yum.repos.d/epel.repo)" ]]; then
+    if [[ -f /etc/yum.repos.d/epel.repo && ! "$(grep sysbench /etc/yum.repos.d/epel.repo)" ]]; then
       excludevalue=$(grep '^exclude=' /etc/yum.repos.d/epel.repo | head -n1)
       sed -i "s/exclude=.*/${excludevalue} sysbench/" /etc/yum.repos.d/epel.repo
     fi
