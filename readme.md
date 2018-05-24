@@ -125,81 +125,81 @@ max: 0.01
 ## sysbench fileio
 
 ```
-./sysbench.sh file
+./sysbench.sh file                           
 
 sysbench fileio prepare
 sysbench fileio --file-total-size=38320634 prepare
 
-sysbench fileio --threads=1 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=seqrd --time=10 --events=0 run
+sysbench fileio --threads=1 --file-total-size=38320634 --file-block-size=4096 --file-io-mode=sync --file-test-mode=seqrd --time=10 --events=0 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 1
 Block-size 4KiB
 Using synchronous I/O mode
 Doing sequential read test
-reads/s: 1240534.66
+reads/s: 1215381.25
 writes/s: 0.00
 fsyncs/s: 0.00
-read-MiB/s: 4786.29
+read-MiB/s: 4689.24
 written-MiB/s: 0.00
 time: 10.0000s
 min: 0.00
 avg: 0.00
-max: 0.02
+max: 0.01
 95th: 0.00
 
-sysbench fileio --threads=1 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=seqwr --time=10 --events=0 run
+sysbench fileio --threads=1 --file-total-size=38320634 --file-block-size=4096 --file-io-mode=sync --file-test-mode=seqwr --time=10 --events=0 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 1
 Block-size 4KiB
 Using synchronous I/O mode
 Doing sequential write (creation) test
 reads/s: 0.00
-writes/s: 24556.83
-fsyncs/s: 31431.75
+writes/s: 24586.96
+fsyncs/s: 31468.51
 read-MiB/s: 0.00
-written-MiB/s: 94.75
-time: 10.0001s
+written-MiB/s: 94.86
+time: 10.0000s
 min: 0.00
 avg: 0.02
-max: 9.96
+max: 1.35
 95th: 0.03
 
-sysbench fileio --threads=1 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=seqrewr --time=10 --events=0 run
+sysbench fileio --threads=1 --file-total-size=38320634 --file-block-size=4096 --file-io-mode=sync --file-test-mode=seqrewr --time=10 --events=0 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 1
 Block-size 4KiB
 Using synchronous I/O mode
 Doing sequential rewrite test
 reads/s: 0.00
-writes/s: 24596.93
-fsyncs/s: 31482.37
+writes/s: 24575.91
+fsyncs/s: 31456.47
 read-MiB/s: 0.00
-written-MiB/s: 94.90
-time: 10.0000s
+written-MiB/s: 94.82
+time: 10.0004s
 min: 0.00
 avg: 0.02
-max: 4.97
+max: 3.85
 95th: 0.03
 
-sysbench fileio --threads=1 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=rndrd --time=10 --events=0 run
+sysbench fileio --threads=1 --file-total-size=38320634 --file-block-size=4096 --file-io-mode=sync --file-test-mode=rndrd --time=10 --events=0 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 1
 Block-size 4KiB
 Read/Write ratio for combined random IO test: 1.50
 Using synchronous I/O mode
 Doing random read test
-reads/s: 1012370.33
+reads/s: 983721.80
 writes/s: 0.00
 fsyncs/s: 0.00
-read-MiB/s: 3928.33
+read-MiB/s: 3817.13
 written-MiB/s: 0.00
 time: 10.0000s
 min: 0.00
 avg: 0.00
-max: 0.03
+max: 0.01
 95th: 0.00
 
-sysbench fileio --threads=1 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=rndwr --time=10 --events=0 run
+sysbench fileio --threads=1 --file-total-size=38320634 --file-block-size=4096 --file-io-mode=sync --file-test-mode=rndwr --time=10 --events=0 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 1
 Block-size 4KiB
@@ -207,104 +207,104 @@ Read/Write ratio for combined random IO test: 1.50
 Using synchronous I/O mode
 Doing random write test
 reads/s: 0.00
-writes/s: 14618.12
-fsyncs/s: 18703.40
+writes/s: 14698.13
+fsyncs/s: 18802.41
 read-MiB/s: 0.00
-written-MiB/s: 56.73
-time: 10.0001s
+written-MiB/s: 57.05
+time: 10.0000s
 min: 0.00
 avg: 0.03
-max: 12.36
+max: 0.81
 95th: 0.08
 
-sysbench fileio --threads=1 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=rndrw --time=10 --events=0 run
+sysbench fileio --threads=1 --file-total-size=38320634 --file-block-size=4096 --file-io-mode=sync --file-test-mode=rndrw --time=10 --events=0 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 1
 Block-size 4KiB
 Read/Write ratio for combined random IO test: 1.50
 Using synchronous I/O mode
 Doing random r/w test
-reads/s: 12388.44
-writes/s: 8258.96
-fsyncs/s: 26418.57
-read-MiB/s: 48.08
-written-MiB/s: 32.04
+reads/s: 12424.45
+writes/s: 8282.97
+fsyncs/s: 26499.10
+read-MiB/s: 48.20
+written-MiB/s: 32.13
 time: 10.0000s
 min: 0.00
 avg: 0.02
-max: 0.56
+max: 5.55
 95th: 0.07
 
-sysbench fileio --threads=8 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=seqrd --time=10 --events=0 run
+sysbench fileio --threads=8 --file-total-size=38320634 --file-block-size=4096 --file-io-mode=sync --file-test-mode=seqrd --time=10 --events=0 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 8
 Block-size 4KiB
 Using synchronous I/O mode
 Doing sequential read test
-reads/s: 2836508.07
+reads/s: 2838044.62
 writes/s: 0.00
 fsyncs/s: 0.00
-read-MiB/s: 10943.94
+read-MiB/s: 10949.87
 written-MiB/s: 0.00
 time: 10.0001s
 min: 0.00
 avg: 0.00
-max: 20.80
+max: 4.05
 95th: 0.00
 
-sysbench fileio --threads=8 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=seqwr --time=10 --events=0 run
+sysbench fileio --threads=8 --file-total-size=38320634 --file-block-size=4096 --file-io-mode=sync --file-test-mode=seqwr --time=10 --events=0 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 8
 Block-size 4KiB
 Using synchronous I/O mode
 Doing sequential write (creation) test
 reads/s: 0.00
-writes/s: 24986.77
-fsyncs/s: 31976.47
+writes/s: 24936.76
+fsyncs/s: 31911.35
+read-MiB/s: 0.00
+written-MiB/s: 96.21
+time: 10.0002s
+min: 0.00
+avg: 0.14
+max: 23.05
+95th: 0.13
+
+sysbench fileio --threads=8 --file-total-size=38320634 --file-block-size=4096 --file-io-mode=sync --file-test-mode=seqrewr --time=10 --events=0 run
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+threads: 8
+Block-size 4KiB
+Using synchronous I/O mode
+Doing sequential rewrite test
+reads/s: 0.00
+writes/s: 24986.76
+fsyncs/s: 31981.65
 read-MiB/s: 0.00
 written-MiB/s: 96.41
 time: 10.0002s
 min: 0.00
 avg: 0.14
-max: 28.51
+max: 27.08
 95th: 0.13
 
-sysbench fileio --threads=8 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=seqrewr --time=10 --events=0 run
-sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
-threads: 8
-Block-size 4KiB
-Using synchronous I/O mode
-Doing sequential rewrite test
-reads/s: 0.00
-writes/s: 25046.73
-fsyncs/s: 32058.51
-read-MiB/s: 0.00
-written-MiB/s: 96.64
-time: 10.0002s
-min: 0.00
-avg: 0.14
-max: 23.95
-95th: 0.13
-
-sysbench fileio --threads=8 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=rndrd --time=10 --events=0 run
+sysbench fileio --threads=8 --file-total-size=38320634 --file-block-size=4096 --file-io-mode=sync --file-test-mode=rndrd --time=10 --events=0 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 8
 Block-size 4KiB
 Read/Write ratio for combined random IO test: 1.50
 Using synchronous I/O mode
 Doing random read test
-reads/s: 2538339.29
+reads/s: 2530196.45
 writes/s: 0.00
 fsyncs/s: 0.00
-read-MiB/s: 9849.58
+read-MiB/s: 9818.03
 written-MiB/s: 0.00
-time: 10.0000s
+time: 10.0001s
 min: 0.00
 avg: 0.00
-max: 21.57
+max: 28.08
 95th: 0.00
 
-sysbench fileio --threads=8 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=rndwr --time=10 --events=0 run
+sysbench fileio --threads=8 --file-total-size=38320634 --file-block-size=4096 --file-io-mode=sync --file-test-mode=rndwr --time=10 --events=0 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 8
 Block-size 4KiB
@@ -312,32 +312,32 @@ Read/Write ratio for combined random IO test: 1.50
 Using synchronous I/O mode
 Doing random write test
 reads/s: 0.00
-writes/s: 17987.44
-fsyncs/s: 23020.33
+writes/s: 18027.43
+fsyncs/s: 23063.92
 read-MiB/s: 0.00
-written-MiB/s: 69.80
+written-MiB/s: 69.95
 time: 10.0002s
 min: 0.00
 avg: 0.19
-max: 12.74
+max: 14.45
 95th: 0.90
 
-sysbench fileio --threads=8 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=rndrw --time=10 --events=0 run
+sysbench fileio --threads=8 --file-total-size=38320634 --file-block-size=4096 --file-io-mode=sync --file-test-mode=rndrw --time=10 --events=0 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 8
 Block-size 4KiB
 Read/Write ratio for combined random IO test: 1.50
 Using synchronous I/O mode
 Doing random r/w test
-reads/s: 14139.98
-writes/s: 9426.65
-fsyncs/s: 30153.08
-read-MiB/s: 54.85
-written-MiB/s: 36.59
+reads/s: 14097.93
+writes/s: 9398.79
+fsyncs/s: 30065.60
+read-MiB/s: 54.72
+written-MiB/s: 36.47
 time: 10.0002s
 min: 0.00
 avg: 0.15
-max: 13.39
+max: 18.12
 95th: 0.69
 
 sysbench fileio cleanup
