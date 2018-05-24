@@ -63,7 +63,6 @@ Usage:
 ```
 ./sysbench.sh cpu
 
-threads: 1
 sysbench cpu --cpu-max-prime=20000 --threads=1 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 1
@@ -75,7 +74,6 @@ avg: 1.90
 max: 2.35
 95th: 1.89
 
-threads: 8
 sysbench cpu --cpu-max-prime=20000 --threads=8 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 8
@@ -93,7 +91,6 @@ max: 23.65
 ```
 ./sysbench.sh mem
 
-threads: 1
 sysbench memory --threads=1 --memory-block-size=1K --memory-scope=global --memory-total-size=1G --memory-oper=read run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 1
@@ -109,7 +106,6 @@ avg: 0.00
 max: 0.01
 95th: 0.00
 
-threads: 8
 sysbench memory --threads=8 --memory-block-size=1K --memory-scope=global --memory-total-size=1G --memory-oper=read run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 8
@@ -134,7 +130,6 @@ max: 0.01
 sysbench fileio prepare
 sysbench fileio --file-total-size=38320634 prepare
 
-threads: 1
 sysbench fileio --threads=1 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=seqrd --time=10 --events=0 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 1
@@ -240,7 +235,6 @@ avg: 0.02
 max: 0.56
 95th: 0.07
 
-threads: 8
 sysbench fileio --threads=8 --file-total-size=38320634 --file-block-size=4096 --file-test-mode=seqrd --time=10 --events=0 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 8
