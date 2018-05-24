@@ -660,10 +660,10 @@ max: 87.87
 
 | mysql sysbench | sysbench | threads: | read: | write: | other: | total: | transactions: | queries: | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| oltp.lua | 1.0.14 | 8 | 575974 | 164564 | 82282 | 822820 | 41141 | 822820 | 15.0036s | 1.21 | 2.92 | 87.87 | 4.03 |
+| oltp.lua | 1.0.14 | 8 | 575974 | 164564 | 82282 | 822820 | 2741.88 | 54837.61 | 15.0036s | 1.21 | 2.92 | 87.87 | 4.03 |
 
 sysbench,sysbench,threads,read,write,other,total,transactions,queries,time,min,avg,max,95th 
-oltp.lua,1.0.14,8,575974,164564,82282,822820,41141,822820,15.0036s,1.21,2.92,87.87,4.03 
+oltp.lua,1.0.14,8,575974,164564,82282,822820,2741.88,54837.61,15.0036s,1.21,2.92,87.87,4.03 
 
 sysbench mysql cleanup database: sbt
 sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --time=15 --threads=8 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql cleanup
@@ -677,4 +677,4 @@ Dropping table 'sbtest4'...
 
 | mysql sysbench | sysbench | threads: | read: | write: | other: | total: | transactions: | queries: | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| oltp.lua | 1.0.14 | 8 | 575974 | 164564 | 82282 | 822820 | 41141 | 822820 | 15.0036s | 1.21 | 2.92 | 87.87 | 4.03 |
+| oltp.lua | 1.0.14 | 8 | 575974 | 164564 | 82282 | 822820 | 2741.88 | 54837.61 | 15.0036s | 1.21 | 2.92 | 87.87 | 4.03 |
