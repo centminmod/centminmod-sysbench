@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='0.2'
+VER='0.3'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -105,6 +105,8 @@ sysbench_cpu() {
     echo -n "| cpu "; cat "$SYSBENCH_DIR/sysbench-cpu-threads-1.log" | grep -v prime | awk '{print $1,$2}' | xargs | awk '{ for (i=1;i<=NF;i+=2) print $i" |" }' | xargs | tee "$SYSBENCH_DIR/sysbench-cpu-threads-1-markdown.log"
     echo "| --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-cpu-threads-1-markdown.log"
     echo -n "| "; cat "$SYSBENCH_DIR/sysbench-cpu-threads-1.log" | grep -v prime | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-cpu-threads-1-markdown.log"
+    echo
+    cat "$SYSBENCH_DIR/sysbench-cpu-threads-1-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
 
   if [[ "$TEST_SINGLETHREAD" != [yY] ]]; then
     echo
@@ -115,6 +117,8 @@ sysbench_cpu() {
       echo -n "| cpu "; cat "$SYSBENCH_DIR/sysbench-cpu-threads-$(nproc).log" | grep -v prime | awk '{print $1,$2}' | xargs | awk '{ for (i=1;i<=NF;i+=2) print $i" |" }' | xargs | tee "$SYSBENCH_DIR/sysbench-cpu-threads-$(nproc)-markdown.log"
       echo "| --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-cpu-threads-$(nproc)-markdown.log"
       echo -n "| "; cat "$SYSBENCH_DIR/sysbench-cpu-threads-$(nproc).log" | grep -v prime | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-cpu-threads-$(nproc)-markdown.log"
+      echo
+      cat "$SYSBENCH_DIR/sysbench-cpu-threads-$(nproc)-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
   fi
 }
 
@@ -131,6 +135,8 @@ sysbench_mem() {
   echo -n "| memory "; cat "$SYSBENCH_DIR/sysbench-mem-threads-1.log" | egrep -v 'scope:' | awk '{print $1,$2}' | xargs | awk '{ for (i=1;i<=NF;i+=2) print $i" |" }' | xargs | tee "$SYSBENCH_DIR/sysbench-mem-threads-1-markdown.log"
   echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-mem-threads-1-markdown.log"
   echo -n "| "; cat "$SYSBENCH_DIR/sysbench-mem-threads-1.log" | egrep -v 'scope:' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | sed -e 's|(||' | tee -a "$SYSBENCH_DIR/sysbench-mem-threads-1-markdown.log"
+  echo
+  cat "$SYSBENCH_DIR/sysbench-mem-threads-1-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
 
   if [[ "$TEST_SINGLETHREAD" != [yY] ]]; then
     echo
@@ -141,6 +147,8 @@ sysbench_mem() {
     echo -n "| memory "; cat "$SYSBENCH_DIR/sysbench-mem-threads-$(nproc).log" | egrep -v 'scope:' | awk '{print $1,$2}' | xargs | awk '{ for (i=1;i<=NF;i+=2) print $i" |" }' | xargs | tee "$SYSBENCH_DIR/sysbench-mem-threads-$(nproc)-markdown.log"
     echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-mem-threads-$(nproc)-markdown.log"
     echo -n "| "; cat "$SYSBENCH_DIR/sysbench-mem-threads-$(nproc).log" | egrep -v 'scope:' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs| sed -e 's|(||' | tee -a "$SYSBENCH_DIR/sysbench-mem-threads-$(nproc)-markdown.log"
+    echo
+    cat "$SYSBENCH_DIR/sysbench-mem-threads-$(nproc)-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
   fi
 }
 
@@ -167,6 +175,8 @@ sysbench_fileio() {
     echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-1-markdown.log"
     echo -n "| "; cat "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-1.log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-1-markdown.log"
     echo
+    cat "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-1-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
+    echo
   fi
   if [[ "$FILEIO_SEQWR" = [yY] ]]; then
     echo "sysbench fileio --threads=1 --file-total-size=$fileio_filesize --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-test-mode=seqwr --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-1.log"
@@ -175,6 +185,8 @@ sysbench_fileio() {
     echo -n "| fileio "; cat "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-1.log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{ for (i=1;i<=NF;i+=2) print $i" |" }' | xargs | tee "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-1-markdown.log"
     echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-1-markdown.log"
     echo -n "| "; cat "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-1.log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-1-markdown.log"
+    echo
+    cat "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-1-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
     echo
   fi
   if [[ "$FILEIO_SEQREWR" = [yY] ]]; then
@@ -185,6 +197,8 @@ sysbench_fileio() {
     echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-1-markdown.log"
     echo -n "| "; cat "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-1.log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-1-markdown.log"
     echo
+    cat "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-1-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
+    echo
   fi
   if [[ "$FILEIO_RNDRD" = [yY] ]]; then
     echo "sysbench fileio --threads=1 --file-total-size=$fileio_filesize --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-test-mode=rndrd --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-1.log"
@@ -193,6 +207,8 @@ sysbench_fileio() {
     echo -n "| fileio "; cat "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-1.log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{ for (i=1;i<=NF;i+=2) print $i" |" }' | xargs | tee "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-1-markdown.log"
     echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-1-markdown.log"
     echo -n "| "; cat "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-1.log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-1-markdown.log"
+    echo
+    cat "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-1-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
     echo
   fi
   if [[ "$FILEIO_RNDWR" = [yY] ]]; then
@@ -203,6 +219,8 @@ sysbench_fileio() {
     echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-1-markdown.log"
     echo -n "| "; cat "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-1.log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-1-markdown.log"
     echo
+    cat "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-1-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
+    echo
   fi
   if [[ "$FILEIO_RNDRW" = [yY] ]]; then
     echo "sysbench fileio --threads=1 --file-total-size=$fileio_filesize --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-test-mode=rndrw --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-1.log"
@@ -211,6 +229,8 @@ sysbench_fileio() {
     echo -n "| fileio "; cat "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-1.log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{ for (i=1;i<=NF;i+=2) print $i" |" }' | xargs | tee "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-1-markdown.log"
     echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-1-markdown.log"
     echo -n "| "; cat "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-1.log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-1-markdown.log"
+    echo
+    cat "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-1-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
   fi
   if [[ "$TEST_SINGLETHREAD" != [yY] ]]; then
     echo
@@ -223,6 +243,8 @@ sysbench_fileio() {
       echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-$(nproc)-markdown.log"
       echo -n "| "; cat "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-$(nproc).log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-$(nproc)-markdown.log"
       echo
+      cat "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-$(nproc)-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
+      echo
     fi
     if [[ "$FILEIO_SEQWR" = [yY] ]]; then
       echo "sysbench fileio --threads=$(nproc) --file-total-size=$fileio_filesize --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-test-mode=seqwr --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-$(nproc).log"
@@ -231,6 +253,8 @@ sysbench_fileio() {
       echo -n "| fileio "; cat "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-$(nproc).log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{ for (i=1;i<=NF;i+=2) print $i" |" }' | xargs | tee "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-$(nproc)-markdown.log"
       echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-$(nproc)-markdown.log"
       echo -n "| "; cat "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-$(nproc).log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-$(nproc)-markdown.log"
+      echo
+      cat "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-$(nproc)-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
       echo
     fi
     if [[ "$FILEIO_SEQREWR" = [yY] ]]; then
@@ -241,6 +265,8 @@ sysbench_fileio() {
       echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-$(nproc)-markdown.log"
       echo -n "| "; cat "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-$(nproc).log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-$(nproc)-markdown.log"
       echo
+      cat "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-$(nproc)-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
+      echo
     fi
     if [[ "$FILEIO_RNDRD" = [yY] ]]; then
       echo "sysbench fileio --threads=$(nproc) --file-total-size=$fileio_filesize --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-test-mode=rndrd --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-$(nproc).log"
@@ -249,6 +275,8 @@ sysbench_fileio() {
       echo -n "| fileio "; cat "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-$(nproc).log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{ for (i=1;i<=NF;i+=2) print $i" |" }' | xargs | tee "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-$(nproc)-markdown.log"
       echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-$(nproc)-markdown.log"
       echo -n "| "; cat "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-$(nproc).log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-$(nproc)-markdown.log"
+      echo
+      cat "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-$(nproc)-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
       echo
     fi
     if [[ "$FILEIO_RNDWR" = [yY] ]]; then
@@ -259,6 +287,8 @@ sysbench_fileio() {
       echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-$(nproc)-markdown.log"
       echo -n "| "; cat "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-$(nproc).log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-$(nproc)-markdown.log"
       echo
+      cat "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-$(nproc)-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
+      echo
     fi
     if [[ "$FILEIO_RNDRW" = [yY] ]]; then
       echo "sysbench fileio --threads=$(nproc) --file-total-size=$fileio_filesize --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-test-mode=rndrw --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-$(nproc).log"
@@ -267,6 +297,8 @@ sysbench_fileio() {
       echo -n "| fileio "; cat "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-$(nproc).log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{ for (i=1;i<=NF;i+=2) print $i" |" }' | xargs | tee "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-$(nproc)-markdown.log"
       echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-$(nproc)-markdown.log"
       echo -n "| "; cat "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-$(nproc).log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-$(nproc)-markdown.log"
+      echo
+      cat "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-$(nproc)-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
     fi
   fi
 
