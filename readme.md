@@ -10,6 +10,10 @@ sysbench 1.0.14
 ## sysbench install
 
 ```
+mkdir -p /root/tools/sysbench
+cd /root/tools/sysbench
+wget -O /root/tools/sysbench/sysbench.sh https://github.com/centminmod/centminmod-sysbench/raw/master/sysbench.sh
+chmod +x sysbench.sh
 ./sysbench.sh install
 ```
 
