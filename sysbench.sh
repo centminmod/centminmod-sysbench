@@ -386,7 +386,9 @@ sysbench_mysqloltp() {
 
   echo
   echo "setup $MYSQL_DBNAME database & user"
-  echo y | mysqladmin drop $MYSQL_DBNAME >/dev/null 2>&1
+  if [ -d "/var/lib/mysql/$MYSQL_DBNAME" ]; then
+    echo y | mysqladmin drop $MYSQL_DBNAME >/dev/null 2>&1
+  fi
   echo "mysqladmin create database: $MYSQL_DBNAME"
   mysqladmin create $MYSQL_DBNAME
   mysql -e "show grants for '$MYSQL_USER'@'$MYSQL_HOST';" >/dev/null 2>&1
