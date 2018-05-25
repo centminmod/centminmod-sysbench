@@ -207,7 +207,276 @@ Markdown results table
 sysbench fileio disk performance tests are conducted in directory `/home/sysbench/fileio` with the presumption that `/home` partition is usually the largest disk free space partition on the server to ensure you don't run out of disk space. This fileio test tests both single thread and max cpu core/thread count for comparison using a 2048MB file size.
 
 ```
+./sysbench.sh file                    
 
+sysbench fileio prepare
+sysbench fileio --file-total-size=2048M --file-test-mode=seqrd prepare
+
+sysbench fileio --threads=1 --file-total-size=2048M --file-block-size=4096 --file-io-mode=sync --file-test-mode=seqrd --time=10 --events=0 run
+raw log saved: /home/sysbench/sysbench-fileio-seqrd-threads-1-raw.log
+
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+threads: 1
+Block-size 4KiB
+Using synchronous I/O mode
+Doing sequential read test
+reads/s: 1227706.28
+writes/s: 0.00
+fsyncs/s: 0.00
+read-MiB/s: 4795.73
+written-MiB/s: 0.00
+time: 10.0000s
+min: 0.00
+avg: 0.00
+max: 0.01
+95th: 0.00
+
+| fileio sysbench | sysbench | threads: | Block-size | synchronous | sequential | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| fileio | 1.0.14 | 1 | 4KiB | I/O | read | 1227706.28 | 0.00 | 0.00 | 4795.73 | 0.00 | 10.0000s | 0.00 | 0.00 | 0.01 | 0.00 |
+
+sysbench,sysbench,threads,Block-size,synchronous,sequential,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,95th 
+fileio,1.0.14,1,4KiB,I/O,read,1227706.28,0.00,0.00,4795.73,0.00,10.0000s,0.00,0.00,0.01,0.00 
+
+
+sysbench fileio cleanup
+sysbench fileio --file-total-size=2048M cleanup
+
+sysbench fileio prepare
+sysbench fileio --file-total-size=2048M --file-test-mode=seqwr prepare
+
+sysbench fileio --threads=1 --file-total-size=2048M --file-block-size=4096 --file-io-mode=sync --file-test-mode=seqwr --time=10 --events=0 run
+raw log saved: /home/sysbench/sysbench-fileio-seqwr-threads-1-raw.log
+
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+threads: 1
+Block-size 4KiB
+Using synchronous I/O mode
+Doing sequential write (creation) test
+reads/s: 0.00
+writes/s: 24146.97
+fsyncs/s: 30901.92
+read-MiB/s: 0.00
+written-MiB/s: 94.32
+time: 10.0000s
+min: 0.00
+avg: 0.02
+max: 5.63
+95th: 0.02
+
+| fileio sysbench | sysbench | threads: | Block-size | synchronous | sequential | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| fileio | 1.0.14 | 1 | 4KiB | I/O | write | 0.00 | 24146.97 | 30901.92 | 0.00 | 94.32 | 10.0000s | 0.00 | 0.02 | 5.63 | 0.02 |
+
+sysbench,sysbench,threads,Block-size,synchronous,sequential,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,95th 
+fileio,1.0.14,1,4KiB,I/O,write,0.00,24146.97,30901.92,0.00,94.32,10.0000s,0.00,0.02,5.63,0.02 
+
+
+sysbench fileio cleanup
+sysbench fileio --file-total-size=2048M cleanup
+
+sysbench fileio prepare
+sysbench fileio --file-total-size=2048M --file-test-mode=rndrd prepare
+
+sysbench fileio --threads=1 --file-total-size=2048M --file-block-size=4096 --file-io-mode=sync --file-test-mode=rndrd --time=10 --events=0 run
+raw log saved: /home/sysbench/sysbench-fileio-rndrd-threads-1-raw.log
+
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+threads: 1
+Block-size 4KiB
+Read/Write ratio for combined random IO test: 1.50
+Using synchronous I/O mode
+Doing random read test
+reads/s: 941312.45
+writes/s: 0.00
+fsyncs/s: 0.00
+read-MiB/s: 3677.00
+written-MiB/s: 0.00
+time: 10.0000s
+min: 0.00
+avg: 0.00
+max: 0.01
+95th: 0.00
+
+| fileio sysbench | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| fileio | 1.0.14 | 1 | 4KiB | I/O | read | 941312.45 | 0.00 | 0.00 | 3677.00 | 0.00 | 10.0000s | 0.00 | 0.00 | 0.01 | 0.00 |
+
+sysbench,sysbench,threads,Block-size,synchronous,random,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,95th 
+fileio,1.0.14,1,4KiB,I/O,read,941312.45,0.00,0.00,3677.00,0.00,10.0000s,0.00,0.00,0.01,0.00 
+
+
+sysbench fileio cleanup
+sysbench fileio --file-total-size=2048M cleanup
+
+sysbench fileio prepare
+sysbench fileio --file-total-size=2048M --file-test-mode=rndwr prepare
+
+sysbench fileio --threads=1 --file-total-size=2048M --file-block-size=4096 --file-io-mode=sync --file-test-mode=rndwr --time=10 --events=0 run
+raw log saved: /home/sysbench/sysbench-fileio-rndwr-threads-1-raw.log
+
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+threads: 1
+Block-size 4KiB
+Read/Write ratio for combined random IO test: 1.50
+Using synchronous I/O mode
+Doing random write test
+reads/s: 0.00
+writes/s: 16647.83
+fsyncs/s: 21307.53
+read-MiB/s: 0.00
+written-MiB/s: 65.03
+time: 10.0001s
+min: 0.00
+avg: 0.03
+max: 6.53
+95th: 0.07
+
+| fileio sysbench | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| fileio | 1.0.14 | 1 | 4KiB | I/O | write | 0.00 | 16647.83 | 21307.53 | 0.00 | 65.03 | 10.0001s | 0.00 | 0.03 | 6.53 | 0.07 |
+
+sysbench,sysbench,threads,Block-size,synchronous,random,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,95th 
+fileio,1.0.14,1,4KiB,I/O,write,0.00,16647.83,21307.53,0.00,65.03,10.0001s,0.00,0.03,6.53,0.07 
+
+
+
+sysbench fileio cleanup
+sysbench fileio --file-total-size=2048M cleanup
+
+sysbench fileio prepare
+sysbench fileio --file-total-size=2048M --file-test-mode=seqrd prepare
+
+sysbench fileio --threads=8 --file-total-size=2048M --file-block-size=4096 --file-io-mode=sync --file-test-mode=seqrd --time=10 --events=0 run
+raw log saved: /home/sysbench/sysbench-fileio-seqrd-threads-8-raw.log
+
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+threads: 8
+Block-size 4KiB
+Using synchronous I/O mode
+Doing sequential read test
+reads/s: 2691115.77
+writes/s: 0.00
+fsyncs/s: 0.00
+read-MiB/s: 10512.17
+written-MiB/s: 0.00
+time: 10.0001s
+min: 0.00
+avg: 0.00
+max: 11.04
+95th: 0.00
+
+| fileio sysbench | sysbench | threads: | Block-size | synchronous | sequential | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| fileio | 1.0.14 | 8 | 4KiB | I/O | read | 2691115.77 | 0.00 | 0.00 | 10512.17 | 0.00 | 10.0001s | 0.00 | 0.00 | 11.04 | 0.00 |
+
+sysbench,sysbench,threads,Block-size,synchronous,sequential,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,95th 
+fileio,1.0.14,8,4KiB,I/O,read,2691115.77,0.00,0.00,10512.17,0.00,10.0001s,0.00,0.00,11.04,0.00 
+
+
+sysbench fileio cleanup
+sysbench fileio --file-total-size=2048M cleanup
+
+sysbench fileio prepare
+sysbench fileio --file-total-size=2048M --file-test-mode=seqwr prepare
+
+sysbench fileio --threads=8 --file-total-size=2048M --file-block-size=4096 --file-io-mode=sync --file-test-mode=seqwr --time=10 --events=0 run
+raw log saved: /home/sysbench/sysbench-fileio-seqwr-threads-8-raw.log
+
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+threads: 8
+Block-size 4KiB
+Using synchronous I/O mode
+Doing sequential write (creation) test
+reads/s: 0.00
+writes/s: 24050.79
+fsyncs/s: 30780.02
+read-MiB/s: 0.00
+written-MiB/s: 93.95
+time: 10.0001s
+min: 0.00
+avg: 0.15
+max: 15.27
+95th: 0.28
+
+| fileio sysbench | sysbench | threads: | Block-size | synchronous | sequential | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| fileio | 1.0.14 | 8 | 4KiB | I/O | write | 0.00 | 24050.79 | 30780.02 | 0.00 | 93.95 | 10.0001s | 0.00 | 0.15 | 15.27 | 0.28 |
+
+sysbench,sysbench,threads,Block-size,synchronous,sequential,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,95th 
+fileio,1.0.14,8,4KiB,I/O,write,0.00,24050.79,30780.02,0.00,93.95,10.0001s,0.00,0.15,15.27,0.28 
+
+
+sysbench fileio cleanup
+sysbench fileio --file-total-size=2048M cleanup
+
+sysbench fileio prepare
+sysbench fileio --file-total-size=2048M --file-test-mode=rndrd prepare
+
+sysbench fileio --threads=8 --file-total-size=2048M --file-block-size=4096 --file-io-mode=sync --file-test-mode=rndrd --time=10 --events=0 run
+raw log saved: /home/sysbench/sysbench-fileio-rndrd-threads-8-raw.log
+
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+threads: 8
+Block-size 4KiB
+Read/Write ratio for combined random IO test: 1.50
+Using synchronous I/O mode
+Doing random read test
+reads/s: 2444836.80
+writes/s: 0.00
+fsyncs/s: 0.00
+read-MiB/s: 9550.14
+written-MiB/s: 0.00
+time: 10.0000s
+min: 0.00
+avg: 0.00
+max: 14.32
+95th: 0.01
+
+| fileio sysbench | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| fileio | 1.0.14 | 8 | 4KiB | I/O | read | 2444836.80 | 0.00 | 0.00 | 9550.14 | 0.00 | 10.0000s | 0.00 | 0.00 | 14.32 | 0.01 |
+
+sysbench,sysbench,threads,Block-size,synchronous,random,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,95th 
+fileio,1.0.14,8,4KiB,I/O,read,2444836.80,0.00,0.00,9550.14,0.00,10.0000s,0.00,0.00,14.32,0.01 
+
+
+sysbench fileio cleanup
+sysbench fileio --file-total-size=2048M cleanup
+
+sysbench fileio prepare
+sysbench fileio --file-total-size=2048M --file-test-mode=rndwr prepare
+
+sysbench fileio --threads=8 --file-total-size=2048M --file-block-size=4096 --file-io-mode=sync --file-test-mode=rndwr --time=10 --events=0 run
+raw log saved: /home/sysbench/sysbench-fileio-rndwr-threads-8-raw.log
+
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+threads: 8
+Block-size 4KiB
+Read/Write ratio for combined random IO test: 1.50
+Using synchronous I/O mode
+Doing random write test
+reads/s: 0.00
+writes/s: 22446.88
+fsyncs/s: 28731.51
+read-MiB/s: 0.00
+written-MiB/s: 87.68
+time: 10.0002s
+min: 0.00
+avg: 0.16
+max: 12.80
+95th: 0.72
+
+| fileio sysbench | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| fileio | 1.0.14 | 8 | 4KiB | I/O | write | 0.00 | 22446.88 | 28731.51 | 0.00 | 87.68 | 10.0002s | 0.00 | 0.16 | 12.80 | 0.72 |
+
+sysbench,sysbench,threads,Block-size,synchronous,random,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,95th 
+fileio,1.0.14,8,4KiB,I/O,write,0.00,22446.88,28731.51,0.00,87.68,10.0002s,0.00,0.16,12.80,0.72 
+
+
+sysbench fileio cleanup
+sysbench fileio --file-total-size=2048M cleanup
 ```
 
 Parsing sysbench fileio for markdown table
@@ -216,27 +485,39 @@ Sequential
 
 ```
 ls -rt /home/sysbench/  | grep 'sysbench-fileio' | grep 'markdown' | grep 'seq' | while read f; do echo -n '|'; grep 'fileio' /home/sysbench/$f; done
-
+|fileio | 1.0.14 | 1 | 4KiB | I/O | read | 1227706.28 | 0.00 | 0.00 | 4795.73 | 0.00 | 10.0000s | 0.00 | 0.00 | 0.01 | 0.00 |
+|fileio | 1.0.14 | 1 | 4KiB | I/O | write | 0.00 | 24146.97 | 30901.92 | 0.00 | 94.32 | 10.0000s | 0.00 | 0.02 | 5.63 | 0.02 |
+|fileio | 1.0.14 | 8 | 4KiB | I/O | read | 2691115.77 | 0.00 | 0.00 | 10512.17 | 0.00 | 10.0001s | 0.00 | 0.00 | 11.04 | 0.00 |
+|fileio | 1.0.14 | 8 | 4KiB | I/O | write | 0.00 | 24050.79 | 30780.02 | 0.00 | 93.95 | 10.0001s | 0.00 | 0.15 | 15.27 | 0.28 |
 ```
 
 Random
 
 ```
 ls -rt /home/sysbench/  | grep 'sysbench-fileio' | grep 'markdown' | grep 'rnd' | while read f; do echo -n '|'; grep 'fileio' /home/sysbench/$f; done
-
+|fileio | 1.0.14 | 1 | 4KiB | I/O | read | 941312.45 | 0.00 | 0.00 | 3677.00 | 0.00 | 10.0000s | 0.00 | 0.00 | 0.01 | 0.00 |
+|fileio | 1.0.14 | 1 | 4KiB | I/O | write | 0.00 | 16647.83 | 21307.53 | 0.00 | 65.03 | 10.0001s | 0.00 | 0.03 | 6.53 | 0.07 |
+|fileio | 1.0.14 | 8 | 4KiB | I/O | read | 2444836.80 | 0.00 | 0.00 | 9550.14 | 0.00 | 10.0000s | 0.00 | 0.00 | 14.32 | 0.01 |
+|fileio | 1.0.14 | 8 | 4KiB | I/O | write | 0.00 | 22446.88 | 28731.51 | 0.00 | 87.68 | 10.0002s | 0.00 | 0.16 | 12.80 | 0.72 |
 ```
 
 Markdown results table - sequential
 
 | fileio sysbench | sysbench | threads: | Block-size | synchronous | sequential | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-
+|fileio | 1.0.14 | 1 | 4KiB | I/O | read | 1227706.28 | 0.00 | 0.00 | 4795.73 | 0.00 | 10.0000s | 0.00 | 0.00 | 0.01 | 0.00 |
+|fileio | 1.0.14 | 1 | 4KiB | I/O | write | 0.00 | 24146.97 | 30901.92 | 0.00 | 94.32 | 10.0000s | 0.00 | 0.02 | 5.63 | 0.02 |
+|fileio | 1.0.14 | 8 | 4KiB | I/O | read | 2691115.77 | 0.00 | 0.00 | 10512.17 | 0.00 | 10.0001s | 0.00 | 0.00 | 11.04 | 0.00 |
+|fileio | 1.0.14 | 8 | 4KiB | I/O | write | 0.00 | 24050.79 | 30780.02 | 0.00 | 93.95 | 10.0001s | 0.00 | 0.15 | 15.27 | 0.28 |
 
 Markdown results table - random
 
 | fileio sysbench | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-
+|fileio | 1.0.14 | 1 | 4KiB | I/O | read | 941312.45 | 0.00 | 0.00 | 3677.00 | 0.00 | 10.0000s | 0.00 | 0.00 | 0.01 | 0.00 |
+|fileio | 1.0.14 | 1 | 4KiB | I/O | write | 0.00 | 16647.83 | 21307.53 | 0.00 | 65.03 | 10.0001s | 0.00 | 0.03 | 6.53 | 0.07 |
+|fileio | 1.0.14 | 8 | 4KiB | I/O | read | 2444836.80 | 0.00 | 0.00 | 9550.14 | 0.00 | 10.0000s | 0.00 | 0.00 | 14.32 | 0.01 |
+|fileio | 1.0.14 | 8 | 4KiB | I/O | write | 0.00 | 22446.88 | 28731.51 | 0.00 | 87.68 | 10.0002s | 0.00 | 0.16 | 12.80 | 0.72 |
 
 ## sysbench mysql
 
