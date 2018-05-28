@@ -63,6 +63,7 @@ MYSQL_SCALE='100'
 
 
 SYSBENCH_DIR='/home/sysbench'
+SYSBENCH_FILEIODIR="${SYSBENCH_DIR}/fileio"
 #########################################################
 # functions
 #############
@@ -71,8 +72,8 @@ if [ ! -d "$SYSBENCH_DIR" ]; then
   mkdir -p "${SYSBENCH_DIR}"
 fi
 
-if [ ! -d "${SYSBENCH_DIR}/fileio" ]; then
-  mkdir -p "${SYSBENCH_DIR}/fileio"
+if [ ! -d "${SYSBENCH_FILEIODIR}" ]; then
+  mkdir -p "${SYSBENCH_FILEIODIR}"
 fi
 
 if [ ! -d "${SYSBENCH_DIR}/mysql" ]; then
@@ -221,7 +222,7 @@ sysbench_fileio() {
     echo
     exit
   fi
-  cd "$SYSBENCH_DIR/fileio"
+  cd "${SYSBENCH_FILEIODIR}"
 
   # echo "threads: 1";
   if [[ "$FILEIO_SEQRD" = [yY] ]]; then
