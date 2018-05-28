@@ -37,48 +37,55 @@ each `sysbench.sh` test option saves results into temporary log file in `/home/s
 
 ```
 ls -lh /home/sysbench/
-total 164K
-drwxr-xr-x 2 root root 4.0K May 25 04:35 fileio
+total 192K
+drwxr-xr-x 2 root root 4.0K May 28 06:22 fileio
 drwxr-xr-x 2 root root 4.0K May 24 16:47 mysql
--rw-r--r-- 1 root root  199 May 25 04:51 sysbench-cpu-threads-1.log
--rw-r--r-- 1 root root  182 May 25 04:51 sysbench-cpu-threads-1-markdown.log
--rw-r--r-- 1 root root  201 May 25 04:51 sysbench-cpu-threads-8.log
--rw-r--r-- 1 root root  184 May 25 04:51 sysbench-cpu-threads-8-markdown.log
--rw-r--r-- 1 root root  467 May 25 04:33 sysbench-fileio-rndrd-threads-1.log
--rw-r--r-- 1 root root  394 May 25 04:33 sysbench-fileio-rndrd-threads-1-markdown.log
--rw-r--r-- 1 root root 1.3K May 25 04:33 sysbench-fileio-rndrd-threads-1-raw.log
--rw-r--r-- 1 root root  469 May 25 04:35 sysbench-fileio-rndrd-threads-8.log
--rw-r--r-- 1 root root  396 May 25 04:35 sysbench-fileio-rndrd-threads-8-markdown.log
--rw-r--r-- 1 root root 1.3K May 25 04:35 sysbench-fileio-rndrd-threads-8-raw.log
--rw-r--r-- 1 root root  469 May 25 04:33 sysbench-fileio-rndwr-threads-1.log
--rw-r--r-- 1 root root  396 May 25 04:33 sysbench-fileio-rndwr-threads-1-markdown.log
--rw-r--r-- 1 root root 1.3K May 25 04:33 sysbench-fileio-rndwr-threads-1-raw.log
--rw-r--r-- 1 root root  470 May 25 04:35 sysbench-fileio-rndwr-threads-8.log
--rw-r--r-- 1 root root  397 May 25 04:35 sysbench-fileio-rndwr-threads-8-markdown.log
--rw-r--r-- 1 root root 1.3K May 25 04:35 sysbench-fileio-rndwr-threads-8-raw.log
--rw-r--r-- 1 root root  421 May 25 04:32 sysbench-fileio-seqrd-threads-1.log
--rw-r--r-- 1 root root  399 May 25 04:32 sysbench-fileio-seqrd-threads-1-markdown.log
--rw-r--r-- 1 root root 1.3K May 25 04:32 sysbench-fileio-seqrd-threads-1-raw.log
--rw-r--r-- 1 root root  423 May 25 04:34 sysbench-fileio-seqrd-threads-8.log
--rw-r--r-- 1 root root  401 May 25 04:34 sysbench-fileio-seqrd-threads-8-markdown.log
--rw-r--r-- 1 root root 1.3K May 25 04:34 sysbench-fileio-seqrd-threads-8-raw.log
--rw-r--r-- 1 root root  433 May 25 04:33 sysbench-fileio-seqwr-threads-1.log
--rw-r--r-- 1 root root  400 May 25 04:33 sysbench-fileio-seqwr-threads-1-markdown.log
--rw-r--r-- 1 root root 1.3K May 25 04:33 sysbench-fileio-seqwr-threads-1-raw.log
--rw-r--r-- 1 root root  434 May 25 04:34 sysbench-fileio-seqwr-threads-8.log
--rw-r--r-- 1 root root  401 May 25 04:34 sysbench-fileio-seqwr-threads-8-markdown.log
--rw-r--r-- 1 root root 1.3K May 25 04:34 sysbench-fileio-seqwr-threads-8-raw.log
--rw-r--r-- 1 root root  376 May 25 04:51 sysbench-mem-threads-1.log
--rw-r--r-- 1 root root  322 May 25 04:51 sysbench-mem-threads-1-markdown.log
--rw-r--r-- 1 root root  379 May 25 04:51 sysbench-mem-threads-8.log
--rw-r--r-- 1 root root  324 May 25 04:51 sysbench-mem-threads-8-markdown.log
--rw-r--r-- 1 root root  401 May 25 04:52 sysbench-mysql-cleanup-threads-8.log
--rw-r--r-- 1 root root  733 May 25 04:51 sysbench-mysql-prepare-threads-8.log
--rw-r--r-- 1 root root  446 May 25 04:52 sysbench-mysql-run-summary-threads-8-corrected.log
--rw-r--r-- 1 root root  481 May 25 04:52 sysbench-mysql-run-summary-threads-8.log
--rw-r--r-- 1 root root  338 May 25 04:52 sysbench-mysql-run-summary-threads-8-markdown.log
--rw-r--r-- 1 root root 3.3K May 25 04:52 sysbench-mysql-run-threads-8.log
--rw-r--r-- 1 root root  928 May 25 04:51 sysbench-mysql-table-list.log
+-rw-r--r-- 1 root root  199 May 28 06:18 sysbench-cpu-threads-1.log
+-rw-r--r-- 1 root root  182 May 28 06:18 sysbench-cpu-threads-1-markdown.log
+-rw-r--r-- 1 root root  201 May 28 06:18 sysbench-cpu-threads-8.log
+-rw-r--r-- 1 root root  184 May 28 06:18 sysbench-cpu-threads-8-markdown.log
+-rw-r--r-- 1 root root  504 May 28 06:20 sysbench-fileio-rndrd-threads-1.log
+-rw-r--r-- 1 root root  390 May 28 06:20 sysbench-fileio-rndrd-threads-1-markdown.log
+-rw-r--r-- 1 root root 1.3K May 28 06:20 sysbench-fileio-rndrd-threads-1-raw.log
+-rw-r--r-- 1 root root  506 May 28 06:22 sysbench-fileio-rndrd-threads-8.log
+-rw-r--r-- 1 root root  392 May 28 06:22 sysbench-fileio-rndrd-threads-8-markdown.log
+-rw-r--r-- 1 root root 1.3K May 28 06:22 sysbench-fileio-rndrd-threads-8-raw.log
+-rw-r--r-- 1 root root  510 May 28 06:21 sysbench-fileio-rndwr-threads-1.log
+-rw-r--r-- 1 root root  396 May 28 06:21 sysbench-fileio-rndwr-threads-1-markdown.log
+-rw-r--r-- 1 root root 1.3K May 28 06:21 sysbench-fileio-rndwr-threads-1-raw.log
+-rw-r--r-- 1 root root  510 May 28 06:22 sysbench-fileio-rndwr-threads-8.log
+-rw-r--r-- 1 root root  396 May 28 06:22 sysbench-fileio-rndwr-threads-8-markdown.log
+-rw-r--r-- 1 root root 1.3K May 28 06:22 sysbench-fileio-rndwr-threads-8-raw.log
+-rw-r--r-- 1 root root  459 May 28 06:19 sysbench-fileio-seqrd-threads-1.log
+-rw-r--r-- 1 root root  396 May 28 06:19 sysbench-fileio-seqrd-threads-1-markdown.log
+-rw-r--r-- 1 root root 1.2K May 28 06:19 sysbench-fileio-seqrd-threads-1-raw.log
+-rw-r--r-- 1 root root  459 May 28 06:21 sysbench-fileio-seqrd-threads-8.log
+-rw-r--r-- 1 root root  396 May 28 06:21 sysbench-fileio-seqrd-threads-8-markdown.log
+-rw-r--r-- 1 root root 1.2K May 28 06:21 sysbench-fileio-seqrd-threads-8-raw.log
+-rw-r--r-- 1 root root  474 May 28 06:20 sysbench-fileio-seqwr-threads-1.log
+-rw-r--r-- 1 root root  400 May 28 06:20 sysbench-fileio-seqwr-threads-1-markdown.log
+-rw-r--r-- 1 root root 1.3K May 28 06:20 sysbench-fileio-seqwr-threads-1-raw.log
+-rw-r--r-- 1 root root  474 May 28 06:21 sysbench-fileio-seqwr-threads-8.log
+-rw-r--r-- 1 root root  400 May 28 06:21 sysbench-fileio-seqwr-threads-8-markdown.log
+-rw-r--r-- 1 root root 1.3K May 28 06:21 sysbench-fileio-seqwr-threads-8-raw.log
+-rw-r--r-- 1 root root  376 May 28 06:18 sysbench-mem-threads-1.log
+-rw-r--r-- 1 root root  322 May 28 06:18 sysbench-mem-threads-1-markdown.log
+-rw-r--r-- 1 root root  378 May 28 06:18 sysbench-mem-threads-8.log
+-rw-r--r-- 1 root root  323 May 28 06:18 sysbench-mem-threads-8-markdown.log
+-rw-r--r-- 1 root root  429 May 28 06:31 sysbench-mysql-cleanup-threads-8.log
+-rw-r--r-- 1 root root  429 May 28 06:44 sysbench-mysql-cleanup-threads-8-readonly.log
+-rw-r--r-- 1 root root  761 May 28 06:30 sysbench-mysql-prepare-threads-8.log
+-rw-r--r-- 1 root root  761 May 28 06:44 sysbench-mysql-prepare-threads-8-readonly.log
+-rw-r--r-- 1 root root  480 May 28 06:31 sysbench-mysql-run-summary-threads-8-corrected.log
+-rw-r--r-- 1 root root  510 May 28 06:44 sysbench-mysql-run-summary-threads-8-corrected-readonly.log
+-rw-r--r-- 1 root root  512 May 28 06:31 sysbench-mysql-run-summary-threads-8.log
+-rw-r--r-- 1 root root  344 May 28 06:31 sysbench-mysql-run-summary-threads-8-markdown.log
+-rw-r--r-- 1 root root  335 May 28 06:44 sysbench-mysql-run-summary-threads-8-markdown-readonly.log
+-rw-r--r-- 1 root root  542 May 28 06:44 sysbench-mysql-run-summary-threads-8-readonly.log
+-rw-r--r-- 1 root root 4.0K May 28 06:31 sysbench-mysql-run-threads-8.log
+-rw-r--r-- 1 root root 3.9K May 28 06:44 sysbench-mysql-run-threads-8-readonly.log
+-rw-r--r-- 1 root root  928 May 28 06:31 sysbench-mysql-table-list.log
+-rw-r--r-- 1 root root  928 May 28 06:44 sysbench-mysql-table-list-readonly.log
 ```
 
 ## sysbench install
@@ -104,8 +111,10 @@ chmod +x sysbench.sh
 ## sysbench usage
 
 ```
+./sysbench.sh 
+
 Usage:
-./sysbench.sh {install|update|cpu|mem|file|mysql}
+./sysbench.sh {install|update|cpu|mem|file|mysql|mysqlro}
 ```
 
 ## sysbench cpu
