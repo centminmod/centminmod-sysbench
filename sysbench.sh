@@ -55,6 +55,7 @@ MYSQL_PASS='sbtestpass'
 MYSQL_DBNAME='sbt'
 MYSQL_ENGINE='InnoDB'
 MYSQL_TIME='20'
+# max cpu threads detected via nproc output
 MYSQL_THREADS="$(nproc)"
 MYSQL_TABLECOUNT='4'
 MYSQL_OLTPTABLESIZE='100000'
