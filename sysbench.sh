@@ -53,6 +53,7 @@ MYSQL_LOGIN='y'
 MYSQL_USER='sbtest'
 MYSQL_PASS='sbtestpass'
 MYSQL_DBNAME='sbt'
+MYSQL_ENGINE='InnoDB'
 MYSQL_TIME='20'
 MYSQL_THREADS="$(nproc)"
 MYSQL_TABLECOUNT='4'
@@ -557,20 +558,20 @@ sysbench_mysqltpcc() {
   fi
 
   echo
-  echo "./tpcc.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --tables=${MYSQL_TABLECOUNT} --scale=${MYSQL_SCALE} --db-driver=mysql prepare"
-  ./tpcc.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --tables=${MYSQL_TABLECOUNT} --scale=${MYSQL_SCALE} --db-driver=mysql prepare
+  echo "./tpcc.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --tables=${MYSQL_TABLECOUNT} --scale=${MYSQL_SCALE} --db-driver=mysql prepare"
+  ./tpcc.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --tables=${MYSQL_TABLECOUNT} --scale=${MYSQL_SCALE} --db-driver=mysql prepare
 
   echo
   mysql -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
 CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((data_length+index_length)/(1024*1024),2),'MB') AS'Total', ROW_FORMAT, TABLE_COLLATION FROM information_schema.TABLES WHERE table_schema LIKE '$MYSQL_DBNAME';"
 
   echo
-  echo "./tpcc.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --tables=${MYSQL_TABLECOUNT} --scale=${MYSQL_SCALE} --db-driver=mysql run"
-  ./tpcc.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --tables=${MYSQL_TABLECOUNT} --scale=${MYSQL_SCALE} --db-driver=mysql run
+  echo "./tpcc.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --tables=${MYSQL_TABLECOUNT} --scale=${MYSQL_SCALE} --db-driver=mysql run"
+  ./tpcc.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --tables=${MYSQL_TABLECOUNT} --scale=${MYSQL_SCALE} --db-driver=mysql run
 
   echo
-  echo "./tpcc.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --tables=${MYSQL_TABLECOUNT} --scale=${MYSQL_SCALE} --db-driver=mysql cleanup"
-  ./tpcc.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --tables=${MYSQL_TABLECOUNT} --scale=${MYSQL_SCALE} --db-driver=mysql cleanup
+  echo "./tpcc.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --tables=${MYSQL_TABLECOUNT} --scale=${MYSQL_SCALE} --db-driver=mysql cleanup"
+  ./tpcc.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --tables=${MYSQL_TABLECOUNT} --scale=${MYSQL_SCALE} --db-driver=mysql cleanup
 }
 
 sysbench_mysqloltp() {
@@ -603,8 +604,8 @@ sysbench_mysqloltp() {
 
   echo
   echo "sysbench prepare database: $MYSQL_DBNAME"
-  echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare" | tee "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}.log"
-  sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}.log"
+  echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare" | tee "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}.log"
+  sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}.log"
 
   echo
   sleep 6
@@ -613,8 +614,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
 
   echo
   echo "sysbench mysql benchmark:"
-  echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}.log"
-  sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}.log"
+  echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}.log"
+  sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}.log"
 
   echo
   echo "sysbench mysql summary:"
@@ -623,7 +624,7 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   trans_persec=$(awk '/transactions:/ {print $3}' "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}.log" | sed -e 's|(||')
   queries_persec=$(awk '/queries:/ {print $3}' "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}.log" | sed -e 's|(||')
 
-  cat "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}.log" | sed -e "s|transactions: .*|transactions: $trans_persec|" -e "s|queries: .*|queries: $queries_persec|" | tee "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}-corrected.log"
+  cat "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}.log" | sed -e "s|transactions: .*|transactions\/s: $trans_persec|" -e "s|queries: .*|queries\/s: $queries_persec|" | tee "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}-corrected.log"
 
   echo
   echo -n "| mysql "; cat "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}-corrected.log" | awk '{print $1,$2}' | xargs | awk '{ for (i=1;i<=NF;i+=2) print $i" |" }' | xargs | tee "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}-markdown.log"
@@ -635,8 +636,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
 
   echo
   echo "sysbench mysql cleanup database: $MYSQL_DBNAME"
-  echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup" | tee "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}.log"
-  sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}.log"
+  echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup" | tee "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}.log"
+  sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}.log"
 }
 
 #########################################################
