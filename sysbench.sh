@@ -61,6 +61,9 @@ MYSQL_TABLECOUNT='8'
 MYSQL_OLTPTABLESIZE='150000'
 MYSQL_SCALE='100'
 
+COLLECT_MYSQLSTATS='y'
+COLLECT_DISKSTATS='y'
+COLLECT_PIDSTATS='y'
 
 SYSBENCH_DIR='/home/sysbench'
 SYSBENCH_FILEIODIR="${SYSBENCH_DIR}/fileio"
@@ -115,13 +118,24 @@ tools_setup() {
 
 get_mysqlstats(){
   mysqltag=$1
-  mysqladmin -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} ext -i10 > "$SYSBENCH_DIR/mysqlstats-${mysqltag}.log" &
-  getmysqlstats_pid=$!
+  if [[ "$COLLECT_MYSQLSTATS" = [yY] ]]; then
+    mysqladmin -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} ext -i10 > "$SYSBENCH_DIR/mysqlstats-${mysqltag}.log" &
+    getmysqlstats_pid=$!
+  fi
 }
 get_diskstats(){
   disktag=$1
-  vmstat 1 > "$SYSBENCH_DIR/diskstats-${disktag}.log" &
-  getdiskstats_pid=$!
+  if [[ "$COLLECT_DISKSTATS" = [yY] ]]; then
+    vmstat 1 > "$SYSBENCH_DIR/diskstats-${disktag}.log" &
+    getdiskstats_pid=$!
+  fi
+}
+get_pidstats(){
+  pidstattag=$1
+  if [[ "$COLLECT_PIDSTATS" = [yY] ]]; then
+    pidstat -durh 1 | egrep 'sysbench|mysqld|UID' > "$SYSBENCH_DIR/pidstat-${pidstattag}.log" &
+    getpidstat_pid=$!
+  fi
 }
 
 mysqlsettings() {
@@ -781,6 +795,7 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
 
   get_mysqlstats mysqloltp-legacy-read-write
   get_diskstats mysqloltp-legacy-read-write
+  get_pidstats mysqloltp-legacy-read-write
 
   echo
   echo "sysbench mysql benchmark:"
@@ -792,10 +807,18 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   fi
 
   # set +e
-  kill $getmysqlstats_pid
-  wait $getmysqlstats_pid 2>/dev/null
-  kill $getdiskstats_pid
-  wait $getdiskstats_pid 2>/dev/null
+  if [[ "$COLLECT_MYSQLSTATS" = [yY] ]]; then
+    kill $getmysqlstats_pid
+    wait $getmysqlstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_DISKSTATS" = [yY] ]]; then
+    kill $getdiskstats_pid
+    wait $getdiskstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_PIDSTATS" = [yY] ]]; then
+    kill $getpidstat_pid
+    wait $getpidstat_pid 2>/dev/null
+  fi
   # set -e
   
   echo
@@ -859,6 +882,7 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
 
   get_mysqlstats mysqloltp-legacy-read-only
   get_diskstats mysqloltp-legacy-read-only
+  get_pidstats mysqloltp-legacy-read-only
 
   echo
   echo "sysbench mysql read only benchmark:"
@@ -870,10 +894,18 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   fi
 
   # set +e
-  kill $getmysqlstats_pid
-  wait $getmysqlstats_pid 2>/dev/null
-  kill $getdiskstats_pid
-  wait $getdiskstats_pid 2>/dev/null
+  if [[ "$COLLECT_MYSQLSTATS" = [yY] ]]; then
+    kill $getmysqlstats_pid
+    wait $getmysqlstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_DISKSTATS" = [yY] ]]; then
+    kill $getdiskstats_pid
+    wait $getdiskstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_PIDSTATS" = [yY] ]]; then
+    kill $getpidstat_pid
+    wait $getpidstat_pid 2>/dev/null
+  fi
   # set -e
   
   echo
@@ -937,6 +969,7 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
 
   get_mysqlstats mysqloltp-legacy-insert
   get_diskstats mysqloltp-legacy-insert
+  get_pidstats mysqloltp-legacy-insert
 
   echo
   echo "sysbench mysql insert benchmark:"
@@ -948,10 +981,18 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   fi
 
   # set +e
-  kill $getmysqlstats_pid
-  wait $getmysqlstats_pid 2>/dev/null
-  kill $getdiskstats_pid
-  wait $getdiskstats_pid 2>/dev/null
+  if [[ "$COLLECT_MYSQLSTATS" = [yY] ]]; then
+    kill $getmysqlstats_pid
+    wait $getmysqlstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_DISKSTATS" = [yY] ]]; then
+    kill $getdiskstats_pid
+    wait $getdiskstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_PIDSTATS" = [yY] ]]; then
+    kill $getpidstat_pid
+    wait $getpidstat_pid 2>/dev/null
+  fi
   # set -e
   
   echo
@@ -1015,6 +1056,7 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
 
   get_mysqlstats mysqloltp-legacy-update-index
   get_diskstats mysqloltp-legacy-update-index
+  get_pidstats mysqloltp-legacy-update-index
 
   echo
   echo "sysbench mysql update index benchmark:"
@@ -1026,10 +1068,18 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   fi
 
   # set +e
-  kill $getmysqlstats_pid
-  wait $getmysqlstats_pid 2>/dev/null
-  kill $getdiskstats_pid
-  wait $getdiskstats_pid 2>/dev/null
+  if [[ "$COLLECT_MYSQLSTATS" = [yY] ]]; then
+    kill $getmysqlstats_pid
+    wait $getmysqlstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_DISKSTATS" = [yY] ]]; then
+    kill $getdiskstats_pid
+    wait $getdiskstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_PIDSTATS" = [yY] ]]; then
+    kill $getpidstat_pid
+    wait $getpidstat_pid 2>/dev/null
+  fi
   # set -e
   
   echo
@@ -1093,6 +1143,7 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
 
   get_mysqlstats mysqloltp-legacy-update-nonindex
   get_diskstats mysqloltp-legacy-update-nonindex
+  get_pidstats mysqloltp-legacy-update-nonindex
 
   echo
   echo "sysbench mysql update index benchmark:"
@@ -1104,10 +1155,18 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   fi
 
   # set +e
-  kill $getmysqlstats_pid
-  wait $getmysqlstats_pid 2>/dev/null
-  kill $getdiskstats_pid
-  wait $getdiskstats_pid 2>/dev/null
+  if [[ "$COLLECT_MYSQLSTATS" = [yY] ]]; then
+    kill $getmysqlstats_pid
+    wait $getmysqlstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_DISKSTATS" = [yY] ]]; then
+    kill $getdiskstats_pid
+    wait $getdiskstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_PIDSTATS" = [yY] ]]; then
+    kill $getpidstat_pid
+    wait $getpidstat_pid 2>/dev/null
+  fi
   # set -e
   
   echo
@@ -1173,6 +1232,7 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
 
   get_mysqlstats mysqloltp-new-read-write
   get_diskstats mysqloltp-new-read-write
+  get_pidstats mysqloltp-new-read-write
 
   echo
   echo "sysbench mysql OLTP new benchmark:"
@@ -1184,10 +1244,18 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   fi
 
   # set +e
-  kill $getmysqlstats_pid
-  wait $getmysqlstats_pid 2>/dev/null
-  kill $getdiskstats_pid
-  wait $getdiskstats_pid 2>/dev/null
+  if [[ "$COLLECT_MYSQLSTATS" = [yY] ]]; then
+    kill $getmysqlstats_pid
+    wait $getmysqlstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_DISKSTATS" = [yY] ]]; then
+    kill $getdiskstats_pid
+    wait $getdiskstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_PIDSTATS" = [yY] ]]; then
+    kill $getpidstat_pid
+    wait $getpidstat_pid 2>/dev/null
+  fi
   # set -e
   
   echo
@@ -1251,6 +1319,7 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
 
   get_mysqlstats mysqloltp-new-read-only
   get_diskstats mysqloltp-new-read-only
+  get_pidstats mysqloltp-new-read-only
 
   echo
   echo "sysbench mysql OLTP read only new benchmark:"
@@ -1262,10 +1331,18 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   fi
 
   # set +e
-  kill $getmysqlstats_pid
-  wait $getmysqlstats_pid 2>/dev/null
-  kill $getdiskstats_pid
-  wait $getdiskstats_pid 2>/dev/null
+  if [[ "$COLLECT_MYSQLSTATS" = [yY] ]]; then
+    kill $getmysqlstats_pid
+    wait $getmysqlstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_DISKSTATS" = [yY] ]]; then
+    kill $getdiskstats_pid
+    wait $getdiskstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_PIDSTATS" = [yY] ]]; then
+    kill $getpidstat_pid
+    wait $getpidstat_pid 2>/dev/null
+  fi
   # set -e
   
   echo
@@ -1329,6 +1406,7 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
 
   get_mysqlstats mysqloltp-new-write-only
   get_diskstats mysqloltp-new-write-only
+  get_pidstats mysqloltp-new-write-only
 
   echo
   echo "sysbench mysql OLTP write only new benchmark:"
@@ -1340,10 +1418,18 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   fi
 
   # set +e
-  kill $getmysqlstats_pid
-  wait $getmysqlstats_pid 2>/dev/null
-  kill $getdiskstats_pid
-  wait $getdiskstats_pid 2>/dev/null
+  if [[ "$COLLECT_MYSQLSTATS" = [yY] ]]; then
+    kill $getmysqlstats_pid
+    wait $getmysqlstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_DISKSTATS" = [yY] ]]; then
+    kill $getdiskstats_pid
+    wait $getdiskstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_PIDSTATS" = [yY] ]]; then
+    kill $getpidstat_pid
+    wait $getpidstat_pid 2>/dev/null
+  fi
   # set -e
 
   echo
@@ -1407,6 +1493,7 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
 
   get_mysqlstats mysqloltp-new-point-select
   get_diskstats mysqloltp-new-point-select
+  get_pidstats mysqloltp-new-point-select
 
   echo
   echo "sysbench mysql OLTP POINT SELECT new benchmark:"
@@ -1418,10 +1505,18 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   fi
 
   # set +e
-  kill $getmysqlstats_pid
-  wait $getmysqlstats_pid 2>/dev/null
-  kill $getdiskstats_pid
-  wait $getdiskstats_pid 2>/dev/null
+  if [[ "$COLLECT_MYSQLSTATS" = [yY] ]]; then
+    kill $getmysqlstats_pid
+    wait $getmysqlstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_DISKSTATS" = [yY] ]]; then
+    kill $getdiskstats_pid
+    wait $getdiskstats_pid 2>/dev/null
+  fi
+  if [[ "$COLLECT_PIDSTATS" = [yY] ]]; then
+    kill $getpidstat_pid
+    wait $getpidstat_pid 2>/dev/null
+  fi
   # set -e
 
   echo
