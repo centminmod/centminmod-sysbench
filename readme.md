@@ -748,6 +748,111 @@ Markdown results table - random
 setup sbt database & user
 mysqladmin create database: sbt
 
+MySQL Buffers
+aria_pagecache_buffer_size           1073741824
+aria_sort_buffer_size                268435456
+bulk_insert_buffer_size              8388608
+innodb_buffer_pool_dump_at_shutdown  OFF
+innodb_buffer_pool_dump_now          OFF
+innodb_buffer_pool_dump_pct          100
+innodb_buffer_pool_filename          ib_buffer_pool
+innodb_buffer_pool_instances         8
+innodb_buffer_pool_load_abort        OFF
+innodb_buffer_pool_load_at_startup   OFF
+innodb_buffer_pool_load_now          OFF
+innodb_buffer_pool_populate          OFF
+innodb_buffer_pool_size              8589934592
+innodb_change_buffer_max_size        25
+innodb_change_buffering              all
+innodb_log_buffer_size               16777216
+innodb_sort_buffer_size              2097152
+join_buffer_size                     2097152
+join_buffer_space_limit              2097152
+key_buffer_size                      805306368
+mrr_buffer_size                      262144
+myisam_sort_buffer_size              805306368
+net_buffer_length                    16384
+optimizer_switch                     index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,index_merge_sort_intersection=off,engine_condition_pushdown=off,index_condition_pushdown=on,derived_merge=on,derived_with_keys=on,firstmatch=on,loosescan=on,materialization=on,in_to_exists=on,semijoin=on,partial_match_rowid_merge=on,partial_match_table_scan=on,subquery_cache=on,mrr=off,mrr_cost_based=off,mrr_sort_keys=off,outer_join_with_cache=on,semijoin_with_cache=on,join_cache_incremental=on,join_cache_hashed=on,join_cache_bka=on,optimize_join_buffer_size=off,table_elimination=on,extended_keys=on,exists_to_in=on,orderby_uses_equalities=off
+preload_buffer_size                  32768
+read_buffer_size                     2097152
+read_rnd_buffer_size                 524288
+sort_buffer_size                     2097152
+sql_buffer_result                    OFF
+
+MySQL Limits
+aria_pagecache_division_limit         100
+delayed_insert_limit                  100
+expensive_subquery_limit              100
+ft_query_expansion_limit              20
+innodb_ft_result_cache_limit          2000000000
+join_buffer_space_limit               2097152
+key_cache_division_limit              100
+log_slow_rate_limit                   1
+min_examined_row_limit                0
+open_files_limit                      262144
+optimizer_selectivity_sampling_limit  100
+query_cache_limit                     1572864
+relay_log_space_limit                 0
+sql_select_limit                      18446744073709551615
+thread_pool_stall_limit               500
+updatable_views_with_limit            YES
+
+MySQL Maxes
+aria_max_sort_file_size           9223372036853727232
+extra_max_connections             1
+ft_max_word_len                   84
+group_concat_max_len              1024
+innodb_adaptive_max_sleep_delay   150000
+innodb_compression_pad_pct_max    50
+innodb_file_format_max            Antelope
+innodb_ft_max_token_size          84
+innodb_io_capacity_max            2800
+innodb_max_bitmap_file_size       104857600
+innodb_max_changed_pages          1000000
+innodb_max_dirty_pages_pct        75.000000
+innodb_max_dirty_pages_pct_lwm    0.001000
+innodb_max_purge_lag              0
+innodb_max_purge_lag_delay        0
+innodb_online_alter_log_max_size  134217728
+max_allowed_packet                134217728
+max_binlog_cache_size             18446744073709547520
+max_binlog_size                   1073741824
+max_binlog_stmt_cache_size        18446744073709547520
+max_connect_errors                100000
+max_connections                   1000
+max_delayed_threads               20
+max_digest_length                 1024
+max_error_count                   64
+max_heap_table_size               1073741824
+max_insert_delayed_threads        20
+max_join_size                     18446744073709551615
+max_length_for_sort_data          1024
+max_long_data_size                134217728
+max_prepared_stmt_count           16382
+max_relay_log_size                1073741824
+max_seeks_for_key                 4294967295
+max_session_mem_used              9223372036854775807
+max_sort_length                   1024
+max_sp_recursion_depth            0
+max_statement_time                0.000000
+max_tmp_tables                    32
+max_user_connections              0
+max_write_lock_count              4294967295
+myisam_max_sort_file_size         8589934592
+slave_max_allowed_packet          1073741824
+slave_parallel_max_queued         131072
+thread_pool_max_threads           1000
+wsrep_max_ws_rows                 0
+wsrep_max_ws_size                 2147483647
+
+MySQL Concurrency
+concurrent_insert           ALWAYS
+innodb_commit_concurrency   0
+innodb_concurrency_tickets  5000
+innodb_thread_concurrency   0
+thread_concurrency          10
+
+
 sysbench prepare database: sbt
 sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-socket=/var/lib/mysql/mysql.sock --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-table-engine=InnoDB --time=30 --threads=8 --report-interval=1 --oltp-table-size=150000 --oltp-tables-count=8 --db-driver=mysql prepare
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
@@ -911,6 +1016,111 @@ Dropping table 'sbtest8'...
 setup sbt database & user
 mysqladmin create database: sbt
 
+MySQL Buffers
+aria_pagecache_buffer_size           1073741824
+aria_sort_buffer_size                268435456
+bulk_insert_buffer_size              8388608
+innodb_buffer_pool_dump_at_shutdown  OFF
+innodb_buffer_pool_dump_now          OFF
+innodb_buffer_pool_dump_pct          100
+innodb_buffer_pool_filename          ib_buffer_pool
+innodb_buffer_pool_instances         8
+innodb_buffer_pool_load_abort        OFF
+innodb_buffer_pool_load_at_startup   OFF
+innodb_buffer_pool_load_now          OFF
+innodb_buffer_pool_populate          OFF
+innodb_buffer_pool_size              8589934592
+innodb_change_buffer_max_size        25
+innodb_change_buffering              all
+innodb_log_buffer_size               16777216
+innodb_sort_buffer_size              2097152
+join_buffer_size                     2097152
+join_buffer_space_limit              2097152
+key_buffer_size                      805306368
+mrr_buffer_size                      262144
+myisam_sort_buffer_size              805306368
+net_buffer_length                    16384
+optimizer_switch                     index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,index_merge_sort_intersection=off,engine_condition_pushdown=off,index_condition_pushdown=on,derived_merge=on,derived_with_keys=on,firstmatch=on,loosescan=on,materialization=on,in_to_exists=on,semijoin=on,partial_match_rowid_merge=on,partial_match_table_scan=on,subquery_cache=on,mrr=off,mrr_cost_based=off,mrr_sort_keys=off,outer_join_with_cache=on,semijoin_with_cache=on,join_cache_incremental=on,join_cache_hashed=on,join_cache_bka=on,optimize_join_buffer_size=off,table_elimination=on,extended_keys=on,exists_to_in=on,orderby_uses_equalities=off
+preload_buffer_size                  32768
+read_buffer_size                     2097152
+read_rnd_buffer_size                 524288
+sort_buffer_size                     2097152
+sql_buffer_result                    OFF
+
+MySQL Limits
+aria_pagecache_division_limit         100
+delayed_insert_limit                  100
+expensive_subquery_limit              100
+ft_query_expansion_limit              20
+innodb_ft_result_cache_limit          2000000000
+join_buffer_space_limit               2097152
+key_cache_division_limit              100
+log_slow_rate_limit                   1
+min_examined_row_limit                0
+open_files_limit                      262144
+optimizer_selectivity_sampling_limit  100
+query_cache_limit                     1572864
+relay_log_space_limit                 0
+sql_select_limit                      18446744073709551615
+thread_pool_stall_limit               500
+updatable_views_with_limit            YES
+
+MySQL Maxes
+aria_max_sort_file_size           9223372036853727232
+extra_max_connections             1
+ft_max_word_len                   84
+group_concat_max_len              1024
+innodb_adaptive_max_sleep_delay   150000
+innodb_compression_pad_pct_max    50
+innodb_file_format_max            Antelope
+innodb_ft_max_token_size          84
+innodb_io_capacity_max            2800
+innodb_max_bitmap_file_size       104857600
+innodb_max_changed_pages          1000000
+innodb_max_dirty_pages_pct        75.000000
+innodb_max_dirty_pages_pct_lwm    0.001000
+innodb_max_purge_lag              0
+innodb_max_purge_lag_delay        0
+innodb_online_alter_log_max_size  134217728
+max_allowed_packet                134217728
+max_binlog_cache_size             18446744073709547520
+max_binlog_size                   1073741824
+max_binlog_stmt_cache_size        18446744073709547520
+max_connect_errors                100000
+max_connections                   1000
+max_delayed_threads               20
+max_digest_length                 1024
+max_error_count                   64
+max_heap_table_size               1073741824
+max_insert_delayed_threads        20
+max_join_size                     18446744073709551615
+max_length_for_sort_data          1024
+max_long_data_size                134217728
+max_prepared_stmt_count           16382
+max_relay_log_size                1073741824
+max_seeks_for_key                 4294967295
+max_session_mem_used              9223372036854775807
+max_sort_length                   1024
+max_sp_recursion_depth            0
+max_statement_time                0.000000
+max_tmp_tables                    32
+max_user_connections              0
+max_write_lock_count              4294967295
+myisam_max_sort_file_size         8589934592
+slave_max_allowed_packet          1073741824
+slave_parallel_max_queued         131072
+thread_pool_max_threads           1000
+wsrep_max_ws_rows                 0
+wsrep_max_ws_size                 2147483647
+
+MySQL Concurrency
+concurrent_insert           ALWAYS
+innodb_commit_concurrency   0
+innodb_concurrency_tickets  5000
+innodb_thread_concurrency   0
+thread_concurrency          10
+
+
 sysbench prepare database: sbt
 sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-socket=/var/lib/mysql/mysql.sock --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-table-engine=InnoDB --time=30 --threads=8 --report-interval=1 --oltp-table-size=150000 --oltp-tables-count=8 --db-driver=mysql prepare
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
@@ -1072,6 +1282,111 @@ Dropping table 'sbtest8'...
 
 setup sbt database & user
 mysqladmin create database: sbt
+
+MySQL Buffers
+aria_pagecache_buffer_size           1073741824
+aria_sort_buffer_size                268435456
+bulk_insert_buffer_size              8388608
+innodb_buffer_pool_dump_at_shutdown  OFF
+innodb_buffer_pool_dump_now          OFF
+innodb_buffer_pool_dump_pct          100
+innodb_buffer_pool_filename          ib_buffer_pool
+innodb_buffer_pool_instances         8
+innodb_buffer_pool_load_abort        OFF
+innodb_buffer_pool_load_at_startup   OFF
+innodb_buffer_pool_load_now          OFF
+innodb_buffer_pool_populate          OFF
+innodb_buffer_pool_size              8589934592
+innodb_change_buffer_max_size        25
+innodb_change_buffering              all
+innodb_log_buffer_size               16777216
+innodb_sort_buffer_size              2097152
+join_buffer_size                     2097152
+join_buffer_space_limit              2097152
+key_buffer_size                      805306368
+mrr_buffer_size                      262144
+myisam_sort_buffer_size              805306368
+net_buffer_length                    16384
+optimizer_switch                     index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,index_merge_sort_intersection=off,engine_condition_pushdown=off,index_condition_pushdown=on,derived_merge=on,derived_with_keys=on,firstmatch=on,loosescan=on,materialization=on,in_to_exists=on,semijoin=on,partial_match_rowid_merge=on,partial_match_table_scan=on,subquery_cache=on,mrr=off,mrr_cost_based=off,mrr_sort_keys=off,outer_join_with_cache=on,semijoin_with_cache=on,join_cache_incremental=on,join_cache_hashed=on,join_cache_bka=on,optimize_join_buffer_size=off,table_elimination=on,extended_keys=on,exists_to_in=on,orderby_uses_equalities=off
+preload_buffer_size                  32768
+read_buffer_size                     2097152
+read_rnd_buffer_size                 524288
+sort_buffer_size                     2097152
+sql_buffer_result                    OFF
+
+MySQL Limits
+aria_pagecache_division_limit         100
+delayed_insert_limit                  100
+expensive_subquery_limit              100
+ft_query_expansion_limit              20
+innodb_ft_result_cache_limit          2000000000
+join_buffer_space_limit               2097152
+key_cache_division_limit              100
+log_slow_rate_limit                   1
+min_examined_row_limit                0
+open_files_limit                      262144
+optimizer_selectivity_sampling_limit  100
+query_cache_limit                     1572864
+relay_log_space_limit                 0
+sql_select_limit                      18446744073709551615
+thread_pool_stall_limit               500
+updatable_views_with_limit            YES
+
+MySQL Maxes
+aria_max_sort_file_size           9223372036853727232
+extra_max_connections             1
+ft_max_word_len                   84
+group_concat_max_len              1024
+innodb_adaptive_max_sleep_delay   150000
+innodb_compression_pad_pct_max    50
+innodb_file_format_max            Antelope
+innodb_ft_max_token_size          84
+innodb_io_capacity_max            2800
+innodb_max_bitmap_file_size       104857600
+innodb_max_changed_pages          1000000
+innodb_max_dirty_pages_pct        75.000000
+innodb_max_dirty_pages_pct_lwm    0.001000
+innodb_max_purge_lag              0
+innodb_max_purge_lag_delay        0
+innodb_online_alter_log_max_size  134217728
+max_allowed_packet                134217728
+max_binlog_cache_size             18446744073709547520
+max_binlog_size                   1073741824
+max_binlog_stmt_cache_size        18446744073709547520
+max_connect_errors                100000
+max_connections                   1000
+max_delayed_threads               20
+max_digest_length                 1024
+max_error_count                   64
+max_heap_table_size               1073741824
+max_insert_delayed_threads        20
+max_join_size                     18446744073709551615
+max_length_for_sort_data          1024
+max_long_data_size                134217728
+max_prepared_stmt_count           16382
+max_relay_log_size                1073741824
+max_seeks_for_key                 4294967295
+max_session_mem_used              9223372036854775807
+max_sort_length                   1024
+max_sp_recursion_depth            0
+max_statement_time                0.000000
+max_tmp_tables                    32
+max_user_connections              0
+max_write_lock_count              4294967295
+myisam_max_sort_file_size         8589934592
+slave_max_allowed_packet          1073741824
+slave_parallel_max_queued         131072
+thread_pool_max_threads           1000
+wsrep_max_ws_rows                 0
+wsrep_max_ws_size                 2147483647
+
+MySQL Concurrency
+concurrent_insert           ALWAYS
+innodb_commit_concurrency   0
+innodb_concurrency_tickets  5000
+innodb_thread_concurrency   0
+thread_concurrency          10
+
 
 sysbench prepare database: sbt
 sysbench insert.lua --mysql-host=localhost --mysql-port=3306 --mysql-socket=/var/lib/mysql/mysql.sock --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-table-engine=InnoDB --time=30 --threads=8 --report-interval=1 --oltp-table-size=150000 --oltp-tables-count=8 --db-driver=mysql prepare
@@ -1235,6 +1550,111 @@ Dropping table 'sbtest8'...
 setup sbt database & user
 mysqladmin create database: sbt
 
+MySQL Buffers
+aria_pagecache_buffer_size           1073741824
+aria_sort_buffer_size                268435456
+bulk_insert_buffer_size              8388608
+innodb_buffer_pool_dump_at_shutdown  OFF
+innodb_buffer_pool_dump_now          OFF
+innodb_buffer_pool_dump_pct          100
+innodb_buffer_pool_filename          ib_buffer_pool
+innodb_buffer_pool_instances         8
+innodb_buffer_pool_load_abort        OFF
+innodb_buffer_pool_load_at_startup   OFF
+innodb_buffer_pool_load_now          OFF
+innodb_buffer_pool_populate          OFF
+innodb_buffer_pool_size              8589934592
+innodb_change_buffer_max_size        25
+innodb_change_buffering              all
+innodb_log_buffer_size               16777216
+innodb_sort_buffer_size              2097152
+join_buffer_size                     2097152
+join_buffer_space_limit              2097152
+key_buffer_size                      805306368
+mrr_buffer_size                      262144
+myisam_sort_buffer_size              805306368
+net_buffer_length                    16384
+optimizer_switch                     index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,index_merge_sort_intersection=off,engine_condition_pushdown=off,index_condition_pushdown=on,derived_merge=on,derived_with_keys=on,firstmatch=on,loosescan=on,materialization=on,in_to_exists=on,semijoin=on,partial_match_rowid_merge=on,partial_match_table_scan=on,subquery_cache=on,mrr=off,mrr_cost_based=off,mrr_sort_keys=off,outer_join_with_cache=on,semijoin_with_cache=on,join_cache_incremental=on,join_cache_hashed=on,join_cache_bka=on,optimize_join_buffer_size=off,table_elimination=on,extended_keys=on,exists_to_in=on,orderby_uses_equalities=off
+preload_buffer_size                  32768
+read_buffer_size                     2097152
+read_rnd_buffer_size                 524288
+sort_buffer_size                     2097152
+sql_buffer_result                    OFF
+
+MySQL Limits
+aria_pagecache_division_limit         100
+delayed_insert_limit                  100
+expensive_subquery_limit              100
+ft_query_expansion_limit              20
+innodb_ft_result_cache_limit          2000000000
+join_buffer_space_limit               2097152
+key_cache_division_limit              100
+log_slow_rate_limit                   1
+min_examined_row_limit                0
+open_files_limit                      262144
+optimizer_selectivity_sampling_limit  100
+query_cache_limit                     1572864
+relay_log_space_limit                 0
+sql_select_limit                      18446744073709551615
+thread_pool_stall_limit               500
+updatable_views_with_limit            YES
+
+MySQL Maxes
+aria_max_sort_file_size           9223372036853727232
+extra_max_connections             1
+ft_max_word_len                   84
+group_concat_max_len              1024
+innodb_adaptive_max_sleep_delay   150000
+innodb_compression_pad_pct_max    50
+innodb_file_format_max            Antelope
+innodb_ft_max_token_size          84
+innodb_io_capacity_max            2800
+innodb_max_bitmap_file_size       104857600
+innodb_max_changed_pages          1000000
+innodb_max_dirty_pages_pct        75.000000
+innodb_max_dirty_pages_pct_lwm    0.001000
+innodb_max_purge_lag              0
+innodb_max_purge_lag_delay        0
+innodb_online_alter_log_max_size  134217728
+max_allowed_packet                134217728
+max_binlog_cache_size             18446744073709547520
+max_binlog_size                   1073741824
+max_binlog_stmt_cache_size        18446744073709547520
+max_connect_errors                100000
+max_connections                   1000
+max_delayed_threads               20
+max_digest_length                 1024
+max_error_count                   64
+max_heap_table_size               1073741824
+max_insert_delayed_threads        20
+max_join_size                     18446744073709551615
+max_length_for_sort_data          1024
+max_long_data_size                134217728
+max_prepared_stmt_count           16382
+max_relay_log_size                1073741824
+max_seeks_for_key                 4294967295
+max_session_mem_used              9223372036854775807
+max_sort_length                   1024
+max_sp_recursion_depth            0
+max_statement_time                0.000000
+max_tmp_tables                    32
+max_user_connections              0
+max_write_lock_count              4294967295
+myisam_max_sort_file_size         8589934592
+slave_max_allowed_packet          1073741824
+slave_parallel_max_queued         131072
+thread_pool_max_threads           1000
+wsrep_max_ws_rows                 0
+wsrep_max_ws_size                 2147483647
+
+MySQL Concurrency
+concurrent_insert           ALWAYS
+innodb_commit_concurrency   0
+innodb_concurrency_tickets  5000
+innodb_thread_concurrency   0
+thread_concurrency          10
+
+
 sysbench prepare database: sbt
 sysbench update_index.lua --mysql-host=localhost --mysql-port=3306 --mysql-socket=/var/lib/mysql/mysql.sock --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-table-engine=InnoDB --time=30 --threads=8 --report-interval=1 --oltp-table-size=150000 --oltp-tables-count=8 --db-driver=mysql prepare
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
@@ -1395,6 +1815,111 @@ Dropping table 'sbtest8'...
 
 setup sbt database & user
 mysqladmin create database: sbt
+
+MySQL Buffers
+aria_pagecache_buffer_size           1073741824
+aria_sort_buffer_size                268435456
+bulk_insert_buffer_size              8388608
+innodb_buffer_pool_dump_at_shutdown  OFF
+innodb_buffer_pool_dump_now          OFF
+innodb_buffer_pool_dump_pct          100
+innodb_buffer_pool_filename          ib_buffer_pool
+innodb_buffer_pool_instances         8
+innodb_buffer_pool_load_abort        OFF
+innodb_buffer_pool_load_at_startup   OFF
+innodb_buffer_pool_load_now          OFF
+innodb_buffer_pool_populate          OFF
+innodb_buffer_pool_size              8589934592
+innodb_change_buffer_max_size        25
+innodb_change_buffering              all
+innodb_log_buffer_size               16777216
+innodb_sort_buffer_size              2097152
+join_buffer_size                     2097152
+join_buffer_space_limit              2097152
+key_buffer_size                      805306368
+mrr_buffer_size                      262144
+myisam_sort_buffer_size              805306368
+net_buffer_length                    16384
+optimizer_switch                     index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,index_merge_sort_intersection=off,engine_condition_pushdown=off,index_condition_pushdown=on,derived_merge=on,derived_with_keys=on,firstmatch=on,loosescan=on,materialization=on,in_to_exists=on,semijoin=on,partial_match_rowid_merge=on,partial_match_table_scan=on,subquery_cache=on,mrr=off,mrr_cost_based=off,mrr_sort_keys=off,outer_join_with_cache=on,semijoin_with_cache=on,join_cache_incremental=on,join_cache_hashed=on,join_cache_bka=on,optimize_join_buffer_size=off,table_elimination=on,extended_keys=on,exists_to_in=on,orderby_uses_equalities=off
+preload_buffer_size                  32768
+read_buffer_size                     2097152
+read_rnd_buffer_size                 524288
+sort_buffer_size                     2097152
+sql_buffer_result                    OFF
+
+MySQL Limits
+aria_pagecache_division_limit         100
+delayed_insert_limit                  100
+expensive_subquery_limit              100
+ft_query_expansion_limit              20
+innodb_ft_result_cache_limit          2000000000
+join_buffer_space_limit               2097152
+key_cache_division_limit              100
+log_slow_rate_limit                   1
+min_examined_row_limit                0
+open_files_limit                      262144
+optimizer_selectivity_sampling_limit  100
+query_cache_limit                     1572864
+relay_log_space_limit                 0
+sql_select_limit                      18446744073709551615
+thread_pool_stall_limit               500
+updatable_views_with_limit            YES
+
+MySQL Maxes
+aria_max_sort_file_size           9223372036853727232
+extra_max_connections             1
+ft_max_word_len                   84
+group_concat_max_len              1024
+innodb_adaptive_max_sleep_delay   150000
+innodb_compression_pad_pct_max    50
+innodb_file_format_max            Antelope
+innodb_ft_max_token_size          84
+innodb_io_capacity_max            2800
+innodb_max_bitmap_file_size       104857600
+innodb_max_changed_pages          1000000
+innodb_max_dirty_pages_pct        75.000000
+innodb_max_dirty_pages_pct_lwm    0.001000
+innodb_max_purge_lag              0
+innodb_max_purge_lag_delay        0
+innodb_online_alter_log_max_size  134217728
+max_allowed_packet                134217728
+max_binlog_cache_size             18446744073709547520
+max_binlog_size                   1073741824
+max_binlog_stmt_cache_size        18446744073709547520
+max_connect_errors                100000
+max_connections                   1000
+max_delayed_threads               20
+max_digest_length                 1024
+max_error_count                   64
+max_heap_table_size               1073741824
+max_insert_delayed_threads        20
+max_join_size                     18446744073709551615
+max_length_for_sort_data          1024
+max_long_data_size                134217728
+max_prepared_stmt_count           16382
+max_relay_log_size                1073741824
+max_seeks_for_key                 4294967295
+max_session_mem_used              9223372036854775807
+max_sort_length                   1024
+max_sp_recursion_depth            0
+max_statement_time                0.000000
+max_tmp_tables                    32
+max_user_connections              0
+max_write_lock_count              4294967295
+myisam_max_sort_file_size         8589934592
+slave_max_allowed_packet          1073741824
+slave_parallel_max_queued         131072
+thread_pool_max_threads           1000
+wsrep_max_ws_rows                 0
+wsrep_max_ws_size                 2147483647
+
+MySQL Concurrency
+concurrent_insert           ALWAYS
+innodb_commit_concurrency   0
+innodb_concurrency_tickets  5000
+innodb_thread_concurrency   0
+thread_concurrency          10
+
 
 sysbench prepare database: sbt
 sysbench update_non_index.lua --mysql-host=localhost --mysql-port=3306 --mysql-socket=/var/lib/mysql/mysql.sock --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-table-engine=InnoDB --time=30 --threads=8 --report-interval=1 --oltp-table-size=150000 --oltp-tables-count=8 --db-driver=mysql prepare
@@ -1558,6 +2083,111 @@ Dropping table 'sbtest8'...
 
 setup sbt database & user
 mysqladmin create database: sbt
+
+MySQL Buffers
+aria_pagecache_buffer_size           1073741824
+aria_sort_buffer_size                268435456
+bulk_insert_buffer_size              8388608
+innodb_buffer_pool_dump_at_shutdown  OFF
+innodb_buffer_pool_dump_now          OFF
+innodb_buffer_pool_dump_pct          100
+innodb_buffer_pool_filename          ib_buffer_pool
+innodb_buffer_pool_instances         8
+innodb_buffer_pool_load_abort        OFF
+innodb_buffer_pool_load_at_startup   OFF
+innodb_buffer_pool_load_now          OFF
+innodb_buffer_pool_populate          OFF
+innodb_buffer_pool_size              8589934592
+innodb_change_buffer_max_size        25
+innodb_change_buffering              all
+innodb_log_buffer_size               16777216
+innodb_sort_buffer_size              2097152
+join_buffer_size                     2097152
+join_buffer_space_limit              2097152
+key_buffer_size                      805306368
+mrr_buffer_size                      262144
+myisam_sort_buffer_size              805306368
+net_buffer_length                    16384
+optimizer_switch                     index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,index_merge_sort_intersection=off,engine_condition_pushdown=off,index_condition_pushdown=on,derived_merge=on,derived_with_keys=on,firstmatch=on,loosescan=on,materialization=on,in_to_exists=on,semijoin=on,partial_match_rowid_merge=on,partial_match_table_scan=on,subquery_cache=on,mrr=off,mrr_cost_based=off,mrr_sort_keys=off,outer_join_with_cache=on,semijoin_with_cache=on,join_cache_incremental=on,join_cache_hashed=on,join_cache_bka=on,optimize_join_buffer_size=off,table_elimination=on,extended_keys=on,exists_to_in=on,orderby_uses_equalities=off
+preload_buffer_size                  32768
+read_buffer_size                     2097152
+read_rnd_buffer_size                 524288
+sort_buffer_size                     2097152
+sql_buffer_result                    OFF
+
+MySQL Limits
+aria_pagecache_division_limit         100
+delayed_insert_limit                  100
+expensive_subquery_limit              100
+ft_query_expansion_limit              20
+innodb_ft_result_cache_limit          2000000000
+join_buffer_space_limit               2097152
+key_cache_division_limit              100
+log_slow_rate_limit                   1
+min_examined_row_limit                0
+open_files_limit                      262144
+optimizer_selectivity_sampling_limit  100
+query_cache_limit                     1572864
+relay_log_space_limit                 0
+sql_select_limit                      18446744073709551615
+thread_pool_stall_limit               500
+updatable_views_with_limit            YES
+
+MySQL Maxes
+aria_max_sort_file_size           9223372036853727232
+extra_max_connections             1
+ft_max_word_len                   84
+group_concat_max_len              1024
+innodb_adaptive_max_sleep_delay   150000
+innodb_compression_pad_pct_max    50
+innodb_file_format_max            Antelope
+innodb_ft_max_token_size          84
+innodb_io_capacity_max            2800
+innodb_max_bitmap_file_size       104857600
+innodb_max_changed_pages          1000000
+innodb_max_dirty_pages_pct        75.000000
+innodb_max_dirty_pages_pct_lwm    0.001000
+innodb_max_purge_lag              0
+innodb_max_purge_lag_delay        0
+innodb_online_alter_log_max_size  134217728
+max_allowed_packet                134217728
+max_binlog_cache_size             18446744073709547520
+max_binlog_size                   1073741824
+max_binlog_stmt_cache_size        18446744073709547520
+max_connect_errors                100000
+max_connections                   1000
+max_delayed_threads               20
+max_digest_length                 1024
+max_error_count                   64
+max_heap_table_size               1073741824
+max_insert_delayed_threads        20
+max_join_size                     18446744073709551615
+max_length_for_sort_data          1024
+max_long_data_size                134217728
+max_prepared_stmt_count           16382
+max_relay_log_size                1073741824
+max_seeks_for_key                 4294967295
+max_session_mem_used              9223372036854775807
+max_sort_length                   1024
+max_sp_recursion_depth            0
+max_statement_time                0.000000
+max_tmp_tables                    32
+max_user_connections              0
+max_write_lock_count              4294967295
+myisam_max_sort_file_size         8589934592
+slave_max_allowed_packet          1073741824
+slave_parallel_max_queued         131072
+thread_pool_max_threads           1000
+wsrep_max_ws_rows                 0
+wsrep_max_ws_size                 2147483647
+
+MySQL Concurrency
+concurrent_insert           ALWAYS
+innodb_commit_concurrency   0
+innodb_concurrency_tickets  5000
+innodb_thread_concurrency   0
+thread_concurrency          10
+
 
 sysbench prepare database: sbt
 sysbench oltp_read_write.lua --mysql-host=localhost --mysql-port=3306 --mysql-socket=/var/lib/mysql/mysql.sock --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-storage-engine=InnoDB --time=30 --threads=8 --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=150000 --tables=8 --db-driver=mysql prepare
@@ -1724,6 +2354,111 @@ Dropping table 'sbtest8'...
 setup sbt database & user
 mysqladmin create database: sbt
 
+MySQL Buffers
+aria_pagecache_buffer_size           1073741824
+aria_sort_buffer_size                268435456
+bulk_insert_buffer_size              8388608
+innodb_buffer_pool_dump_at_shutdown  OFF
+innodb_buffer_pool_dump_now          OFF
+innodb_buffer_pool_dump_pct          100
+innodb_buffer_pool_filename          ib_buffer_pool
+innodb_buffer_pool_instances         8
+innodb_buffer_pool_load_abort        OFF
+innodb_buffer_pool_load_at_startup   OFF
+innodb_buffer_pool_load_now          OFF
+innodb_buffer_pool_populate          OFF
+innodb_buffer_pool_size              8589934592
+innodb_change_buffer_max_size        25
+innodb_change_buffering              all
+innodb_log_buffer_size               16777216
+innodb_sort_buffer_size              2097152
+join_buffer_size                     2097152
+join_buffer_space_limit              2097152
+key_buffer_size                      805306368
+mrr_buffer_size                      262144
+myisam_sort_buffer_size              805306368
+net_buffer_length                    16384
+optimizer_switch                     index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,index_merge_sort_intersection=off,engine_condition_pushdown=off,index_condition_pushdown=on,derived_merge=on,derived_with_keys=on,firstmatch=on,loosescan=on,materialization=on,in_to_exists=on,semijoin=on,partial_match_rowid_merge=on,partial_match_table_scan=on,subquery_cache=on,mrr=off,mrr_cost_based=off,mrr_sort_keys=off,outer_join_with_cache=on,semijoin_with_cache=on,join_cache_incremental=on,join_cache_hashed=on,join_cache_bka=on,optimize_join_buffer_size=off,table_elimination=on,extended_keys=on,exists_to_in=on,orderby_uses_equalities=off
+preload_buffer_size                  32768
+read_buffer_size                     2097152
+read_rnd_buffer_size                 524288
+sort_buffer_size                     2097152
+sql_buffer_result                    OFF
+
+MySQL Limits
+aria_pagecache_division_limit         100
+delayed_insert_limit                  100
+expensive_subquery_limit              100
+ft_query_expansion_limit              20
+innodb_ft_result_cache_limit          2000000000
+join_buffer_space_limit               2097152
+key_cache_division_limit              100
+log_slow_rate_limit                   1
+min_examined_row_limit                0
+open_files_limit                      262144
+optimizer_selectivity_sampling_limit  100
+query_cache_limit                     1572864
+relay_log_space_limit                 0
+sql_select_limit                      18446744073709551615
+thread_pool_stall_limit               500
+updatable_views_with_limit            YES
+
+MySQL Maxes
+aria_max_sort_file_size           9223372036853727232
+extra_max_connections             1
+ft_max_word_len                   84
+group_concat_max_len              1024
+innodb_adaptive_max_sleep_delay   150000
+innodb_compression_pad_pct_max    50
+innodb_file_format_max            Antelope
+innodb_ft_max_token_size          84
+innodb_io_capacity_max            2800
+innodb_max_bitmap_file_size       104857600
+innodb_max_changed_pages          1000000
+innodb_max_dirty_pages_pct        75.000000
+innodb_max_dirty_pages_pct_lwm    0.001000
+innodb_max_purge_lag              0
+innodb_max_purge_lag_delay        0
+innodb_online_alter_log_max_size  134217728
+max_allowed_packet                134217728
+max_binlog_cache_size             18446744073709547520
+max_binlog_size                   1073741824
+max_binlog_stmt_cache_size        18446744073709547520
+max_connect_errors                100000
+max_connections                   1000
+max_delayed_threads               20
+max_digest_length                 1024
+max_error_count                   64
+max_heap_table_size               1073741824
+max_insert_delayed_threads        20
+max_join_size                     18446744073709551615
+max_length_for_sort_data          1024
+max_long_data_size                134217728
+max_prepared_stmt_count           16382
+max_relay_log_size                1073741824
+max_seeks_for_key                 4294967295
+max_session_mem_used              9223372036854775807
+max_sort_length                   1024
+max_sp_recursion_depth            0
+max_statement_time                0.000000
+max_tmp_tables                    32
+max_user_connections              0
+max_write_lock_count              4294967295
+myisam_max_sort_file_size         8589934592
+slave_max_allowed_packet          1073741824
+slave_parallel_max_queued         131072
+thread_pool_max_threads           1000
+wsrep_max_ws_rows                 0
+wsrep_max_ws_size                 2147483647
+
+MySQL Concurrency
+concurrent_insert           ALWAYS
+innodb_commit_concurrency   0
+innodb_concurrency_tickets  5000
+innodb_thread_concurrency   0
+thread_concurrency          10
+
+
 sysbench prepare database: sbt
 sysbench oltp_read_only.lua --mysql-host=localhost --mysql-port=3306 --mysql-socket=/var/lib/mysql/mysql.sock --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-storage-engine=InnoDB --time=30 --threads=8 --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=150000 --tables=8 --db-driver=mysql prepare
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
@@ -1887,6 +2622,111 @@ Dropping table 'sbtest8'...
 
 setup sbt database & user
 mysqladmin create database: sbt
+
+MySQL Buffers
+aria_pagecache_buffer_size           1073741824
+aria_sort_buffer_size                268435456
+bulk_insert_buffer_size              8388608
+innodb_buffer_pool_dump_at_shutdown  OFF
+innodb_buffer_pool_dump_now          OFF
+innodb_buffer_pool_dump_pct          100
+innodb_buffer_pool_filename          ib_buffer_pool
+innodb_buffer_pool_instances         8
+innodb_buffer_pool_load_abort        OFF
+innodb_buffer_pool_load_at_startup   OFF
+innodb_buffer_pool_load_now          OFF
+innodb_buffer_pool_populate          OFF
+innodb_buffer_pool_size              8589934592
+innodb_change_buffer_max_size        25
+innodb_change_buffering              all
+innodb_log_buffer_size               16777216
+innodb_sort_buffer_size              2097152
+join_buffer_size                     2097152
+join_buffer_space_limit              2097152
+key_buffer_size                      805306368
+mrr_buffer_size                      262144
+myisam_sort_buffer_size              805306368
+net_buffer_length                    16384
+optimizer_switch                     index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,index_merge_sort_intersection=off,engine_condition_pushdown=off,index_condition_pushdown=on,derived_merge=on,derived_with_keys=on,firstmatch=on,loosescan=on,materialization=on,in_to_exists=on,semijoin=on,partial_match_rowid_merge=on,partial_match_table_scan=on,subquery_cache=on,mrr=off,mrr_cost_based=off,mrr_sort_keys=off,outer_join_with_cache=on,semijoin_with_cache=on,join_cache_incremental=on,join_cache_hashed=on,join_cache_bka=on,optimize_join_buffer_size=off,table_elimination=on,extended_keys=on,exists_to_in=on,orderby_uses_equalities=off
+preload_buffer_size                  32768
+read_buffer_size                     2097152
+read_rnd_buffer_size                 524288
+sort_buffer_size                     2097152
+sql_buffer_result                    OFF
+
+MySQL Limits
+aria_pagecache_division_limit         100
+delayed_insert_limit                  100
+expensive_subquery_limit              100
+ft_query_expansion_limit              20
+innodb_ft_result_cache_limit          2000000000
+join_buffer_space_limit               2097152
+key_cache_division_limit              100
+log_slow_rate_limit                   1
+min_examined_row_limit                0
+open_files_limit                      262144
+optimizer_selectivity_sampling_limit  100
+query_cache_limit                     1572864
+relay_log_space_limit                 0
+sql_select_limit                      18446744073709551615
+thread_pool_stall_limit               500
+updatable_views_with_limit            YES
+
+MySQL Maxes
+aria_max_sort_file_size           9223372036853727232
+extra_max_connections             1
+ft_max_word_len                   84
+group_concat_max_len              1024
+innodb_adaptive_max_sleep_delay   150000
+innodb_compression_pad_pct_max    50
+innodb_file_format_max            Antelope
+innodb_ft_max_token_size          84
+innodb_io_capacity_max            2800
+innodb_max_bitmap_file_size       104857600
+innodb_max_changed_pages          1000000
+innodb_max_dirty_pages_pct        75.000000
+innodb_max_dirty_pages_pct_lwm    0.001000
+innodb_max_purge_lag              0
+innodb_max_purge_lag_delay        0
+innodb_online_alter_log_max_size  134217728
+max_allowed_packet                134217728
+max_binlog_cache_size             18446744073709547520
+max_binlog_size                   1073741824
+max_binlog_stmt_cache_size        18446744073709547520
+max_connect_errors                100000
+max_connections                   1000
+max_delayed_threads               20
+max_digest_length                 1024
+max_error_count                   64
+max_heap_table_size               1073741824
+max_insert_delayed_threads        20
+max_join_size                     18446744073709551615
+max_length_for_sort_data          1024
+max_long_data_size                134217728
+max_prepared_stmt_count           16382
+max_relay_log_size                1073741824
+max_seeks_for_key                 4294967295
+max_session_mem_used              9223372036854775807
+max_sort_length                   1024
+max_sp_recursion_depth            0
+max_statement_time                0.000000
+max_tmp_tables                    32
+max_user_connections              0
+max_write_lock_count              4294967295
+myisam_max_sort_file_size         8589934592
+slave_max_allowed_packet          1073741824
+slave_parallel_max_queued         131072
+thread_pool_max_threads           1000
+wsrep_max_ws_rows                 0
+wsrep_max_ws_size                 2147483647
+
+MySQL Concurrency
+concurrent_insert           ALWAYS
+innodb_commit_concurrency   0
+innodb_concurrency_tickets  5000
+innodb_thread_concurrency   0
+thread_concurrency          10
+
 
 sysbench prepare database: sbt
 sysbench oltp_write_only.lua --mysql-host=localhost --mysql-port=3306 --mysql-socket=/var/lib/mysql/mysql.sock --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-storage-engine=InnoDB --time=30 --threads=8 --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=150000 --tables=8 --db-driver=mysql prepare
@@ -2052,6 +2892,111 @@ Dropping table 'sbtest8'...
 
 setup sbt database & user
 mysqladmin create database: sbt
+
+MySQL Buffers
+aria_pagecache_buffer_size           1073741824
+aria_sort_buffer_size                268435456
+bulk_insert_buffer_size              8388608
+innodb_buffer_pool_dump_at_shutdown  OFF
+innodb_buffer_pool_dump_now          OFF
+innodb_buffer_pool_dump_pct          100
+innodb_buffer_pool_filename          ib_buffer_pool
+innodb_buffer_pool_instances         8
+innodb_buffer_pool_load_abort        OFF
+innodb_buffer_pool_load_at_startup   OFF
+innodb_buffer_pool_load_now          OFF
+innodb_buffer_pool_populate          OFF
+innodb_buffer_pool_size              8589934592
+innodb_change_buffer_max_size        25
+innodb_change_buffering              all
+innodb_log_buffer_size               16777216
+innodb_sort_buffer_size              2097152
+join_buffer_size                     2097152
+join_buffer_space_limit              2097152
+key_buffer_size                      805306368
+mrr_buffer_size                      262144
+myisam_sort_buffer_size              805306368
+net_buffer_length                    16384
+optimizer_switch                     index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,index_merge_sort_intersection=off,engine_condition_pushdown=off,index_condition_pushdown=on,derived_merge=on,derived_with_keys=on,firstmatch=on,loosescan=on,materialization=on,in_to_exists=on,semijoin=on,partial_match_rowid_merge=on,partial_match_table_scan=on,subquery_cache=on,mrr=off,mrr_cost_based=off,mrr_sort_keys=off,outer_join_with_cache=on,semijoin_with_cache=on,join_cache_incremental=on,join_cache_hashed=on,join_cache_bka=on,optimize_join_buffer_size=off,table_elimination=on,extended_keys=on,exists_to_in=on,orderby_uses_equalities=off
+preload_buffer_size                  32768
+read_buffer_size                     2097152
+read_rnd_buffer_size                 524288
+sort_buffer_size                     2097152
+sql_buffer_result                    OFF
+
+MySQL Limits
+aria_pagecache_division_limit         100
+delayed_insert_limit                  100
+expensive_subquery_limit              100
+ft_query_expansion_limit              20
+innodb_ft_result_cache_limit          2000000000
+join_buffer_space_limit               2097152
+key_cache_division_limit              100
+log_slow_rate_limit                   1
+min_examined_row_limit                0
+open_files_limit                      262144
+optimizer_selectivity_sampling_limit  100
+query_cache_limit                     1572864
+relay_log_space_limit                 0
+sql_select_limit                      18446744073709551615
+thread_pool_stall_limit               500
+updatable_views_with_limit            YES
+
+MySQL Maxes
+aria_max_sort_file_size           9223372036853727232
+extra_max_connections             1
+ft_max_word_len                   84
+group_concat_max_len              1024
+innodb_adaptive_max_sleep_delay   150000
+innodb_compression_pad_pct_max    50
+innodb_file_format_max            Antelope
+innodb_ft_max_token_size          84
+innodb_io_capacity_max            2800
+innodb_max_bitmap_file_size       104857600
+innodb_max_changed_pages          1000000
+innodb_max_dirty_pages_pct        75.000000
+innodb_max_dirty_pages_pct_lwm    0.001000
+innodb_max_purge_lag              0
+innodb_max_purge_lag_delay        0
+innodb_online_alter_log_max_size  134217728
+max_allowed_packet                134217728
+max_binlog_cache_size             18446744073709547520
+max_binlog_size                   1073741824
+max_binlog_stmt_cache_size        18446744073709547520
+max_connect_errors                100000
+max_connections                   1000
+max_delayed_threads               20
+max_digest_length                 1024
+max_error_count                   64
+max_heap_table_size               1073741824
+max_insert_delayed_threads        20
+max_join_size                     18446744073709551615
+max_length_for_sort_data          1024
+max_long_data_size                134217728
+max_prepared_stmt_count           16382
+max_relay_log_size                1073741824
+max_seeks_for_key                 4294967295
+max_session_mem_used              9223372036854775807
+max_sort_length                   1024
+max_sp_recursion_depth            0
+max_statement_time                0.000000
+max_tmp_tables                    32
+max_user_connections              0
+max_write_lock_count              4294967295
+myisam_max_sort_file_size         8589934592
+slave_max_allowed_packet          1073741824
+slave_parallel_max_queued         131072
+thread_pool_max_threads           1000
+wsrep_max_ws_rows                 0
+wsrep_max_ws_size                 2147483647
+
+MySQL Concurrency
+concurrent_insert           ALWAYS
+innodb_commit_concurrency   0
+innodb_concurrency_tickets  5000
+innodb_thread_concurrency   0
+thread_concurrency          10
+
 
 sysbench prepare database: sbt
 sysbench oltp_point_select.lua --mysql-host=localhost --mysql-port=3306 --mysql-socket=/var/lib/mysql/mysql.sock --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-storage-engine=InnoDB --time=30 --threads=8 --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=150000 --tables=8 --db-driver=mysql prepare
