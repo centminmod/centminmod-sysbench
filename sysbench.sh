@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='0.7'
+VER='0.8'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -54,7 +54,7 @@ MYSQL_USER='sbtest'
 MYSQL_PASS='sbtestpass'
 MYSQL_DBNAME='sbt'
 MYSQL_ENGINE='InnoDB'
-MYSQL_TIME='20'
+MYSQL_TIME='30'
 # max cpu threads detected via nproc output
 MYSQL_THREADS="$(nproc)"
 MYSQL_TABLECOUNT='8'
@@ -78,6 +78,20 @@ fi
 
 if [ ! -d "${SYSBENCH_DIR}/mysql" ]; then
   mkdir -p "${SYSBENCH_DIR}/mysql"
+fi
+
+if [[ "$MYSQL_LOGIN" = [yY] ]]; then
+  MYSQL_LOGINOPT=" --mysql-user=${MYSQL_USER} --mysql-password=${MYSQL_PASS}"
+else
+  MYSQL_LOGINOPT=""
+fi
+
+if [[ "$MYSQL_USESOCKET" = [yY] ]]; then
+  MYSQL_USESOCKETOPT=" --mysql-socket=${MYSQL_SOCKET}"
+  MYSQLCLIENT_USESOCKETOPT="${MYSQL_SOCKET}"
+else
+  MYSQL_USESOCKETOPT=""
+  MYSQLCLIENT_USESOCKETOPT=""
 fi
 
 if [ -f /usr/bin/sysbench ]; then
@@ -656,18 +670,6 @@ sysbench_mysqloltp() {
     echo "CREATE USER '$MYSQL_USER'@'$MYSQL_HOST' IDENTIFIED BY '$MYSQL_PASS'; GRANT ALL PRIVILEGES ON \`$MYSQL_DBNAME\`.* TO '$MYSQL_USER'@'$MYSQL_HOST'; flush privileges; show grants for '$MYSQL_USER'@'$MYSQL_HOST';" | mysql
   fi
 
-  if [[ "$MYSQL_LOGIN" = [yY] ]]; then
-    MYSQL_LOGINOPT=" --mysql-user=${MYSQL_USER} --mysql-password=${MYSQL_PASS}"
-  else
-    MYSQL_LOGINOPT=""
-  fi
-
-  if [[ "$MYSQL_USESOCKET" = [yY] ]]; then
-    MYSQL_USESOCKETOPT="  --mysql-socket=${MYSQL_SOCKET}"
-  else
-    MYSQL_USESOCKETOPT=""
-  fi
-
   echo
   echo "sysbench prepare database: $MYSQL_DBNAME"
   echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare" | tee "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}.log"
@@ -678,8 +680,9 @@ sysbench_mysqloltp() {
   fi
 
   echo
-  sleep 8
-  mysql -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
+  mysqladmin -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} flush-tables
+  sleep 3
+  mysql -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
 CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((data_length+index_length)/(1024*1024),2),'MB') AS'Total', ROW_FORMAT, TABLE_COLLATION FROM information_schema.TABLES WHERE table_schema LIKE '$MYSQL_DBNAME';" | tee "$SYSBENCH_DIR/sysbench-mysql-table-list.log"
 
   echo
@@ -734,18 +737,6 @@ sysbench_mysqlro() {
     echo "CREATE USER '$MYSQL_USER'@'$MYSQL_HOST' IDENTIFIED BY '$MYSQL_PASS'; GRANT ALL PRIVILEGES ON \`$MYSQL_DBNAME\`.* TO '$MYSQL_USER'@'$MYSQL_HOST'; flush privileges; show grants for '$MYSQL_USER'@'$MYSQL_HOST';" | mysql
   fi
 
-  if [[ "$MYSQL_LOGIN" = [yY] ]]; then
-    MYSQL_LOGINOPT=" --mysql-user=${MYSQL_USER} --mysql-password=${MYSQL_PASS}"
-  else
-    MYSQL_LOGINOPT=""
-  fi
-
-  if [[ "$MYSQL_USESOCKET" = [yY] ]]; then
-    MYSQL_USESOCKETOPT="  --mysql-socket=${MYSQL_SOCKET}"
-  else
-    MYSQL_USESOCKETOPT=""
-  fi
-
   echo
   echo "sysbench prepare database: $MYSQL_DBNAME"
   echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare" | tee "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-readonly.log"
@@ -756,8 +747,9 @@ sysbench_mysqlro() {
   fi
 
   echo
-  sleep 8
-  mysql -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
+  mysqladmin -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} flush-tables
+  sleep 3
+  mysql -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
 CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((data_length+index_length)/(1024*1024),2),'MB') AS'Total', ROW_FORMAT, TABLE_COLLATION FROM information_schema.TABLES WHERE table_schema LIKE '$MYSQL_DBNAME';" | tee "$SYSBENCH_DIR/sysbench-mysql-table-list-readonly.log"
 
   echo
