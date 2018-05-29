@@ -1,13 +1,14 @@
 # sysbench contents
 
-* [sysbench.sh tool](https://github.com/centminmod/centminmod-sysbench#sysbenchsh-tool)
-* [sysbench.sh install](https://github.com/centminmod/centminmod-sysbench#sysbench-install)
-* [sysbench.sh update](https://github.com/centminmod/centminmod-sysbench#sysbench-update)
-* [sysbench.sh usage](https://github.com/centminmod/centminmod-sysbench#sysbench-usage)
-* [sysbench cpu benchmark](https://github.com/centminmod/centminmod-sysbench#sysbench-cpu)
-* [sysbench memory benchmark](https://github.com/centminmod/centminmod-sysbench#sysbench-memory)
-* [sysbench fileio benchmark](https://github.com/centminmod/centminmod-sysbench#sysbench-fileio)
-* [sysbench mysql benchmark](https://github.com/centminmod/centminmod-sysbench#sysbench-mysql)
+* [sysbench.sh tool](#sysbenchsh-tool)
+* [sysbench.sh install](#sysbench-install)
+* [sysbench.sh update](#sysbench-update)
+* [sysbench.sh usage](#sysbench-usage)
+* [sysbench cpu benchmark](#sysbench-cpu)
+* [sysbench memory benchmark](#sysbench-memory)
+* [sysbench fileio benchmark](#sysbench-fileio)
+* [sysbench mysql read/write benchmark](#sysbench-mysql-read-write-benchmark)
+* [sysbench mysql read only benchmark](#sysbench-mysql-read-only-benchmark)
 
 # sysbench.sh tool
 
@@ -558,16 +559,16 @@ Markdown results table - random
 |fileio | 1.0.14 | 8 | 4KiB | I/O | read | 62997.92 | 0.00 | 0.00 | 246.09 | 0.00 | 10.0002s | 0.05 | 0.13 | 1.01 | 0.17 |
 |fileio | 1.0.14 | 8 | 4KiB | I/O | write | 0.00 | 22746.82 | 29115.43 | 0.00 | 88.85 | 10.0002s | 0.02 | 0.15 | 9.79 | 0.23 |
 
-## sysbench mysql
+## sysbench mysql read/write
 
 ```
-./sysbench.sh mysql                   
+./sysbench.sh mysql
 
 setup sbt database & user
 mysqladmin create database: sbt
 
 sysbench prepare database: sbt
-sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --time=15 --threads=8 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql prepare
+sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-table-engine=InnoDB --time=20 --threads=8 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql prepare
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 
 Creating table 'sbtest1'...
@@ -593,7 +594,7 @@ Creating secondary indexes on 'sbtest4'...
 +-------------+----------------+----------------+-----------+------------+---------+------------+-----------------+
 
 sysbench mysql benchmark:
-sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --time=15 --threads=8 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql run
+sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-table-engine=InnoDB --time=20 --threads=8 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 
 Running the test with following options:
@@ -606,73 +607,78 @@ Initializing worker threads...
 
 Threads started!
 
-[ 1s ] thds: 8 tps: 2379.78 qps: 47704.52 (r/w/o: 33412.84/9524.13/4767.56) lat (ms,95%): 4.74 err/s: 0.00 reconn/s: 0.00
-[ 2s ] thds: 8 tps: 2580.37 qps: 51596.35 (r/w/o: 36119.15/10316.47/5160.74) lat (ms,95%): 4.18 err/s: 0.00 reconn/s: 0.00
-[ 3s ] thds: 8 tps: 2699.00 qps: 53967.97 (r/w/o: 37772.98/10796.99/5398.00) lat (ms,95%): 4.10 err/s: 0.00 reconn/s: 0.00
-[ 4s ] thds: 8 tps: 2694.05 qps: 53904.00 (r/w/o: 37733.70/10782.20/5388.10) lat (ms,95%): 4.18 err/s: 0.00 reconn/s: 0.00
-[ 5s ] thds: 8 tps: 2795.99 qps: 55899.87 (r/w/o: 39128.91/11178.97/5591.99) lat (ms,95%): 3.82 err/s: 0.00 reconn/s: 0.00
-[ 6s ] thds: 8 tps: 2786.94 qps: 55723.71 (r/w/o: 39000.10/11149.74/5573.87) lat (ms,95%): 3.89 err/s: 0.00 reconn/s: 0.00
-[ 7s ] thds: 8 tps: 2746.04 qps: 54918.76 (r/w/o: 38441.53/10985.15/5492.08) lat (ms,95%): 4.03 err/s: 0.00 reconn/s: 0.00
-[ 8s ] thds: 8 tps: 2787.99 qps: 55774.88 (r/w/o: 39050.92/11147.98/5575.99) lat (ms,95%): 3.96 err/s: 0.00 reconn/s: 0.00
-[ 9s ] thds: 8 tps: 2812.93 qps: 56261.51 (r/w/o: 39381.95/11253.70/5625.85) lat (ms,95%): 4.03 err/s: 0.00 reconn/s: 0.00
-[ 10s ] thds: 8 tps: 2817.05 qps: 56345.97 (r/w/o: 39443.68/11268.19/5634.10) lat (ms,95%): 3.96 err/s: 0.00 reconn/s: 0.00
-[ 11s ] thds: 8 tps: 2841.99 qps: 56846.86 (r/w/o: 39793.90/11368.97/5683.99) lat (ms,95%): 3.89 err/s: 0.00 reconn/s: 0.00
-[ 12s ] thds: 8 tps: 2744.06 qps: 54877.24 (r/w/o: 38416.87/10972.25/5488.12) lat (ms,95%): 4.18 err/s: 0.00 reconn/s: 0.00
-[ 13s ] thds: 8 tps: 2820.93 qps: 56408.64 (r/w/o: 39479.05/11287.73/5641.86) lat (ms,95%): 4.03 err/s: 0.00 reconn/s: 0.00
-[ 14s ] thds: 8 tps: 2811.04 qps: 56212.89 (r/w/o: 39350.62/11240.18/5622.09) lat (ms,95%): 4.10 err/s: 0.00 reconn/s: 0.00
-[ 15s ] thds: 8 tps: 2811.96 qps: 56255.17 (r/w/o: 39379.42/11251.83/5623.92) lat (ms,95%): 3.89 err/s: 0.00 reconn/s: 0.00
+[ 1s ] thds: 8 tps: 2253.91 qps: 45164.03 (r/w/o: 31630.60/9017.63/4515.80) lat (ms,95%): 4.82 err/s: 0.00 reconn/s: 0.00
+[ 2s ] thds: 8 tps: 2471.39 qps: 49435.81 (r/w/o: 34605.46/9887.56/4942.78) lat (ms,95%): 4.41 err/s: 0.00 reconn/s: 0.00
+[ 3s ] thds: 8 tps: 2572.99 qps: 51453.87 (r/w/o: 36019.91/10288.97/5144.99) lat (ms,95%): 4.41 err/s: 0.00 reconn/s: 0.00
+[ 4s ] thds: 8 tps: 2571.99 qps: 51432.76 (r/w/o: 36000.83/10286.95/5144.98) lat (ms,95%): 4.41 err/s: 0.00 reconn/s: 0.00
+[ 5s ] thds: 8 tps: 2587.99 qps: 51759.81 (r/w/o: 36231.87/10351.96/5175.98) lat (ms,95%): 4.41 err/s: 0.00 reconn/s: 0.00
+[ 6s ] thds: 8 tps: 2590.95 qps: 51830.92 (r/w/o: 36285.24/10363.78/5181.89) lat (ms,95%): 4.33 err/s: 0.00 reconn/s: 0.00
+[ 7s ] thds: 8 tps: 2416.05 qps: 48326.08 (r/w/o: 33829.76/9664.22/4832.11) lat (ms,95%): 5.57 err/s: 0.00 reconn/s: 0.00
+[ 8s ] thds: 8 tps: 2627.95 qps: 52570.01 (r/w/o: 36794.31/10519.80/5255.90) lat (ms,95%): 4.41 err/s: 0.00 reconn/s: 0.00
+[ 9s ] thds: 8 tps: 2657.02 qps: 53124.33 (r/w/o: 37183.23/10627.07/5314.03) lat (ms,95%): 4.25 err/s: 0.00 reconn/s: 0.00
+[ 10s ] thds: 8 tps: 2673.04 qps: 53443.89 (r/w/o: 37412.62/10685.18/5346.09) lat (ms,95%): 4.18 err/s: 0.00 reconn/s: 0.00
+[ 11s ] thds: 8 tps: 2612.06 qps: 52264.13 (r/w/o: 36591.79/10448.23/5224.11) lat (ms,95%): 4.33 err/s: 0.00 reconn/s: 0.00
+[ 12s ] thds: 8 tps: 2680.89 qps: 53591.83 (r/w/o: 37506.48/10723.57/5361.78) lat (ms,95%): 4.25 err/s: 0.00 reconn/s: 0.00
+[ 13s ] thds: 8 tps: 2585.10 qps: 51733.95 (r/w/o: 36216.37/10347.39/5170.19) lat (ms,95%): 4.65 err/s: 0.00 reconn/s: 0.00
+[ 14s ] thds: 8 tps: 2682.96 qps: 53635.16 (r/w/o: 37544.41/10724.83/5365.92) lat (ms,95%): 4.10 err/s: 0.00 reconn/s: 0.00
+[ 15s ] thds: 8 tps: 2626.96 qps: 52549.10 (r/w/o: 36784.37/10511.82/5252.91) lat (ms,95%): 4.49 err/s: 0.00 reconn/s: 0.00
+[ 16s ] thds: 8 tps: 2629.96 qps: 52608.26 (r/w/o: 36827.48/10519.85/5260.93) lat (ms,95%): 4.33 err/s: 0.00 reconn/s: 0.00
+[ 17s ] thds: 8 tps: 2733.11 qps: 54655.18 (r/w/o: 38258.53/10930.44/5466.22) lat (ms,95%): 3.82 err/s: 0.00 reconn/s: 0.00
+[ 18s ] thds: 8 tps: 2657.04 qps: 53125.75 (r/w/o: 37185.52/10626.15/5314.07) lat (ms,95%): 4.33 err/s: 0.00 reconn/s: 0.00
+[ 19s ] thds: 8 tps: 2712.93 qps: 54253.56 (r/w/o: 37975.99/10851.71/5425.86) lat (ms,95%): 3.89 err/s: 0.00 reconn/s: 0.00
+[ 20s ] thds: 8 tps: 2758.85 qps: 55204.95 (r/w/o: 38650.87/11036.39/5517.70) lat (ms,95%): 3.75 err/s: 0.00 reconn/s: 0.00
 SQL statistics:
     queries performed:
-        read:                            575974
-        write:                           164564
-        other:                           82282
-        total:                           822820
-    transactions:                        41141  (2741.88 per sec.)
-    queries:                             822820 (54837.61 per sec.)
+        read:                            729596
+        write:                           208456
+        other:                           104228
+        total:                           1042280
+    transactions:                        52114  (2605.23 per sec.)
+    queries:                             1042280 (52104.68 per sec.)
     ignored errors:                      0      (0.00 per sec.)
     reconnects:                          0      (0.00 per sec.)
 
 General statistics:
-    total time:                          15.0036s
-    total number of events:              41141
+    total time:                          20.0025s
+    total number of events:              52114
 
 Latency (ms):
-         min:                                    1.21
-         avg:                                    2.92
-         max:                                   87.87
-         95th percentile:                        4.03
-         sum:                               119949.89
+         min:                                    1.18
+         avg:                                    3.07
+         max:                                   73.40
+         95th percentile:                        4.33
+         sum:                               159924.43
 
 Threads fairness:
-    events (avg/stddev):           5142.6250/23.98
-    execution time (avg/stddev):   14.9937/0.00
+    events (avg/stddev):           6514.2500/29.24
+    execution time (avg/stddev):   19.9906/0.00
 
 
 sysbench mysql summary:
-sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --time=15 --threads=8 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql run
+sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-table-engine=InnoDB --time=20 --threads=8 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 8
-read: 575974
-write: 164564
-other: 82282
-total: 822820
-transactions: 41141 (2741.88 per sec.)
-queries: 822820 (54837.61 per sec.)
-time: 15.0036s
-min: 1.21
-avg: 2.92
-max: 87.87
-95th: 4.03
+read: 729596
+write: 208456
+other: 104228
+total: 1042280
+transactions/s: 2605.23
+queries/s: 52104.68
+time: 20.0025s
+min: 1.18
+avg: 3.07
+max: 73.40
+95th: 4.33
 
-| mysql sysbench | sysbench | threads: | read: | write: | other: | total: | transactions: | queries: | time: | min: | avg: | max: | 95th: |
+| mysql sysbench | sysbench | threads: | read: | write: | other: | total: | transactions/s: | queries/s: | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| oltp.lua | 1.0.14 | 8 | 575974 | 164564 | 82282 | 822820 | 2741.88 | 54837.61 | 15.0036s | 1.21 | 2.92 | 87.87 | 4.03 |
+| oltp.lua | 1.0.14 | 8 | 729596 | 208456 | 104228 | 1042280 | 2605.23 | 52104.68 | 20.0025s | 1.18 | 3.07 | 73.40 | 4.33 |
 
-sysbench,sysbench,threads,read,write,other,total,transactions,queries,time,min,avg,max,95th 
-oltp.lua,1.0.14,8,575974,164564,82282,822820,2741.88,54837.61,15.0036s,1.21,2.92,87.87,4.03 
+sysbench,sysbench,threads,read,write,other,total,transactions/s,queries/s,time,min,avg,max,95th 
+oltp.lua,1.0.14,8,729596,208456,104228,1042280,2605.23,52104.68,20.0025s,1.18,3.07,73.40,4.33 
 
 sysbench mysql cleanup database: sbt
-sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --time=15 --threads=8 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql cleanup
+sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-table-engine=InnoDB --time=20 --threads=8 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql cleanup
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 
 Dropping table 'sbtest1'...
@@ -681,6 +687,138 @@ Dropping table 'sbtest3'...
 Dropping table 'sbtest4'...
 ```
 
-| mysql sysbench | sysbench | threads: | read: | write: | other: | total: | transactions: | queries: | time: | min: | avg: | max: | 95th: |
+| mysql sysbench | sysbench | threads: | read: | write: | other: | total: | transactions/s: | queries/s: | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| oltp.lua | 1.0.14 | 8 | 575974 | 164564 | 82282 | 822820 | 2741.88 | 54837.61 | 15.0036s | 1.21 | 2.92 | 87.87 | 4.03 |
+| oltp.lua | 1.0.14 | 8 | 729596 | 208456 | 104228 | 1042280 | 2605.23 | 52104.68 | 20.0025s | 1.18 | 3.07 | 73.40 | 4.33 |
+
+## sysbench mysql read only
+
+```
+./sysbench.sh mysqlro
+
+setup sbt database & user
+mysqladmin create database: sbt
+
+sysbench prepare database: sbt
+sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-table-engine=InnoDB --time=20 --threads=8 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql prepare
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+
+Creating table 'sbtest1'...
+Inserting 100000 records into 'sbtest1'
+Creating secondary indexes on 'sbtest1'...
+Creating table 'sbtest2'...
+Inserting 100000 records into 'sbtest2'
+Creating secondary indexes on 'sbtest2'...
+Creating table 'sbtest3'...
+Inserting 100000 records into 'sbtest3'
+Creating secondary indexes on 'sbtest3'...
+Creating table 'sbtest4'...
+Inserting 100000 records into 'sbtest4'
+Creating secondary indexes on 'sbtest4'...
+
++-------------+----------------+----------------+-----------+------------+---------+------------+-----------------+
+| Table Name  | Number of Rows | Storage Engine | Data Size | Index Size | Total   | ROW_FORMAT | TABLE_COLLATION |
++-------------+----------------+----------------+-----------+------------+---------+------------+-----------------+
+| sbt.sbtest1 | 100000 Rows    | InnoDB         | 0.02MB    | 0.00MB     | 0.02MB  | Compact    | utf8_general_ci |
+| sbt.sbtest2 | 98712 Rows     | InnoDB         | 21.55MB   | 1.52MB     | 23.06MB | Compact    | utf8_general_ci |
+| sbt.sbtest3 | 100000 Rows    | InnoDB         | 0.02MB    | 0.00MB     | 0.02MB  | Compact    | utf8_general_ci |
+| sbt.sbtest4 | 100000 Rows    | InnoDB         | 0.02MB    | 0.00MB     | 0.02MB  | Compact    | utf8_general_ci |
++-------------+----------------+----------------+-----------+------------+---------+------------+-----------------+
+
+sysbench mysql read only benchmark:
+sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-table-engine=InnoDB --time=20 --threads=8 --oltp-read-only=on --oltp-skip-trx=on --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql run
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+
+Running the test with following options:
+Number of threads: 8
+Report intermediate results every 1 second(s)
+Initializing random number generator from current time
+
+
+Initializing worker threads...
+
+Threads started!
+
+[ 1s ] thds: 8 tps: 3691.59 qps: 51727.16 (r/w/o: 51727.16/0.00/0.00) lat (ms,95%): 3.07 err/s: 0.00 reconn/s: 0.00
+[ 2s ] thds: 8 tps: 4556.74 qps: 63828.29 (r/w/o: 63828.29/0.00/0.00) lat (ms,95%): 2.66 err/s: 0.00 reconn/s: 0.00
+[ 3s ] thds: 8 tps: 4998.28 qps: 69962.91 (r/w/o: 69962.91/0.00/0.00) lat (ms,95%): 2.39 err/s: 0.00 reconn/s: 0.00
+[ 4s ] thds: 8 tps: 4576.08 qps: 64056.11 (r/w/o: 64056.11/0.00/0.00) lat (ms,95%): 2.57 err/s: 0.00 reconn/s: 0.00
+[ 5s ] thds: 8 tps: 4244.00 qps: 59408.01 (r/w/o: 59408.01/0.00/0.00) lat (ms,95%): 2.76 err/s: 0.00 reconn/s: 0.00
+[ 6s ] thds: 8 tps: 4019.02 qps: 56263.32 (r/w/o: 56263.32/0.00/0.00) lat (ms,95%): 2.97 err/s: 0.00 reconn/s: 0.00
+[ 7s ] thds: 8 tps: 3916.96 qps: 54861.41 (r/w/o: 54861.41/0.00/0.00) lat (ms,95%): 3.07 err/s: 0.00 reconn/s: 0.00
+[ 8s ] thds: 8 tps: 3826.00 qps: 53566.99 (r/w/o: 53566.99/0.00/0.00) lat (ms,95%): 3.13 err/s: 0.00 reconn/s: 0.00
+[ 9s ] thds: 8 tps: 3733.01 qps: 52250.11 (r/w/o: 52250.11/0.00/0.00) lat (ms,95%): 3.13 err/s: 0.00 reconn/s: 0.00
+[ 10s ] thds: 8 tps: 3692.02 qps: 51694.24 (r/w/o: 51694.24/0.00/0.00) lat (ms,95%): 3.25 err/s: 0.00 reconn/s: 0.00
+[ 11s ] thds: 8 tps: 3642.95 qps: 51007.33 (r/w/o: 51007.33/0.00/0.00) lat (ms,95%): 3.25 err/s: 0.00 reconn/s: 0.00
+[ 12s ] thds: 8 tps: 3608.05 qps: 50479.73 (r/w/o: 50479.73/0.00/0.00) lat (ms,95%): 3.30 err/s: 0.00 reconn/s: 0.00
+[ 13s ] thds: 8 tps: 3578.04 qps: 50126.56 (r/w/o: 50126.56/0.00/0.00) lat (ms,95%): 3.30 err/s: 0.00 reconn/s: 0.00
+[ 14s ] thds: 8 tps: 3515.95 qps: 49205.30 (r/w/o: 49205.30/0.00/0.00) lat (ms,95%): 3.36 err/s: 0.00 reconn/s: 0.00
+[ 15s ] thds: 8 tps: 3515.02 qps: 49219.30 (r/w/o: 49219.30/0.00/0.00) lat (ms,95%): 3.43 err/s: 0.00 reconn/s: 0.00
+[ 16s ] thds: 8 tps: 3439.98 qps: 48164.70 (r/w/o: 48164.70/0.00/0.00) lat (ms,95%): 3.43 err/s: 0.00 reconn/s: 0.00
+[ 17s ] thds: 8 tps: 3468.98 qps: 48533.70 (r/w/o: 48533.70/0.00/0.00) lat (ms,95%): 3.49 err/s: 0.00 reconn/s: 0.00
+[ 18s ] thds: 8 tps: 3424.02 qps: 47951.35 (r/w/o: 47951.35/0.00/0.00) lat (ms,95%): 3.49 err/s: 0.00 reconn/s: 0.00
+[ 19s ] thds: 8 tps: 3455.00 qps: 48381.02 (r/w/o: 48381.02/0.00/0.00) lat (ms,95%): 3.49 err/s: 0.00 reconn/s: 0.00
+[ 20s ] thds: 8 tps: 3394.67 qps: 47530.33 (r/w/o: 47530.33/0.00/0.00) lat (ms,95%): 3.49 err/s: 0.00 reconn/s: 0.00
+SQL statistics:
+    queries performed:
+        read:                            1068312
+        write:                           0
+        other:                           0
+        total:                           1068312
+    transactions:                        76308  (3814.85 per sec.)
+    queries:                             1068312 (53407.94 per sec.)
+    ignored errors:                      0      (0.00 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          20.0018s
+    total number of events:              76308
+
+Latency (ms):
+         min:                                    0.40
+         avg:                                    2.10
+         max:                                   11.07
+         95th percentile:                        3.19
+         sum:                               159907.89
+
+Threads fairness:
+    events (avg/stddev):           9538.5000/18.63
+    execution time (avg/stddev):   19.9885/0.00
+
+
+sysbench mysql read only summary:
+sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-table-engine=InnoDB --time=20 --threads=8 --oltp-read-only=on --oltp-skip-trx=on --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql run
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+threads: 8
+read: 1068312
+write: 0
+other: 0
+total: 1068312
+transactions/s: 3814.85
+queries/s: 53407.94
+time: 20.0018s
+min: 0.40
+avg: 2.10
+max: 11.07
+95th: 3.19
+
+| mysql sysbench | sysbench | threads: | read: | write: | other: | total: | transactions/s: | queries/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| oltp.lua | 1.0.14 | 8 | 1068312 | 0 | 0 | 1068312 | 3814.85 | 53407.94 | 20.0018s | 0.40 | 2.10 | 11.07 | 3.19 |
+
+sysbench,sysbench,threads,read,write,other,total,transactions/s,queries/s,time,min,avg,max,95th 
+oltp.lua,1.0.14,8,1068312,0,0,1068312,3814.85,53407.94,20.0018s,0.40,2.10,11.07,3.19 
+
+sysbench mysql cleanup database: sbt
+sysbench oltp.lua --mysql-host=localhost --mysql-port=3306 --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-table-engine=InnoDB --time=20 --threads=8 --report-interval=1 --oltp-table-size=100000 --oltp-tables-count=4 --db-driver=mysql cleanup
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+
+Dropping table 'sbtest1'...
+Dropping table 'sbtest2'...
+Dropping table 'sbtest3'...
+Dropping table 'sbtest4'...
+```
+
+| mysql sysbench | sysbench | threads: | read: | write: | other: | total: | transactions/s: | queries/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| oltp.lua | 1.0.14 | 8 | 1068312 | 0 | 0 | 1068312 | 3814.85 | 53407.94 | 20.0018s | 0.40 | 2.10 | 11.07 | 3.19 |
