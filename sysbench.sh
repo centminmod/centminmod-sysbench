@@ -98,6 +98,21 @@ if [ -f /usr/bin/sysbench ]; then
   SYSBENCH_GETVER=$(sysbench --version | awk '{print $2}' | cut -d . -f1,3 | sed -e 's|\.||g')
 fi
 
+tools_setup() {
+  # wget -q -O /usr/local/bin/tlbstat https://github.com/brendangregg/pmc-cloud-tools/raw/master/tlbstat
+  wget -q -O /usr/local/bin/pmcarch https://github.com/brendangregg/pmc-cloud-tools/raw/master/pmcarch
+  wget -q -O /usr/local/bin/cpucache https://github.com/brendangregg/pmc-cloud-tools/raw/master/cpucache
+  wget -q -O /usr/local/bin/syscount https://github.com/brendangregg/perf-tools/raw/master/syscount
+  wget -q -O /usr/local/bin/iosnoop https://github.com/brendangregg/perf-tools/raw/master/iosnoop
+  wget -q -O /usr/local/bin/funccount https://github.com/brendangregg/perf-tools/raw/master/kernel/funccount
+  # chmod +x /usr/local/bin/tlbstat
+  chmod +x /usr/local/bin/pmcarch
+  chmod +x /usr/local/bin/cpucache
+  chmod +x /usr/local/bin/syscount
+  chmod +x /usr/local/bin/iosnoop
+  chmod +x /usr/local/bin/funccount
+}
+
 mysqlsettings() {
   echo
   echo "MySQL Buffers"

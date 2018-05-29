@@ -19,7 +19,7 @@
 
 # sysbench.sh tool
 
-`sysbench.sh` benchmark tool utilising [sysbench](https://github.com/akopytov/sysbench). The `sysbench.sh` script is written specifically for [Centmin Mod LEMP stack](https://centminmod.com/) testing. Results are displayed in 3 formats, standard, github markdown and CSV comma separated.
+`sysbench.sh` benchmark tool utilising [sysbench](https://github.com/akopytov/sysbench) currently maintained by [Alexey Kopytov](https://kaamos.me/blog/2016/03/08/towards-sysbench-1.0-history.html). The `sysbench.sh` script is written specifically for [Centmin Mod LEMP stack](https://centminmod.com/) testing. Results are displayed in 3 formats, standard, github markdown and CSV comma separated.
 
 ```
 sysbench --version
