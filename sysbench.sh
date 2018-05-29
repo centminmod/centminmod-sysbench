@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='1.2'
+VER='1.3'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -111,6 +111,17 @@ tools_setup() {
   chmod +x /usr/local/bin/syscount
   chmod +x /usr/local/bin/iosnoop
   chmod +x /usr/local/bin/funccount
+}
+
+get_mysqlstats(){
+  mysqltag=$1
+  mysqladmin -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} ext -i10 > "$SYSBENCH_DIR/mysqlstats-${mysqltag}.log" &
+  getmysqlstats_pid=$!
+}
+get_diskstats(){
+  disktag=$1
+  vmstat 1 > "$SYSBENCH_DIR/diskstats-${disktag}.log" &
+  getdiskstats_pid=$!
 }
 
 mysqlsettings() {
@@ -768,6 +779,9 @@ sysbench_mysqloltp() {
   mysql -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
 CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((data_length+index_length)/(1024*1024),2),'MB') AS'Total', ROW_FORMAT, TABLE_COLLATION FROM information_schema.TABLES WHERE table_schema LIKE '$MYSQL_DBNAME';" | tee "$SYSBENCH_DIR/sysbench-mysql-table-list.log"
 
+  get_mysqlstats mysqloltp-legacy-read-write
+  get_diskstats mysqloltp-legacy-read-write
+
   echo
   echo "sysbench mysql benchmark:"
   echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}.log"
@@ -777,6 +791,13 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}.log"
   fi
 
+  # set +e
+  kill $getmysqlstats_pid
+  wait $getmysqlstats_pid 2>/dev/null
+  kill $getdiskstats_pid
+  wait $getdiskstats_pid 2>/dev/null
+  # set -e
+  
   echo
   echo "sysbench mysql summary:"
   cat "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}.log" | egrep 'sysbench |Number of threads:|read:|write:|other:|total:|transactions:|queries:|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's|total time:|time:|' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' ' > "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}.log"
@@ -836,6 +857,9 @@ sysbench_mysqlro() {
   mysql -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
 CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((data_length+index_length)/(1024*1024),2),'MB') AS'Total', ROW_FORMAT, TABLE_COLLATION FROM information_schema.TABLES WHERE table_schema LIKE '$MYSQL_DBNAME';" | tee "$SYSBENCH_DIR/sysbench-mysql-table-list-readonly.log"
 
+  get_mysqlstats mysqloltp-legacy-read-only
+  get_diskstats mysqloltp-legacy-read-only
+
   echo
   echo "sysbench mysql read only benchmark:"
   echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --oltp-read-only=on --oltp-skip-trx=on --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-readonly.log"
@@ -845,6 +869,13 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --oltp-read-only=on --oltp-skip-trx=on --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-readonly.log"
   fi
 
+  # set +e
+  kill $getmysqlstats_pid
+  wait $getmysqlstats_pid 2>/dev/null
+  kill $getdiskstats_pid
+  wait $getdiskstats_pid 2>/dev/null
+  # set -e
+  
   echo
   echo "sysbench mysql read only summary:"
   cat "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-readonly.log" | egrep 'sysbench |Number of threads:|read:|write:|other:|total:|transactions:|queries:|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's|total time:|time:|' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' ' > "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}-readonly.log"
@@ -904,6 +935,9 @@ sysbench_mysqlinsert() {
   mysql -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
 CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((data_length+index_length)/(1024*1024),2),'MB') AS'Total', ROW_FORMAT, TABLE_COLLATION FROM information_schema.TABLES WHERE table_schema LIKE '$MYSQL_DBNAME';" | tee "$SYSBENCH_DIR/sysbench-mysql-table-list-insert.log"
 
+  get_mysqlstats mysqloltp-legacy-insert
+  get_diskstats mysqloltp-legacy-insert
+
   echo
   echo "sysbench mysql insert benchmark:"
   echo "sysbench insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-insert.log"
@@ -913,6 +947,13 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-insert.log"
   fi
 
+  # set +e
+  kill $getmysqlstats_pid
+  wait $getmysqlstats_pid 2>/dev/null
+  kill $getdiskstats_pid
+  wait $getdiskstats_pid 2>/dev/null
+  # set -e
+  
   echo
   echo "sysbench mysql insert summary:"
   cat "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-insert.log" | egrep 'sysbench |Number of threads:|read:|write:|other:|total:|transactions:|queries:|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's|total time:|time:|' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' ' > "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}-insert.log"
@@ -972,6 +1013,9 @@ sysbench_mysqlupdateindex() {
   mysql -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
 CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((data_length+index_length)/(1024*1024),2),'MB') AS'Total', ROW_FORMAT, TABLE_COLLATION FROM information_schema.TABLES WHERE table_schema LIKE '$MYSQL_DBNAME';" | tee "$SYSBENCH_DIR/sysbench-mysql-table-list-insert.log"
 
+  get_mysqlstats mysqloltp-legacy-update-index
+  get_diskstats mysqloltp-legacy-update-index
+
   echo
   echo "sysbench mysql update index benchmark:"
   echo "sysbench update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updateindex.log"
@@ -981,6 +1025,13 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updateindex.log"
   fi
 
+  # set +e
+  kill $getmysqlstats_pid
+  wait $getmysqlstats_pid 2>/dev/null
+  kill $getdiskstats_pid
+  wait $getdiskstats_pid 2>/dev/null
+  # set -e
+  
   echo
   echo "sysbench mysql update index summary:"
   cat "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updateindex.log" | egrep 'sysbench |Number of threads:|read:|write:|other:|total:|transactions:|queries:|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's|total time:|time:|' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' ' > "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}-updateindex.log"
@@ -1040,6 +1091,9 @@ sysbench_mysqlupdatenonindex() {
   mysql -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
 CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((data_length+index_length)/(1024*1024),2),'MB') AS'Total', ROW_FORMAT, TABLE_COLLATION FROM information_schema.TABLES WHERE table_schema LIKE '$MYSQL_DBNAME';" | tee "$SYSBENCH_DIR/sysbench-mysql-table-list-insert.log"
 
+  get_mysqlstats mysqloltp-legacy-update-nonindex
+  get_diskstats mysqloltp-legacy-update-nonindex
+
   echo
   echo "sysbench mysql update index benchmark:"
   echo "sysbench update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updatenonindex.log"
@@ -1049,6 +1103,13 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updatenonindex.log"
   fi
 
+  # set +e
+  kill $getmysqlstats_pid
+  wait $getmysqlstats_pid 2>/dev/null
+  kill $getdiskstats_pid
+  wait $getdiskstats_pid 2>/dev/null
+  # set -e
+  
   echo
   echo "sysbench mysql update index summary:"
   cat "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updatenonindex.log" | egrep 'sysbench |Number of threads:|read:|write:|other:|total:|transactions:|queries:|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's|total time:|time:|' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' ' > "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}-updatenonindex.log"
@@ -1110,6 +1171,9 @@ sysbench_mysqloltp_new() {
   mysql -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
 CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((data_length+index_length)/(1024*1024),2),'MB') AS'Total', ROW_FORMAT, TABLE_COLLATION FROM information_schema.TABLES WHERE table_schema LIKE '$MYSQL_DBNAME';" | tee "$SYSBENCH_DIR/sysbench-mysql-table-list.log"
 
+  get_mysqlstats mysqloltp-new-read-write
+  get_diskstats mysqloltp-new-read-write
+
   echo
   echo "sysbench mysql OLTP new benchmark:"
   echo "sysbench oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
@@ -1119,6 +1183,13 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
     sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
   fi
 
+  # set +e
+  kill $getmysqlstats_pid
+  wait $getmysqlstats_pid 2>/dev/null
+  kill $getdiskstats_pid
+  wait $getdiskstats_pid 2>/dev/null
+  # set -e
+  
   echo
   echo "sysbench mysql OLTP new summary:"
   cat "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-write-new.log" | egrep 'sysbench |Number of threads:|read:|write:|other:|total:|transactions:|queries:|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's|total time:|time:|' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' ' > "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
@@ -1178,6 +1249,9 @@ sysbench_mysqlro_new() {
   mysql -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
 CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((data_length+index_length)/(1024*1024),2),'MB') AS'Total', ROW_FORMAT, TABLE_COLLATION FROM information_schema.TABLES WHERE table_schema LIKE '$MYSQL_DBNAME';" | tee "$SYSBENCH_DIR/sysbench-mysql-table-list.log"
 
+  get_mysqlstats mysqloltp-new-read-only
+  get_diskstats mysqloltp-new-read-only
+
   echo
   echo "sysbench mysql OLTP read only new benchmark:"
   echo "sysbench oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
@@ -1187,6 +1261,13 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
     sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
   fi
 
+  # set +e
+  kill $getmysqlstats_pid
+  wait $getmysqlstats_pid 2>/dev/null
+  kill $getdiskstats_pid
+  wait $getdiskstats_pid 2>/dev/null
+  # set -e
+  
   echo
   echo "sysbench mysql OLTP read only new summary:"
   cat "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-only-new.log" | egrep 'sysbench |Number of threads:|read:|write:|other:|total:|transactions:|queries:|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's|total time:|time:|' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' ' > "$SYSBENCH_DIR/sysbench-mysql-run-summary-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
@@ -1246,6 +1327,9 @@ sysbench_mysqlwo_new() {
   mysql -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
 CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((data_length+index_length)/(1024*1024),2),'MB') AS'Total', ROW_FORMAT, TABLE_COLLATION FROM information_schema.TABLES WHERE table_schema LIKE '$MYSQL_DBNAME';" | tee "$SYSBENCH_DIR/sysbench-mysql-table-list.log"
 
+  get_mysqlstats mysqloltp-new-write-only
+  get_diskstats mysqloltp-new-write-only
+
   echo
   echo "sysbench mysql OLTP write only new benchmark:"
   echo "sysbench oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
@@ -1254,6 +1338,13 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   else
     sysbench /usr/share/sysbench/oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
   fi
+
+  # set +e
+  kill $getmysqlstats_pid
+  wait $getmysqlstats_pid 2>/dev/null
+  kill $getdiskstats_pid
+  wait $getdiskstats_pid 2>/dev/null
+  # set -e
 
   echo
   echo "sysbench mysql OLTP write only new summary:"
@@ -1314,6 +1405,9 @@ sysbench_mysqlpointselect_new() {
   mysql -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} -t -e "SELECT CONCAT(table_schema,'.',table_name) AS 'Table Name', CONCAT(ROUND(table_rows,2),' Rows') AS 'Number of Rows',ENGINE AS 'Storage Engine',CONCAT(ROUND(data_length/(1024*1024),2),'MB') AS 'Data Size',
 CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((data_length+index_length)/(1024*1024),2),'MB') AS'Total', ROW_FORMAT, TABLE_COLLATION FROM information_schema.TABLES WHERE table_schema LIKE '$MYSQL_DBNAME';" | tee "$SYSBENCH_DIR/sysbench-mysql-table-list.log"
 
+  get_mysqlstats mysqloltp-new-point-select
+  get_diskstats mysqloltp-new-point-select
+
   echo
   echo "sysbench mysql OLTP POINT SELECT new benchmark:"
   echo "sysbench oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
@@ -1322,6 +1416,13 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   else
     sysbench /usr/share/sysbench/oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
   fi
+
+  # set +e
+  kill $getmysqlstats_pid
+  wait $getmysqlstats_pid 2>/dev/null
+  kill $getdiskstats_pid
+  wait $getdiskstats_pid 2>/dev/null
+  # set -e
 
   echo
   echo "sysbench mysql OLTP POINT SELECT new summary:"
@@ -1396,6 +1497,20 @@ case "$1" in
   mysqlpointselect-new )
     sysbench_mysqlpointselect_new
     ;;
+  all )
+    baseinfo
+    sysbench_cpu
+    sysbench_mem
+    sysbench_fileio
+    sysbench_mysqloltp
+    sysbench_mysqlro
+    sysbench_mysqlupdateindex
+    sysbench_mysqlupdatenonindex
+    sysbench_mysqloltp_new
+    sysbench_mysqlro_new
+    sysbench_mysqlwo_new
+    sysbench_mysqlpointselect_new
+    ;;
   * )
     echo
     echo "Usage:"
@@ -1413,6 +1528,7 @@ case "$1" in
     echo "$0 mysqlreadonly-new"
     echo "$0 mysqlwriteonly-new"
     echo "$0 mysqlpointselect-new"
+    echo "$0 all"
     echo
     ;;
 esac
