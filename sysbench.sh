@@ -98,6 +98,57 @@ if [ -f /usr/bin/sysbench ]; then
   SYSBENCH_GETVER=$(sysbench --version | awk '{print $2}' | cut -d . -f1,3 | sed -e 's|\.||g')
 fi
 
+baseinfo() {
+  echo "-------------------------------------------"
+  echo "System Information"
+  echo "-------------------------------------------"
+  echo
+
+  uname -r
+  echo
+
+  cat /etc/redhat-release
+  echo
+  
+  if [ -f /etc/centminmod-release ]; then
+  echo -n "Centmin Mod "
+  cat /etc/centminmod-release 2>&1 >/dev/null
+  echo
+  fi
+  
+  if [ ! -f /proc/user_beancounters ]; then
+    CPUFLAGS=$(cat /proc/cpuinfo | grep '^flags' | cut -d: -f2 | awk 'NR==1')
+    lscpu
+    echo
+    echo "CPU Flags"
+    echo "$CPUFLAGS"    
+  else
+    CPUNAME=$(cat /proc/cpuinfo | grep "model name" | cut -d ":" -f2 | tr -s " " | head -n 1)
+    CPUCOUNT=$(cat /proc/cpuinfo | grep "model name" | cut -d ":" -f2 | wc -l)
+    CPUFLAGS=$(cat /proc/cpuinfo | grep '^flags' | cut -d: -f2 | awk 'NR==1')
+    echo "CPU: $CPUCOUNT x$CPUNAME"
+    uname -m
+    echo
+    echo "CPU Flags"
+    echo "$CPUFLAGS"
+  fi
+  echo
+
+  if [ ! -f /proc/user_beancounters ]; then
+  lscpu -e
+  echo
+  fi
+  
+  # cat /proc/cpuinfo
+  # s
+  
+  free -ml
+  echo
+  
+  df -h
+  echo
+}
+
 sysbench_update() {
   echo
   echo "update sysbench from yum repo"
@@ -1268,9 +1319,11 @@ case "$1" in
     sysbench_update
     ;;
   cpu )
+    baseinfo
     sysbench_cpu
     ;;
   mem )
+    baseinfo
     sysbench_mem
     ;;
   file )

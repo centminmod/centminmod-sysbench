@@ -176,14 +176,78 @@ Usage:
 sysbench cpu tests test both single thread and max cpu core/thread count for comparison
 
 ```
-./sysbench.sh cpu
+./sysbench.sh cpu                     
+-------------------------------------------
+System Information
+-------------------------------------------
+
+3.10.0-862.2.3.el7.x86_64
+
+CentOS Linux release 7.5.1804 (Core) 
+
+Centmin Mod 
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                8
+On-line CPU(s) list:   0-7
+Thread(s) per core:    2
+Core(s) per socket:    4
+Socket(s):             1
+NUMA node(s):          1
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 60
+Model name:            Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz
+Stepping:              3
+CPU MHz:               4199.951
+CPU max MHz:           4400.0000
+CPU min MHz:           800.0000
+BogoMIPS:              7981.67
+Virtualization:        VT-x
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              8192K
+NUMA node0 CPU(s):     0-7
+Flags:                 fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm epb tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid xsaveopt ibpb ibrs dtherm ida arat pln pts
+
+CPU Flags
+ fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm epb tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid xsaveopt ibpb ibrs dtherm ida arat pln pts
+
+CPU NODE SOCKET CORE L1d:L1i:L2:L3 ONLINE MAXMHZ    MINMHZ
+0   0    0      0    0:0:0:0       yes    4400.0000 800.0000
+1   0    0      1    1:1:1:0       yes    4400.0000 800.0000
+2   0    0      2    2:2:2:0       yes    4400.0000 800.0000
+3   0    0      3    3:3:3:0       yes    4400.0000 800.0000
+4   0    0      0    0:0:0:0       yes    4400.0000 800.0000
+5   0    0      1    1:1:1:0       yes    4400.0000 800.0000
+6   0    0      2    2:2:2:0       yes    4400.0000 800.0000
+7   0    0      3    3:3:3:0       yes    4400.0000 800.0000
+
+              total        used        free      shared  buff/cache   available
+Mem:          31974       10947       16094         173        4932       20417
+Low:          31974       15879       16094
+High:             0           0           0
+Swap:          2045           1        2044
+
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/md1         69G   29G   37G  44% /
+devtmpfs         16G     0   16G   0% /dev
+tmpfs            16G     0   16G   0% /dev/shm
+tmpfs            16G  121M   16G   1% /run
+tmpfs            16G     0   16G   0% /sys/fs/cgroup
+tmpfs            16G  972K   16G   1% /tmp
+/dev/md2        151G   11G  133G   8% /home
+tmpfs           3.2G     0  3.2G   0% /run/user/0
+
 
 sysbench cpu --cpu-max-prime=20000 --threads=1 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 1
 prime: 20000
-events/s: 525.58
-time: 10.0011s
+events/s: 525.15
+time: 10.0016s
 min: 1.90
 avg: 1.90
 max: 2.35
@@ -191,36 +255,35 @@ max: 2.35
 
 | cpu sysbench | threads: | events/s: | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1.0.14 | 1 | 525.58 | 10.0011s | 1.90 | 1.90 | 2.35 | 1.89 |
+| 1.0.14 | 1 | 525.15 | 10.0016s | 1.90 | 1.90 | 2.35 | 1.89 |
 
 sysbench,threads,events/s,time,min,avg,max,95th 
-1.0.14,1,525.58,10.0011s,1.90,1.90,2.35,1.89 
+1.0.14,1,525.15,10.0016s,1.90,1.90,2.35,1.89 
 
 sysbench cpu --cpu-max-prime=20000 --threads=8 run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
 threads: 8
 prime: 20000
-events/s: 3232.75
-time: 10.0018s
+events/s: 3229.16
+time: 10.0020s
 min: 1.90
-avg: 2.47
-max: 38.64
+avg: 2.48
+max: 11.47
 95th: 2.48
 
 | cpu sysbench | threads: | events/s: | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1.0.14 | 8 | 3232.75 | 10.0018s | 1.90 | 2.47 | 38.64 | 2.48 |
+| 1.0.14 | 8 | 3229.16 | 10.0020s | 1.90 | 2.48 | 11.47 | 2.48 |
 
 sysbench,threads,events/s,time,min,avg,max,95th 
-1.0.14,8,3232.75,10.0018s,1.90,2.47,38.64,2.48 
+1.0.14,8,3229.16,10.0020s,1.90,2.48,11.47,2.48 
 ```
 
 Markdown results table
 
 | cpu sysbench | threads: | events/s: | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1.0.14 | 1 | 525.58 | 10.0011s | 1.90 | 1.90 | 2.35 | 1.89 |
-| 1.0.14 | 8 | 3232.75 | 10.0018s | 1.90 | 2.47 | 38.64 | 2.48 |
+| 1.0.14 | 1 | 525.15 | 10.0016s | 1.90 | 1.90 | 2.35 | 1.89 |
 
 ## sysbench memory
 
@@ -228,6 +291,70 @@ sysbench memory tests test both single thread and max cpu core/thread count for 
 
 ```
 ./sysbench.sh mem
+-------------------------------------------
+System Information
+-------------------------------------------
+
+3.10.0-862.2.3.el7.x86_64
+
+CentOS Linux release 7.5.1804 (Core) 
+
+Centmin Mod 
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                8
+On-line CPU(s) list:   0-7
+Thread(s) per core:    2
+Core(s) per socket:    4
+Socket(s):             1
+NUMA node(s):          1
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 60
+Model name:            Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz
+Stepping:              3
+CPU MHz:               4200.195
+CPU max MHz:           4400.0000
+CPU min MHz:           800.0000
+BogoMIPS:              7981.67
+Virtualization:        VT-x
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              8192K
+NUMA node0 CPU(s):     0-7
+Flags:                 fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm epb tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid xsaveopt ibpb ibrs dtherm ida arat pln pts
+
+CPU Flags
+ fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm epb tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid xsaveopt ibpb ibrs dtherm ida arat pln pts
+
+CPU NODE SOCKET CORE L1d:L1i:L2:L3 ONLINE MAXMHZ    MINMHZ
+0   0    0      0    0:0:0:0       yes    4400.0000 800.0000
+1   0    0      1    1:1:1:0       yes    4400.0000 800.0000
+2   0    0      2    2:2:2:0       yes    4400.0000 800.0000
+3   0    0      3    3:3:3:0       yes    4400.0000 800.0000
+4   0    0      0    0:0:0:0       yes    4400.0000 800.0000
+5   0    0      1    1:1:1:0       yes    4400.0000 800.0000
+6   0    0      2    2:2:2:0       yes    4400.0000 800.0000
+7   0    0      3    3:3:3:0       yes    4400.0000 800.0000
+
+              total        used        free      shared  buff/cache   available
+Mem:          31974       10946       16095         173        4932       20417
+Low:          31974       15879       16095
+High:             0           0           0
+Swap:          2045           1        2044
+
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/md1         69G   29G   37G  44% /
+devtmpfs         16G     0   16G   0% /dev
+tmpfs            16G     0   16G   0% /dev/shm
+tmpfs            16G  121M   16G   1% /run
+tmpfs            16G     0   16G   0% /sys/fs/cgroup
+tmpfs            16G  972K   16G   1% /tmp
+/dev/md2        151G   11G  133G   8% /home
+tmpfs           3.2G     0  3.2G   0% /run/user/0
+
 
 sysbench memory --threads=1 --memory-block-size=1K --memory-scope=global --memory-total-size=1G --memory-oper=read run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
@@ -236,9 +363,9 @@ block-size: 1KiB
 total-size: 1024MiB
 operation: read
 scope: global
-total-ops: 1048576 (8189451.03 per second)
-transferred (7997.51 MiB/sec)
-time: 0.1268s
+total-ops: 1048576 (8179314.39 per second)
+transferred (7987.61 MiB/sec)
+time: 0.1270s
 min: 0.00
 avg: 0.00
 max: 0.00
@@ -246,10 +373,10 @@ max: 0.00
 
 | memory sysbench | sysbench | threads: | block-size: | total-size: | operation: | total-ops: | transferred | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| memory | 1.0.14 | 1 | 1KiB | 1024MiB | read | 1048576 | 7997.51 | 0.1268s | 0.00 | 0.00 | 0.00 | 0.00 |
+| memory | 1.0.14 | 1 | 1KiB | 1024MiB | read | 1048576 | 7987.61 | 0.1270s | 0.00 | 0.00 | 0.00 | 0.00 |
 
 sysbench,sysbench,threads,block-size,total-size,operation,total-ops,transferred,time,min,avg,max,95th 
-memory,1.0.14,1,1KiB,1024MiB,read,1048576,7997.51,0.1268s,0.00,0.00,0.00,0.00 
+memory,1.0.14,1,1KiB,1024MiB,read,1048576,7987.61,0.1270s,0.00,0.00,0.00,0.00 
 
 sysbench memory --threads=8 --memory-block-size=1K --memory-scope=global --memory-total-size=1G --memory-oper=read run
 sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
@@ -258,9 +385,9 @@ block-size: 1KiB
 total-size: 1024MiB
 operation: read
 scope: global
-total-ops: 1048576 (27524346.98 per second)
-transferred (26879.25 MiB/sec)
-time: 0.0369s
+total-ops: 1048576 (32721691.65 per second)
+transferred (31954.78 MiB/sec)
+time: 0.0308s
 min: 0.00
 avg: 0.00
 max: 0.01
@@ -268,18 +395,17 @@ max: 0.01
 
 | memory sysbench | sysbench | threads: | block-size: | total-size: | operation: | total-ops: | transferred | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| memory | 1.0.14 | 8 | 1KiB | 1024MiB | read | 1048576 | 26879.25 | 0.0369s | 0.00 | 0.00 | 0.01 | 0.00 |
+| memory | 1.0.14 | 8 | 1KiB | 1024MiB | read | 1048576 | 31954.78 | 0.0308s | 0.00 | 0.00 | 0.01 | 0.00 |
 
 sysbench,sysbench,threads,block-size,total-size,operation,total-ops,transferred,time,min,avg,max,95th 
-memory,1.0.14,8,1KiB,1024MiB,read,1048576,26879.25,0.0369s,0.00,0.00,0.01,0.00 
+memory,1.0.14,8,1KiB,1024MiB,read,1048576,31954.78,0.0308s,0.00,0.00,0.01,0.00 
 ```
 
 Markdown results table
 
 | memory sysbench | sysbench | threads: | block-size: | total-size: | operation: | total-ops: | transferred | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| memory | 1.0.14 | 1 | 1KiB | 1024MiB | read | 1048576 | 7997.51 | 0.1268s | 0.00 | 0.00 | 0.00 | 0.00 |
-| memory | 1.0.14 | 8 | 1KiB | 1024MiB | read | 1048576 | 26879.25 | 0.0369s | 0.00 | 0.00 | 0.01 | 0.00 |
+| memory | 1.0.14 | 1 | 1KiB | 1024MiB | read | 1048576 | 7987.61 | 0.1270s | 0.00 | 0.00 | 0.00 | 0.00 |
 
 ## sysbench fileio
 
