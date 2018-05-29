@@ -12,9 +12,10 @@
 * [sysbench mysql INSERT legacy benchmark](#sysbench-mysql-insert)
 * [sysbench mysql UPDATE INDEX legacy benchmark](#sysbench-mysql-update-index)
 * [sysbench mysql UPDATE NON-INDEX legacy benchmark](#sysbench-mysql-update-nonindex)
-* [sysbench mysql OLTP read/write new benchmark](#sysbench-mysql-OLTP-new-readwrite)
-* [sysbench mysql OLTP read only new benchmark](#sysbench-mysql-OLTP-new-read-only)
-* [sysbench mysql OLTP write only new benchmark](#sysbench-mysql-OLTP-new-write-only)
+* [sysbench mysql OLTP read/write new benchmark](#sysbench-mysql-oltp-new-readwrite)
+* [sysbench mysql OLTP read only new benchmark](#sysbench-mysql-oltp-new-read-only)
+* [sysbench mysql OLTP write only new benchmark](#sysbench-mysql-oltp-new-write-only)
+* [sysbench mysql OLTP POINT SELECT new benchmark](#sysbench-mysql-oltp-new-point-select)
 
 # sysbench.sh tool
 
@@ -150,7 +151,7 @@ chmod +x sysbench.sh
 ./sysbench.sh 
 
 Usage:
-/root/tools/sysbench/sysbench.sh {install|update|cpu|mem|file|mysql|mysqlro|mysqlinsert|mysqlupdateindex|mysqlupdatenonindex|mysqloltpnew|mysqlreadonly-new|mysqlwriteonly-new}
+/root/tools/sysbench/sysbench.sh {install|update|cpu|mem|file|mysql|mysqlro|mysqlinsert|mysqlupdateindex|mysqlupdatenonindex|mysqloltpnew|mysqlreadonly-new|mysqlwriteonly-new|mysqlpointselect-new}
 ```
 
 ## sysbench cpu
@@ -1893,3 +1894,167 @@ Dropping table 'sbtest8'...
 | mysql sysbench | sysbench | threads: | read: | write: | other: | total: | transactions/s: | queries/s: | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | oltp_write_only.lua | 1.0.14 | 8 | 0 | 1640116 | 820058 | 2460174 | 13665.96 | 81995.74 | 30.0026s | 0.15 | 0.58 | 233.35 | 0.89 |
+
+## sysbench mysql OLTP new point select
+
+```
+./sysbench.sh mysqlpointselect-new                           
+
+setup sbt database & user
+mysqladmin create database: sbt
+
+sysbench prepare database: sbt
+sysbench oltp_point_select.lua --mysql-host=localhost --mysql-port=3306 --mysql-socket=/var/lib/mysql/mysql.sock --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-storage-engine=InnoDB --time=30 --threads=8 --report-interval=1 --table-size=150000 --tables=8 --db-driver=mysql prepare
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+
+Initializing worker threads...
+
+Creating table 'sbtest3'...
+Creating table 'sbtest5'...
+Creating table 'sbtest8'...
+Creating table 'sbtest1'...
+Creating table 'sbtest7'...
+Creating table 'sbtest2'...
+Creating table 'sbtest6'...
+Creating table 'sbtest4'...
+Inserting 150000 records into 'sbtest1'
+Inserting 150000 records into 'sbtest8'
+Inserting 150000 records into 'sbtest3'
+Inserting 150000 records into 'sbtest5'
+Inserting 150000 records into 'sbtest7'
+Inserting 150000 records into 'sbtest4'
+Inserting 150000 records into 'sbtest2'
+Inserting 150000 records into 'sbtest6'
+Creating a secondary index on 'sbtest1'...
+Creating a secondary index on 'sbtest8'...
+Creating a secondary index on 'sbtest3'...
+Creating a secondary index on 'sbtest5'...
+Creating a secondary index on 'sbtest6'...
+Creating a secondary index on 'sbtest2'...
+Creating a secondary index on 'sbtest4'...
+Creating a secondary index on 'sbtest7'...
+
++-------------+----------------+----------------+-----------+------------+--------+------------+-----------------+
+| Table Name  | Number of Rows | Storage Engine | Data Size | Index Size | Total  | ROW_FORMAT | TABLE_COLLATION |
++-------------+----------------+----------------+-----------+------------+--------+------------+-----------------+
+| sbt.sbtest1 | 150000 Rows    | InnoDB         | 0.02MB    | 0.00MB     | 0.02MB | Compact    | utf8_general_ci |
+| sbt.sbtest2 | 150000 Rows    | InnoDB         | 0.02MB    | 0.00MB     | 0.02MB | Compact    | utf8_general_ci |
+| sbt.sbtest3 | 150001 Rows    | InnoDB         | 0.17MB    | 0.00MB     | 0.17MB | Compact    | utf8_general_ci |
+| sbt.sbtest4 | 150000 Rows    | InnoDB         | 0.02MB    | 0.00MB     | 0.02MB | Compact    | utf8_general_ci |
+| sbt.sbtest5 | 150000 Rows    | InnoDB         | 0.02MB    | 0.00MB     | 0.02MB | Compact    | utf8_general_ci |
+| sbt.sbtest6 | 150000 Rows    | InnoDB         | 0.02MB    | 0.00MB     | 0.02MB | Compact    | utf8_general_ci |
+| sbt.sbtest7 | 150000 Rows    | InnoDB         | 0.02MB    | 0.00MB     | 0.02MB | Compact    | utf8_general_ci |
+| sbt.sbtest8 | 150000 Rows    | InnoDB         | 0.02MB    | 0.00MB     | 0.02MB | Compact    | utf8_general_ci |
++-------------+----------------+----------------+-----------+------------+--------+------------+-----------------+
+
+sysbench mysql OLTP POINT SELECT new benchmark:
+sysbench oltp_point_select.lua --mysql-host=localhost --mysql-port=3306 --mysql-socket=/var/lib/mysql/mysql.sock --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-storage-engine=InnoDB --time=30 --threads=8 --report-interval=1 --table-size=150000 --tables=8 --db-driver=mysql run
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+
+Running the test with following options:
+Number of threads: 8
+Report intermediate results every 1 second(s)
+Initializing random number generator from current time
+
+
+Initializing worker threads...
+
+Threads started!
+
+[ 1s ] thds: 8 tps: 66300.44 qps: 66300.44 (r/w/o: 66300.44/0.00/0.00) lat (ms,95%): 0.28 err/s: 0.00 reconn/s: 0.00
+[ 2s ] thds: 8 tps: 69689.54 qps: 69689.54 (r/w/o: 69689.54/0.00/0.00) lat (ms,95%): 0.30 err/s: 0.00 reconn/s: 0.00
+[ 3s ] thds: 8 tps: 65390.06 qps: 65390.06 (r/w/o: 65390.06/0.00/0.00) lat (ms,95%): 0.32 err/s: 0.00 reconn/s: 0.00
+[ 4s ] thds: 8 tps: 66191.20 qps: 66191.20 (r/w/o: 66191.20/0.00/0.00) lat (ms,95%): 0.31 err/s: 0.00 reconn/s: 0.00
+[ 5s ] thds: 8 tps: 64178.35 qps: 64178.35 (r/w/o: 64178.35/0.00/0.00) lat (ms,95%): 0.32 err/s: 0.00 reconn/s: 0.00
+[ 6s ] thds: 8 tps: 62698.79 qps: 62698.79 (r/w/o: 62698.79/0.00/0.00) lat (ms,95%): 0.34 err/s: 0.00 reconn/s: 0.00
+[ 7s ] thds: 8 tps: 61742.38 qps: 61742.38 (r/w/o: 61742.38/0.00/0.00) lat (ms,95%): 0.34 err/s: 0.00 reconn/s: 0.00
+[ 8s ] thds: 8 tps: 61914.50 qps: 61914.50 (r/w/o: 61914.50/0.00/0.00) lat (ms,95%): 0.34 err/s: 0.00 reconn/s: 0.00
+[ 9s ] thds: 8 tps: 63273.36 qps: 63273.36 (r/w/o: 63273.36/0.00/0.00) lat (ms,95%): 0.34 err/s: 0.00 reconn/s: 0.00
+[ 10s ] thds: 8 tps: 64394.30 qps: 64394.30 (r/w/o: 64394.30/0.00/0.00) lat (ms,95%): 0.34 err/s: 0.00 reconn/s: 0.00
+[ 11s ] thds: 8 tps: 63719.67 qps: 63719.67 (r/w/o: 63719.67/0.00/0.00) lat (ms,95%): 0.34 err/s: 0.00 reconn/s: 0.00
+[ 12s ] thds: 8 tps: 64046.71 qps: 64046.71 (r/w/o: 64046.71/0.00/0.00) lat (ms,95%): 0.34 err/s: 0.00 reconn/s: 0.00
+[ 13s ] thds: 8 tps: 63060.16 qps: 63060.16 (r/w/o: 63060.16/0.00/0.00) lat (ms,95%): 0.34 err/s: 0.00 reconn/s: 0.00
+[ 14s ] thds: 8 tps: 62765.60 qps: 62765.60 (r/w/o: 62765.60/0.00/0.00) lat (ms,95%): 0.34 err/s: 0.00 reconn/s: 0.00
+[ 15s ] thds: 8 tps: 62595.66 qps: 62595.66 (r/w/o: 62595.66/0.00/0.00) lat (ms,95%): 0.34 err/s: 0.00 reconn/s: 0.00
+[ 16s ] thds: 8 tps: 62724.72 qps: 62724.72 (r/w/o: 62724.72/0.00/0.00) lat (ms,95%): 0.34 err/s: 0.00 reconn/s: 0.00
+[ 17s ] thds: 8 tps: 62561.09 qps: 62561.09 (r/w/o: 62561.09/0.00/0.00) lat (ms,95%): 0.33 err/s: 0.00 reconn/s: 0.00
+[ 18s ] thds: 8 tps: 62885.06 qps: 62885.06 (r/w/o: 62885.06/0.00/0.00) lat (ms,95%): 0.33 err/s: 0.00 reconn/s: 0.00
+[ 19s ] thds: 8 tps: 63289.75 qps: 63289.75 (r/w/o: 63289.75/0.00/0.00) lat (ms,95%): 0.33 err/s: 0.00 reconn/s: 0.00
+[ 20s ] thds: 8 tps: 60850.00 qps: 60850.00 (r/w/o: 60850.00/0.00/0.00) lat (ms,95%): 0.34 err/s: 0.00 reconn/s: 0.00
+[ 21s ] thds: 8 tps: 61268.89 qps: 61268.89 (r/w/o: 61268.89/0.00/0.00) lat (ms,95%): 0.34 err/s: 0.00 reconn/s: 0.00
+[ 22s ] thds: 8 tps: 60798.86 qps: 60798.86 (r/w/o: 60798.86/0.00/0.00) lat (ms,95%): 0.35 err/s: 0.00 reconn/s: 0.00
+[ 23s ] thds: 8 tps: 61173.54 qps: 61173.54 (r/w/o: 61173.54/0.00/0.00) lat (ms,95%): 0.35 err/s: 0.00 reconn/s: 0.00
+[ 24s ] thds: 8 tps: 61184.70 qps: 61184.70 (r/w/o: 61184.70/0.00/0.00) lat (ms,95%): 0.35 err/s: 0.00 reconn/s: 0.00
+[ 25s ] thds: 8 tps: 60923.96 qps: 60923.96 (r/w/o: 60923.96/0.00/0.00) lat (ms,95%): 0.35 err/s: 0.00 reconn/s: 0.00
+[ 26s ] thds: 8 tps: 60620.91 qps: 60620.91 (r/w/o: 60620.91/0.00/0.00) lat (ms,95%): 0.35 err/s: 0.00 reconn/s: 0.00
+[ 27s ] thds: 8 tps: 60753.54 qps: 60753.54 (r/w/o: 60753.54/0.00/0.00) lat (ms,95%): 0.35 err/s: 0.00 reconn/s: 0.00
+[ 28s ] thds: 8 tps: 60570.85 qps: 60570.85 (r/w/o: 60570.85/0.00/0.00) lat (ms,95%): 0.35 err/s: 0.00 reconn/s: 0.00
+[ 29s ] thds: 8 tps: 61266.00 qps: 61266.00 (r/w/o: 61266.00/0.00/0.00) lat (ms,95%): 0.35 err/s: 0.00 reconn/s: 0.00
+[ 30s ] thds: 8 tps: 61563.86 qps: 61563.86 (r/w/o: 61563.86/0.00/0.00) lat (ms,95%): 0.35 err/s: 0.00 reconn/s: 0.00
+SQL statistics:
+    queries performed:
+        read:                            1884489
+        write:                           0
+        other:                           0
+        total:                           1884489
+    transactions:                        1884489 (62809.90 per sec.)
+    queries:                             1884489 (62809.90 per sec.)
+    ignored errors:                      0      (0.00 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          30.0020s
+    total number of events:              1884489
+
+Latency (ms):
+         min:                                    0.01
+         avg:                                    0.13
+         max:                                    7.90
+         95th percentile:                        0.34
+         sum:                               239248.31
+
+Threads fairness:
+    events (avg/stddev):           235561.1250/451.27
+    execution time (avg/stddev):   29.9060/0.00
+
+
+sysbench mysql OLTP POINT SELECT new summary:
+sysbench oltp_point_select.lua --mysql-host=localhost --mysql-port=3306 --mysql-socket=/var/lib/mysql/mysql.sock --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-storage-engine=InnoDB --time=30 --threads=8 --report-interval=1 --table-size=150000 --tables=8 --db-driver=mysql run
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+threads: 8
+read: 1884489
+write: 0
+other: 0
+total: 1884489
+transactions/s: 62809.90
+queries/s: 62809.90
+time: 30.0020s
+min: 0.01
+avg: 0.13
+max: 7.90
+95th: 0.34
+
+| mysql sysbench | sysbench | threads: | read: | write: | other: | total: | transactions/s: | queries/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| oltp_point_select.lua | 1.0.14 | 8 | 1884489 | 0 | 0 | 1884489 | 62809.90 | 62809.90 | 30.0020s | 0.01 | 0.13 | 7.90 | 0.34 |
+
+sysbench,sysbench,threads,read,write,other,total,transactions/s,queries/s,time,min,avg,max,95th 
+oltp_point_select.lua,1.0.14,8,1884489,0,0,1884489,62809.90,62809.90,30.0020s,0.01,0.13,7.90,0.34 
+
+sysbench mysql cleanup database: sbt
+sysbench oltp_point_select.lua --mysql-host=localhost --mysql-port=3306 --mysql-socket=/var/lib/mysql/mysql.sock --mysql-user=sbtest --mysql-password=sbtestpass --mysql-db=sbt --mysql-storage-engine=InnoDB --time=30 --threads=8 --report-interval=1 --table-size=150000 --tables=8 --db-driver=mysql cleanup
+sysbench 1.0.14 (using bundled LuaJIT 2.1.0-beta2)
+
+Dropping table 'sbtest1'...
+Dropping table 'sbtest2'...
+Dropping table 'sbtest3'...
+Dropping table 'sbtest4'...
+Dropping table 'sbtest5'...
+Dropping table 'sbtest6'...
+Dropping table 'sbtest7'...
+Dropping table 'sbtest8'...
+```
+
+| mysql sysbench | sysbench | threads: | read: | write: | other: | total: | transactions/s: | queries/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| oltp_point_select.lua | 1.0.14 | 8 | 1884489 | 0 | 0 | 1884489 | 62809.90 | 62809.90 | 30.0020s | 0.01 | 0.13 | 7.90 | 0.34 |
