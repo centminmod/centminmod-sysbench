@@ -45,7 +45,7 @@ each `sysbench.sh` test option saves results into temporary log file in `/home/s
 
 ```
 ls -lh /home/sysbench/
-total 340K
+total 360K
 drwxr-xr-x 2 root root 4.0K May 28 20:10 fileio
 drwxr-xr-x 2 root root 4.0K May 24 16:47 mysql
 -rw-r--r-- 1 root root  199 May 28 06:18 sysbench-cpu-threads-1.log
@@ -82,6 +82,7 @@ drwxr-xr-x 2 root root 4.0K May 24 16:47 mysql
 -rw-r--r-- 1 root root  323 May 28 06:18 sysbench-mem-threads-8-markdown.log
 -rw-r--r-- 1 root root  584 May 29 08:11 sysbench-mysql-cleanup-threads-8-insert.log
 -rw-r--r-- 1 root root  582 May 29 08:01 sysbench-mysql-cleanup-threads-8.log
+-rw-r--r-- 1 root root  581 May 29 09:30 sysbench-mysql-cleanup-threads-8-oltp-point-select-new.log
 -rw-r--r-- 1 root root  578 May 29 09:02 sysbench-mysql-cleanup-threads-8-oltp-read-only-new.log
 -rw-r--r-- 1 root root  579 May 29 09:14 sysbench-mysql-cleanup-threads-8-oltp-read-write-new.log
 -rw-r--r-- 1 root root  579 May 29 09:19 sysbench-mysql-cleanup-threads-8-oltp-write-only-new.log
@@ -90,6 +91,7 @@ drwxr-xr-x 2 root root 4.0K May 24 16:47 mysql
 -rw-r--r-- 1 root root  594 May 29 08:38 sysbench-mysql-cleanup-threads-8-updatenonindex.log
 -rw-r--r-- 1 root root 1.3K May 29 08:10 sysbench-mysql-prepare-threads-8-insert.log
 -rw-r--r-- 1 root root 1.3K May 29 08:01 sysbench-mysql-prepare-threads-8.log
+-rw-r--r-- 1 root root 1.3K May 29 09:29 sysbench-mysql-prepare-threads-8-oltp-point-select-new.log
 -rw-r--r-- 1 root root 1.3K May 29 09:02 sysbench-mysql-prepare-threads-8-oltp-read-only-new.log
 -rw-r--r-- 1 root root 1.3K May 29 09:14 sysbench-mysql-prepare-threads-8-oltp-read-write-new.log
 -rw-r--r-- 1 root root 1.3K May 29 09:18 sysbench-mysql-prepare-threads-8-oltp-write-only-new.log
@@ -104,16 +106,18 @@ drwxr-xr-x 2 root root 4.0K May 24 16:47 mysql
 -rw-r--r-- 1 root root  349 May 29 08:38 sysbench-mysql-run-summary-threads-8-markdown-insert.log
 -rw-r--r-- 1 root root  345 May 29 08:01 sysbench-mysql-run-summary-threads-8-markdown.log
 -rw-r--r-- 1 root root  335 May 29 08:00 sysbench-mysql-run-summary-threads-8-markdown-readonly.log
+-rw-r--r-- 1 root root  545 May 29 09:30 sysbench-mysql-run-summary-threads-8-oltp-point-select-new.log
 -rw-r--r-- 1 root root  545 May 29 09:02 sysbench-mysql-run-summary-threads-8-oltp-read-only-new.log
--rw-r--r-- 1 root root  516 May 29 09:19 sysbench-mysql-run-summary-threads-8-oltp-read-write-new-corrected.log
+-rw-r--r-- 1 root root  511 May 29 09:30 sysbench-mysql-run-summary-threads-8-oltp-read-write-new-corrected.log
 -rw-r--r-- 1 root root  552 May 29 09:14 sysbench-mysql-run-summary-threads-8-oltp-read-write-new.log
--rw-r--r-- 1 root root  353 May 29 09:19 sysbench-mysql-run-summary-threads-8-oltp-read-write-new-markdown.log
+-rw-r--r-- 1 root root  348 May 29 09:30 sysbench-mysql-run-summary-threads-8-oltp-read-write-new-markdown.log
 -rw-r--r-- 1 root root  549 May 29 09:19 sysbench-mysql-run-summary-threads-8-oltp-write-only-new.log
 -rw-r--r-- 1 root root  583 May 29 08:00 sysbench-mysql-run-summary-threads-8-readonly.log
 -rw-r--r-- 1 root root  556 May 29 08:37 sysbench-mysql-run-summary-threads-8-updateindex.log
 -rw-r--r-- 1 root root  560 May 29 08:38 sysbench-mysql-run-summary-threads-8-updatenonindex.log
 -rw-r--r-- 1 root root 5.0K May 29 08:11 sysbench-mysql-run-threads-8-insert.log
 -rw-r--r-- 1 root root 5.2K May 29 08:01 sysbench-mysql-run-threads-8.log
+-rw-r--r-- 1 root root 5.0K May 29 09:30 sysbench-mysql-run-threads-8-oltp-point-select-new.log
 -rw-r--r-- 1 root root 5.1K May 29 09:02 sysbench-mysql-run-threads-8-oltp-read-only-new.log
 -rw-r--r-- 1 root root 5.2K May 29 09:14 sysbench-mysql-run-threads-8-oltp-read-write-new.log
 -rw-r--r-- 1 root root 5.2K May 29 09:19 sysbench-mysql-run-threads-8-oltp-write-only-new.log
@@ -121,7 +125,7 @@ drwxr-xr-x 2 root root 4.0K May 24 16:47 mysql
 -rw-r--r-- 1 root root 4.9K May 29 08:37 sysbench-mysql-run-threads-8-updateindex.log
 -rw-r--r-- 1 root root 5.1K May 29 08:38 sysbench-mysql-run-threads-8-updatenonindex.log
 -rw-r--r-- 1 root root 1.4K May 29 08:38 sysbench-mysql-table-list-insert.log
--rw-r--r-- 1 root root 1.4K May 29 09:18 sysbench-mysql-table-list.log
+-rw-r--r-- 1 root root 1.4K May 29 09:29 sysbench-mysql-table-list.log
 -rw-r--r-- 1 root root 1.4K May 29 08:00 sysbench-mysql-table-list-readonly.log
 ```
 
