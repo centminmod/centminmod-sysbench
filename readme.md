@@ -7,8 +7,8 @@
 * [sysbench cpu benchmark](#sysbench-cpu)
 * [sysbench memory benchmark](#sysbench-memory)
 * [sysbench fileio benchmark](#sysbench-fileio)
-* [sysbench mysql read/write benchmark](#sysbench-mysql-read-write-benchmark)
-* [sysbench mysql read only benchmark](#sysbench-mysql-read-only-benchmark)
+* [sysbench mysql read/write benchmark](#sysbench-mysql-readwrite)
+* [sysbench mysql read only benchmark](#sysbench-mysql-read-only)
 
 # sysbench.sh tool
 
