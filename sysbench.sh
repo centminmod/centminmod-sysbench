@@ -1306,7 +1306,20 @@ case "$1" in
   * )
     echo
     echo "Usage:"
-    echo "$0 {install|update|cpu|mem|file|mysql|mysqlro|mysqlinsert|mysqlupdateindex|mysqlupdatenonindex|mysqloltpnew|mysqlreadonly-new|mysqlwriteonly-new|mysqlpointselect-new}"
+    echo "$0 install"
+    echo "$0 update"
+    echo "$0 cpu"
+    echo "$0 mem"
+    echo "$0 file"
+    echo "$0 mysql"
+    echo "$0 mysqlro"
+    echo "$0 mysqlinsert"
+    echo "$0 mysqlupdateindex"
+    echo "$0 mysqlupdatenonindex"
+    echo "$0 mysqloltpnew"
+    echo "$0 mysqlreadonly-new"
+    echo "$0 mysqlwriteonly-new"
+    echo "$0 mysqlpointselect-new"
     echo
     ;;
 esac

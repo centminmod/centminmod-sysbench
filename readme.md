@@ -151,7 +151,20 @@ chmod +x sysbench.sh
 ./sysbench.sh 
 
 Usage:
-/root/tools/sysbench/sysbench.sh {install|update|cpu|mem|file|mysql|mysqlro|mysqlinsert|mysqlupdateindex|mysqlupdatenonindex|mysqloltpnew|mysqlreadonly-new|mysqlwriteonly-new|mysqlpointselect-new}
+./sysbench.sh install
+./sysbench.sh update
+./sysbench.sh cpu
+./sysbench.sh mem
+./sysbench.sh file
+./sysbench.sh mysql
+./sysbench.sh mysqlro
+./sysbench.sh mysqlinsert
+./sysbench.sh mysqlupdateindex
+./sysbench.sh mysqlupdatenonindex
+./sysbench.sh mysqloltpnew
+./sysbench.sh mysqlreadonly-new
+./sysbench.sh mysqlwriteonly-new
+./sysbench.sh mysqlpointselect-new
 ```
 
 ## sysbench cpu
