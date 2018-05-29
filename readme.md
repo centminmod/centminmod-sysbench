@@ -284,6 +284,7 @@ Markdown results table
 | cpu sysbench | threads: | events/s: | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1.0.14 | 1 | 525.15 | 10.0016s | 1.90 | 1.90 | 2.35 | 1.89 |
+| 1.0.14 | 8 | 3229.16 | 10.0020s | 1.90 | 2.48 | 11.47 | 2.48 |
 
 ## sysbench memory
 
@@ -406,6 +407,7 @@ Markdown results table
 | memory sysbench | sysbench | threads: | block-size: | total-size: | operation: | total-ops: | transferred | time: | min: | avg: | max: | 95th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | memory | 1.0.14 | 1 | 1KiB | 1024MiB | read | 1048576 | 7987.61 | 0.1270s | 0.00 | 0.00 | 0.00 | 0.00 |
+| memory | 1.0.14 | 8 | 1KiB | 1024MiB | read | 1048576 | 31954.78 | 0.0308s | 0.00 | 0.00 | 0.01 | 0.00 |
 
 ## sysbench fileio
 
