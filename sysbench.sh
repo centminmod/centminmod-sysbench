@@ -1605,6 +1605,10 @@ case "$1" in
     sysbench_mysqlro_new
     sysbench_mysqlwo_new
     sysbench_mysqlpointselect_new
+    echo
+    echo "ls -lsh $SYSBENCH_DIR"
+    ls -lsh $SYSBENCH_DIR
+    echo
     ;;
   * )
     echo
