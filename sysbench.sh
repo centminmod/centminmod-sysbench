@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='1.3'
+VER='1.4'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -151,6 +151,18 @@ mysqlsettings() {
   echo
   echo "MySQL Concurrency"
   mysqladmin -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} var | awk -F '|' '/concurr/ {print $2,$3}' | tr -s ' ' | egrep -v 'limit|buffer|performance_schema' | column -t  
+  echo
+  echo "MySQL Read/Write"
+  mysqladmin -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} var | egrep 'reads|write' | grep -v thread | awk -F '|' '{print $2,$3}' | tr -s ' ' | egrep -v 'limit|buffer|performance_schema' | column -t  
+  echo
+  echo "MySQL Threads"
+  mysqladmin -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} var | egrep 'thread' | awk -F '|' '{print $2,$3}' | tr -s ' ' | column -t
+  echo
+  echo "MySQL Binlog"
+  mysqladmin -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} var | egrep 'binlog|log_bin' | awk -F '|' '{print $2,$3}' | tr -s ' ' | column -t
+  echo
+  echo "MySQL InnoDB"
+  mysqladmin -P ${MYSQL_PORT} -S ${MYSQLCLIENT_USESOCKETOPT} var | egrep 'innodb' | awk -F '|' '{print $2,$3}' | tr -s ' ' | column -t
   echo
 }
 
