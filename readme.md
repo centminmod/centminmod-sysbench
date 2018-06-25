@@ -17,6 +17,7 @@
 * [sysbench mysql OLTP write only new benchmark](#sysbench-mysql-oltp-new-write-only)
 * [sysbench mysql OLTP POINT SELECT new benchmark](#sysbench-mysql-oltp-new-point-select)
 * [sysbench.sh logging](#sysbenchsh-logging)
+* [sysbench.sh Ubuntu/Debian support](#sysbenchsh-ubuntudebian-support)
 
 # sysbench.sh tool
 
@@ -3180,4 +3181,111 @@ drwxr-xr-x 2 root root 4.0K May 24 16:47 mysql
 -rw-r--r-- 1 root root 1.4K May 29 20:40 sysbench-mysql-table-list-insert.log
 -rw-r--r-- 1 root root 1.4K May 29 20:43 sysbench-mysql-table-list.log
 -rw-r--r-- 1 root root 1.4K May 29 20:39 sysbench-mysql-table-list-readonly.log
+```
+
+# sysbench.sh Ubuntu/Debian support
+
+Add experimental Ubuntu/Debian support to at least be able to install/upgrade via `apt` and run some benchmarks
+
+sysbench cpu benchmark
+
+```
+./sysbench.sh cpu
+-------------------------------------------
+System Information
+-------------------------------------------
+
+4.15.0-22-generic
+
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=18.04
+DISTRIB_CODENAME=bionic
+DISTRIB_DESCRIPTION="Ubuntu 18.04 LTS"
+
+Architecture:        x86_64
+CPU op-mode(s):      32-bit, 64-bit
+Byte Order:          Little Endian
+CPU(s):              4
+On-line CPU(s) list: 0-3
+Thread(s) per core:  1
+Core(s) per socket:  4
+Socket(s):           1
+NUMA node(s):        1
+Vendor ID:           GenuineIntel
+CPU family:          6
+Model:               94
+Model name:          Intel Core Processor (Skylake, IBRS)
+Stepping:            3
+CPU MHz:             2099.998
+BogoMIPS:            4199.99
+Hypervisor vendor:   KVM
+Virtualization type: full
+L1d cache:           32K
+L1i cache:           32K
+L2 cache:            4096K
+NUMA node0 CPU(s):   0-3
+Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology cpuid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch invpcid_single pti fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx avx512f avx512dq rdseed adx smap clflushopt clwb avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1 ibpb ibrs
+
+CPU Flags
+ fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology cpuid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch invpcid_single pti fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx avx512f avx512dq rdseed adx smap clflushopt clwb avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1 ibpb ibrs
+
+CPU NODE SOCKET CORE L1d:L1i:L2 ONLINE
+0   0    0      0    0:0:0      yes
+1   0    0      1    1:1:1      yes
+2   0    0      2    2:2:2      yes
+3   0    0      3    3:3:3      yes
+
+              total        used        free      shared  buff/cache   available
+Mem:          16040          68       15566         100         405       15971
+Low:          16040         473       15566
+High:             0           0           0
+Swap:             0           0           0
+
+Filesystem                   Size  Used Avail Use% Mounted on
+/dev/mapper/ubuntu--vg-root   79G   56G   19G  76% /
+none                         492K     0  492K   0% /dev
+udev                         7.9G     0  7.9G   0% /dev/tty
+tmpfs                        100K     0  100K   0% /dev/lxd
+tmpfs                        100K     0  100K   0% /dev/.lxd-mounts
+tmpfs                        7.9G     0  7.9G   0% /dev/shm
+tmpfs                        7.9G  140K  7.9G   1% /run
+tmpfs                        5.0M     0  5.0M   0% /run/lock
+tmpfs                        7.9G     0  7.9G   0% /sys/fs/cgroup
+
+
+sysbench cpu --cpu-max-prime=20000 --threads=1 run
+sysbench 1.0.11 (using system LuaJIT 2.1.0-beta3)
+threads: 1
+prime: 20000
+events/s: 318.30
+time: 10.0008s
+min: 2.59
+avg: 3.14
+max: 27.03
+95th: 4.33
+
+| cpu sysbench | threads: | events/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1.0.11 | 1 | 318.30 | 10.0008s | 2.59 | 3.14 | 27.03 | 4.33 |
+
+sysbench,threads,events/s,time,min,avg,max,95th 
+1.0.11,1,318.30,10.0008s,2.59,3.14,27.03,4.33 
+
+sysbench cpu --cpu-max-prime=20000 --threads=4 run
+sysbench 1.0.11 (using system LuaJIT 2.1.0-beta3)
+threads: 4
+prime: 20000
+events/s: 1208.10
+time: 10.0055s
+min: 2.59
+avg: 3.31
+max: 30.62
+95th: 4.65
+
+| cpu sysbench | threads: | events/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1.0.11 | 4 | 1208.10 | 10.0055s | 2.59 | 3.31 | 30.62 | 4.65 |
+
+sysbench,threads,events/s,time,min,avg,max,95th 
+1.0.11,4,1208.10,10.0055s,2.59,3.31,30.62,4.65 
 ```
