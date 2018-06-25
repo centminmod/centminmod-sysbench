@@ -21,14 +21,35 @@
 
 # sysbench.sh tool
 
-`sysbench.sh` benchmark tool utilising [sysbench](https://github.com/akopytov/sysbench) currently maintained by [Alexey Kopytov](https://kaamos.me/blog/2016/03/08/towards-sysbench-1.0-history.html). The `sysbench.sh` script is written specifically for [Centmin Mod LEMP stack](https://centminmod.com/) testing. Results are displayed in 3 formats, standard, github markdown and CSV comma separated.
+`sysbench.sh` benchmark tool utilising [sysbench](https://github.com/akopytov/sysbench) currently maintained by [Alexey Kopytov](https://kaamos.me/blog/2016/03/08/towards-sysbench-1.0-history.html). The `sysbench.sh` script is written specifically for [Centmin Mod LEMP stack](https://centminmod.com/) testing. Update: [sysbench.sh Ubuntu/Debian support](#sysbenchsh-ubuntudebian-support) has been added - only tested on Ubuntu 16.04/18.04 so far.
 
 ```
 sysbench --version
 sysbench 1.0.14
 ```
 
-sysbench will switch to using jemalloc memory allocator instead of system default glibc if available
+# sysbench.sh notes
+
+* Results are displayed in 3 formats, standard, github markdown and CSV comma separated.
+* MySQL tests assume mysql root password is set in `/root/.my.cnf`
+
+example `/root/.my.cnf` contents
+
+```
+[client]
+user=root
+password=YOUR_MYSQL_ROOT_PASSWORD
+```
+
+You can edit sysbench.sh settings for:
+
+```
+MYSQL_USER='sbtest'
+MYSQL_PASS='sbtestpass'
+MYSQL_DBNAME='sbt'
+```
+
+sysbench will switch to using jemalloc memory allocator instead of system default glibc if available (CentOS only right now)
 
 ```
 lsof | grep jemalloc | egrep -v 'nginx|mysqld|redis'
