@@ -1,6 +1,7 @@
 # sysbench contents
 
 * [sysbench.sh tool](#sysbenchsh-tool)
+* [sysbench.sh notes](#sysbenchsh-notes)
 * [sysbench.sh install](#sysbench-install)
 * [sysbench.sh update](#sysbench-update)
 * [sysbench.sh usage](#sysbench-usage)
