@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='1.4'
+VER='1.5'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -70,6 +70,10 @@ SYSBENCH_FILEIODIR="${SYSBENCH_DIR}/fileio"
 #########################################################
 # functions
 #############
+
+if [ -f /usr/bin/apt ]; then
+  MYSQL_SOCKET='/var/run/mysqld/mysqld.sock'
+fi
 
 if [ ! -d "$SYSBENCH_DIR" ]; then
   mkdir -p "${SYSBENCH_DIR}"
@@ -175,7 +179,11 @@ baseinfo() {
   uname -r
   echo
 
-  cat /etc/redhat-release
+  if [ -f /etc/redhat-release ]; then
+    cat /etc/redhat-release
+  elif [ -f /etc/lsb-release ]; then
+    cat /etc/lsb-release
+  fi
   echo
   
   if [ -f /etc/centminmod-release ]; then
@@ -219,36 +227,53 @@ baseinfo() {
 
 sysbench_update() {
   echo
-  echo "update sysbench from yum repo"
-  if [ -f /etc/yum.repos.d/epel.repo ]; then
-    echo "yum -y update sysbench --disablerepo=epel"
-    yum -y update sysbench --disablerepo=epel
-  else
-    echo "yum -y update sysbench"
-    yum -y update sysbench
+  if [ -d /etc/yum.repos.d ]; then
+    echo "update sysbench from yum repo"
+    if [ -f /etc/yum.repos.d/epel.repo ]; then
+      echo "yum -y update sysbench --disablerepo=epel"
+      yum -y update sysbench --disablerepo=epel
+    else
+      echo "yum -y update sysbench"
+      yum -y update sysbench
+    fi
+  elif [ -f /usr/bin/apt ]; then
+   echo "update sysbench from apt"
+   sudo apt -y install sysbench
   fi
   echo
 }
 
 sysbench_install() {
   if [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
-    echo
-    echo "install sysbench from yum repo"
-    # ensure sysbench version is latest
-    if [[ -f /usr/bin/sysbench  && "$SYSBENCH_GETVER" -lt '100' ]]; then
-      yum -y -q remove sysbench
-    fi
-    if [[ -f /etc/yum.repos.d/epel.repo && ! "$(grep sysbench /etc/yum.repos.d/epel.repo)" ]]; then
-      excludevalue=$(grep '^exclude=' /etc/yum.repos.d/epel.repo | head -n1)
-      sed -i "s/exclude=.*/${excludevalue} sysbench/" /etc/yum.repos.d/epel.repo
-    fi
-    curl -s https://packagecloud.io/install/repositories/akopytov/sysbench/script.rpm.sh | bash
-    if [ -f /etc/yum.repos.d/epel.repo ]; then
-      echo "yum -y install sysbench --disablerepo=epel"
-      yum -y install sysbench --disablerepo=epel
-    else
-      echo "yum -y install sysbench"
-      yum -y install sysbench
+    if [ -d /etc/yum.repos.d ]; then
+      echo
+      echo "install sysbench from yum repo"
+      # ensure sysbench version is latest
+      if [[ -f /usr/bin/sysbench  && "$SYSBENCH_GETVER" -lt '100' ]]; then
+        yum -y -q remove sysbench
+      fi
+      if [[ -f /etc/yum.repos.d/epel.repo && ! "$(grep sysbench /etc/yum.repos.d/epel.repo)" ]]; then
+        excludevalue=$(grep '^exclude=' /etc/yum.repos.d/epel.repo | head -n1)
+        sed -i "s/exclude=.*/${excludevalue} sysbench/" /etc/yum.repos.d/epel.repo
+      fi
+      curl -s https://packagecloud.io/install/repositories/akopytov/sysbench/script.rpm.sh | bash
+      if [ -f /etc/yum.repos.d/epel.repo ]; then
+        echo "yum -y install sysbench --disablerepo=epel"
+        yum -y install sysbench --disablerepo=epel
+      else
+        echo "yum -y install sysbench"
+        yum -y install sysbench
+      fi
+    elif [ -f /usr/bin/apt ]; then
+      echo
+      echo "install sysbench from apt"
+      # ensure sysbench version is latest
+      if [[ -f /usr/bin/sysbench  && "$SYSBENCH_GETVER" -lt '100' ]]; then
+        apt-get -y -q remove sysbench
+      fi
+      curl -s https://packagecloud.io/install/repositories/akopytov/sysbench/script.deb.sh | sudo bash
+      echo "sudo apt -y install sysbench"
+      sudo apt -y install sysbench
     fi
     echo
   else
