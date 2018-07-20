@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='1.5'
+VER='1.6'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -44,6 +44,8 @@ FILEIO_RNDRD='y'
 FILEIO_RNDWR='y'
 # random read/write
 FILEIO_RNDRW='n'
+# fileio fsync test duration
+FILEIO_FSYNCTIME='30'
 
 MYSQL_HOST='localhost'
 MYSQL_PORT='3306'
@@ -360,7 +362,7 @@ sysbench_mem() {
 }
 
 sysbench_fileio() {
-
+  check_fsync=$1
   if [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
     sysbench_install
   fi
@@ -382,7 +384,45 @@ sysbench_fileio() {
   fi
   cd "${SYSBENCH_FILEIODIR}"
 
-  # echo "threads: 1";
+  if [[ "$check_fsync" = 'fsync' ]]; then
+    # sequential read
+    FILEIO_SEQRD='n'
+    # sequential write
+    FILEIO_SEQWR='n'
+    # sequent rewrite
+    FILEIO_SEQREWR='n'
+    # random read
+    FILEIO_RNDRD='n'
+    # random write
+    FILEIO_RNDWR='n'
+    # random read/write
+    FILEIO_RNDRW='n'
+    echo
+    echo "sysbench fileio fsync prepare"
+    echo "sysbench fileio --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --threads=1 --percentile=99 prepare"
+      sysbench fileio --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --threads=1 --percentile=99 prepare >/dev/null 2>&1
+    echo
+    echo "sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run"
+    if [ -f /usr/lib64/libjemalloc.so.1 ]; then
+      LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-raw.log"
+    else
+      sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-raw.log"
+    fi
+    echo "raw log saved: $SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-raw.log"
+    echo
+    cat "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-raw.log" | egrep 'sysbench |Number of threads:|Block size|ratio |mode|Doing |reads/s:|writes/s:|fsyncs/s:|read, | written,|total time:|min:|avg:|max:|99th percentile:' | sed -e 's|Number of threads|threads|' -e 's| size|-size|' -e 's|total time:|time:|' -e 's|, MiB/s|-MiB/s|g' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' '| tee -a "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1.log"
+    echo
+    echo -n "| fileio "; cat "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1.log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{ for (i=1;i<=NF;i+=2) print $i" |" }' | xargs | tee "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-markdown.log"
+    echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |" | tee -a "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-markdown.log"
+    echo -n "| "; cat "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1.log" | grep -v 'ratio' | sed -e 's|Using ||' -e 's| mode||' -e 's|Doing ||' -e 's| test||' | awk '{print $1,$2}' | xargs | awk '{for (i=2; i<=NF; i+=2)print $i" |" }' | xargs | tee -a "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-markdown.log"
+    echo
+    cat "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-markdown.log" | grep -v '\-\-\-' | sed -e 's| \| |,|g' -e 's|\:||g' -e 's|\|||'
+    echo
+    echo
+    echo "sysbench fileio cleanup"
+    echo "sysbench fileio --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 cleanup"
+    sysbench fileio --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 cleanup >/dev/null 2>&1
+  fi
   if [[ "$FILEIO_SEQRD" = [yY] ]]; then
     # sleep $FILEIO_SLEEP
     echo
@@ -731,21 +771,23 @@ sysbench_fileio() {
     fi
   fi
 
-  echo
-  echo "sysbench fileio cleanup"
-  echo "sysbench fileio --file-total-size=${fileio_filesize}M cleanup"
-  sysbench fileio --file-total-size=${fileio_filesize}M cleanup >/dev/null 2>&1
-
-  echo
-  echo "| fileio sysbench | sysbench | threads: | Block-size | synchronous | sequential | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |"
-  echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"
-  ls -rt /home/sysbench/  | grep 'sysbench-fileio' | grep 'markdown' | grep 'seq' | while read f; do echo -n '|'; grep 'fileio' /home/sysbench/$f; done
-
-  echo 
-  echo "| fileio sysbench | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |"
-  echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"
-  ls -rt /home/sysbench/  | grep 'sysbench-fileio' | grep 'markdown' | grep 'rnd' | while read f; do echo -n '|'; grep 'fileio' /home/sysbench/$f; done
-  echo
+  if [[ ! "$check_fsync" ]]; then
+    echo
+    echo "sysbench fileio cleanup"
+    echo "sysbench fileio --file-total-size=${fileio_filesize}M cleanup"
+    sysbench fileio --file-total-size=${fileio_filesize}M cleanup >/dev/null 2>&1
+  
+    echo
+    echo "| fileio sysbench | sysbench | threads: | Block-size | synchronous | sequential | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |"
+    echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"
+    ls -rt /home/sysbench/  | grep 'sysbench-fileio' | grep 'markdown' | grep 'seq' | while read f; do echo -n '|'; grep 'fileio' /home/sysbench/$f; done
+  
+    echo 
+    echo "| fileio sysbench | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 95th: |"
+    echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"
+    ls -rt /home/sysbench/  | grep 'sysbench-fileio' | grep 'markdown' | grep 'rnd' | while read f; do echo -n '|'; grep 'fileio' /home/sysbench/$f; done
+    echo
+  fi
 }
 
 sysbench_mysqltpcc() {
@@ -1602,6 +1644,9 @@ case "$1" in
   file )
     sysbench_fileio
     ;;
+  file-fsync )
+    sysbench_fileio fsync
+    ;;
   mysql )
     sysbench_mysqloltp
     ;;
@@ -1655,6 +1700,7 @@ case "$1" in
     echo "$0 cpu"
     echo "$0 mem"
     echo "$0 file"
+    echo "$0 file-fsync"
     echo "$0 mysql"
     echo "$0 mysqlro"
     echo "$0 mysqlinsert"

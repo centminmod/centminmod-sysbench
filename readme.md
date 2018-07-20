@@ -8,6 +8,7 @@
 * [sysbench cpu benchmark](#sysbench-cpu)
 * [sysbench memory benchmark](#sysbench-memory)
 * [sysbench fileio benchmark](#sysbench-fileio)
+* [sysbench fileio fsync benchmark](#sysbench-fileio-fsync)
 * [sysbench mysql read/write OLTP legacy benchmark](#sysbench-mysql-readwrite-oltp)
 * [sysbench mysql read only OLTP legacy benchmark](#sysbench-mysql-read-only-oltp)
 * [sysbench mysql INSERT legacy benchmark](#sysbench-mysql-insert)
@@ -676,6 +677,51 @@ Markdown results table - random
 |fileio | 1.0.14 | 1 | 4KiB | I/O | write | 0.00 | 15368.08 | 19658.94 | 0.00 | 60.03 | 10.0000s | 0.02 | 0.03 | 2.21 | 0.04 |
 |fileio | 1.0.14 | 8 | 4KiB | I/O | read | 62997.92 | 0.00 | 0.00 | 246.09 | 0.00 | 10.0002s | 0.05 | 0.13 | 1.01 | 0.17 |
 |fileio | 1.0.14 | 8 | 4KiB | I/O | write | 0.00 | 22746.82 | 29115.43 | 0.00 | 88.85 | 10.0002s | 0.02 | 0.15 | 9.79 | 0.23 |
+
+## sysbench fileio fsync
+
+Added sysbench.sh fileio fsync benchmark as outlined [here](https://www.percona.com/blog/2018/07/18/why-consumer-ssd-reviews-are-useless-for-database-performance-use-case/). Test duration is controlled by variable `FILEIO_FSYNCTIME='30'` which is set to 30 seconds default.
+
+```
+./sysbench.sh file-fsync            
+
+sysbench fileio fsync prepare
+sysbench fileio --time=30 --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --threads=1 --percentile=99 prepare
+
+sysbench fileio --threads=1 --time=30 --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run
+raw log saved: /home/sysbench/sysbench-fileio-fsync-threads-1-raw.log
+
+sysbench 1.0.15 (using bundled LuaJIT 2.1.0-beta2)
+threads: 1
+Block-size 4KiB
+Read/Write ratio for combined random IO test: 1.50
+Using synchronous I/O mode
+Doing random write test
+reads/s: 0.00
+writes/s: 16375.82
+fsyncs/s: 16375.82
+read-MiB/s: 0.00
+written-MiB/s: 63.97
+time: 30.0000s
+min: 0.04
+avg: 0.06
+max: 8.69
+99th: 0.15
+
+| fileio sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 99th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16313.24 | 16313.24 | 0.00 | 63.72 | 30.0000s | 0.04 | 0.06 | 7.14 | 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16362.35 | 16362.35 | 0.00 | 63.92 | 30.0000s | 0.04 | 0.06 | 4.42 | 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16375.82 | 16375.82 | 0.00 | 63.97 | 30.0000s | 0.04 | 0.06 | 8.69 | 0.15 |
+
+sysbench,threads,Block-size,synchronous,random,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,sysbench,threads,Block-size,synchronous,random,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,sysbench,threads,Block-size,synchronous,random,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,99th 
+1.0.15,1,4KiB,I/O,write,0.00,16313.24,16313.24,0.00,63.72,30.0000s,0.04,0.06,7.14,1.0.15,1,4KiB,I/O,write,0.00,16362.35,16362.35,0.00,63.92,30.0000s,0.04,0.06,4.42,1.0.15,1,4KiB,I/O,write,0.00,16375.82,16375.82,0.00,63.97,30.0000s,0.04,0.06,8.69,0.15 
+
+sysbench fileio cleanup
+sysbench fileio --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 cleanup
+```
+
+| fileio sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 99th: |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16313.24 | 16313.24 | 0.00 | 63.72 | 30.0000s | 0.04 | 0.06 | 7.14 | 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16362.35 | 16362.35 | 0.00 | 63.92 | 30.0000s | 0.04 | 0.06 | 4.42 | 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16375.82 | 16375.82 | 0.00 | 63.97 | 30.0000s | 0.04 | 0.06 | 8.69 | 0.15 |
 
 ## sysbench mysql read/write OLTP
 
