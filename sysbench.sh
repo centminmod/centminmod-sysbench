@@ -402,7 +402,7 @@ sysbench_fileio() {
     echo "sysbench fileio --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --threads=1 --percentile=99 prepare"
       sysbench fileio --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --threads=1 --percentile=99 prepare >/dev/null 2>&1
     echo
-    echo "sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run"
+    echo "sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run" | tee "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1.log"
     if [ -f /usr/lib64/libjemalloc.so.1 ]; then
       LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-raw.log"
     else

@@ -97,6 +97,7 @@ Usage:
 ./sysbench.sh cpu
 ./sysbench.sh mem
 ./sysbench.sh file
+./sysbench.sh file-fsync
 ./sysbench.sh mysql
 ./sysbench.sh mysqlro
 ./sysbench.sh mysqlinsert
@@ -698,30 +699,30 @@ Read/Write ratio for combined random IO test: 1.50
 Using synchronous I/O mode
 Doing random write test
 reads/s: 0.00
-writes/s: 16375.82
-fsyncs/s: 16375.82
+writes/s: 16376.35
+fsyncs/s: 16376.35
 read-MiB/s: 0.00
 written-MiB/s: 63.97
 time: 30.0000s
 min: 0.04
 avg: 0.06
-max: 8.69
+max: 6.84
 99th: 0.15
 
-| fileio sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 99th: |
+| fileio sysbench | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 99th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16313.24 | 16313.24 | 0.00 | 63.72 | 30.0000s | 0.04 | 0.06 | 7.14 | 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16362.35 | 16362.35 | 0.00 | 63.92 | 30.0000s | 0.04 | 0.06 | 4.42 | 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16375.82 | 16375.82 | 0.00 | 63.97 | 30.0000s | 0.04 | 0.06 | 8.69 | 0.15 |
+| fileio | 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16376.35 | 16376.35 | 0.00 | 63.97 | 30.0000s | 0.04 | 0.06 | 6.84 | 0.15 |
 
-sysbench,threads,Block-size,synchronous,random,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,sysbench,threads,Block-size,synchronous,random,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,sysbench,threads,Block-size,synchronous,random,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,99th 
-1.0.15,1,4KiB,I/O,write,0.00,16313.24,16313.24,0.00,63.72,30.0000s,0.04,0.06,7.14,1.0.15,1,4KiB,I/O,write,0.00,16362.35,16362.35,0.00,63.92,30.0000s,0.04,0.06,4.42,1.0.15,1,4KiB,I/O,write,0.00,16375.82,16375.82,0.00,63.97,30.0000s,0.04,0.06,8.69,0.15 
+sysbench,sysbench,threads,Block-size,synchronous,random,reads/s,writes/s,fsyncs/s,read-MiB/s,written-MiB/s,time,min,avg,max,99th 
+fileio,1.0.15,1,4KiB,I/O,write,0.00,16376.35,16376.35,0.00,63.97,30.0000s,0.04,0.06,6.84,0.15 
 
 sysbench fileio cleanup
 sysbench fileio --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 cleanup
 ```
 
-| fileio sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 99th: |
+| fileio sysbench | sysbench | threads: | Block-size | synchronous | random | reads/s: | writes/s: | fsyncs/s: | read-MiB/s: | written-MiB/s: | time: | min: | avg: | max: | 99th: |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16313.24 | 16313.24 | 0.00 | 63.72 | 30.0000s | 0.04 | 0.06 | 7.14 | 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16362.35 | 16362.35 | 0.00 | 63.92 | 30.0000s | 0.04 | 0.06 | 4.42 | 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16375.82 | 16375.82 | 0.00 | 63.97 | 30.0000s | 0.04 | 0.06 | 8.69 | 0.15 |
+| fileio | 1.0.15 | 1 | 4KiB | I/O | write | 0.00 | 16376.35 | 16376.35 | 0.00 | 63.97 | 30.0000s | 0.04 | 0.06 | 6.84 | 0.15 |
 
 ## sysbench mysql read/write OLTP
 
