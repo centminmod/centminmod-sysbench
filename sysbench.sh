@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='1.6'
+VER='1.7'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -71,7 +71,9 @@ SYSBENCH_DIR='/home/sysbench'
 SYSBENCH_FILEIODIR="${SYSBENCH_DIR}/fileio"
 #########################################################
 # functions
-#############
+#########################################################
+SCRIPT_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
+#########################################################
 
 if [ -f /usr/bin/apt ]; then
   MYSQL_SOCKET='/var/run/mysqld/mysqld.sock'
@@ -87,6 +89,10 @@ fi
 
 if [ ! -d "${SYSBENCH_DIR}/mysql" ]; then
   mkdir -p "${SYSBENCH_DIR}/mysql"
+fi
+
+if [ -f "${SCRIPT_DIR}/sysbench.ini" ]; then
+  source "${SCRIPT_DIR}/sysbench.ini"
 fi
 
 if [[ "$MYSQL_LOGIN" = [yY] ]]; then

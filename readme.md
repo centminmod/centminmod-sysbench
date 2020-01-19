@@ -43,12 +43,23 @@ user=root
 password=YOUR_MYSQL_ROOT_PASSWORD
 ```
 
-You can edit sysbench.sh settings for:
+You can directly edit `sysbench.sh` settings for:
 
 ```
 MYSQL_USER='sbtest'
 MYSQL_PASS='sbtestpass'
 MYSQL_DBNAME='sbt'
+```
+
+or leave `sysbench.sh` untouched and use a persistent `sysbench.ini` settings file which you can create and place in same directory as your `sysbench.sh` script
+
+example `sysbench.ini` with variables overriding `sysbench.sh` ones:
+
+```
+MYSQL_USER='sbtest'
+MYSQL_PASS='sbtestpass'
+MYSQL_DBNAME='sbt'
+MYSQL_THREADS=16
 ```
 
 sysbench will switch to using jemalloc memory allocator instead of system default glibc if available (CentOS only right now)
