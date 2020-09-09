@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='1.7'
+VER='1.8'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -111,6 +111,12 @@ fi
 
 if [ -f /usr/bin/sysbench ]; then
   SYSBENCH_GETVER=$(sysbench --version | awk '{print $2}' | cut -d . -f1,3 | sed -e 's|\.||g')
+fi
+
+if [ -f /usr/lib64/libjemalloc.so.2 ]; then
+  JEMALLOC_FILE='/usr/lib64/libjemalloc.so.2'
+elif [ -f /usr/lib64/libjemalloc.so.1 ]; then
+  JEMALLOC_FILE='/usr/lib64/libjemalloc.so.1'
 fi
 
 tools_setup() {
@@ -299,8 +305,8 @@ sysbench_cpu() {
   cd "$SYSBENCH_DIR"
   # echo "threads: 1";
   echo "sysbench cpu --cpu-max-prime=${CPU_MAXPRIME} --threads=1 run" | tee "$SYSBENCH_DIR/sysbench-cpu-threads-1.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-      LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench cpu --cpu-max-prime=${CPU_MAXPRIME} --threads=1 run | egrep 'sysbench |Number of threads:|Prime numbers limit:|events per second:|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's|Prime numbers limit|prime|' -e 's|events per second|events/s|' -e 's|total time:|time:|' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' '| tee -a "$SYSBENCH_DIR/sysbench-cpu-threads-1.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+      LD_PRELOAD="$JEMALLOC_FILE" sysbench cpu --cpu-max-prime=${CPU_MAXPRIME} --threads=1 run | egrep 'sysbench |Number of threads:|Prime numbers limit:|events per second:|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's|Prime numbers limit|prime|' -e 's|events per second|events/s|' -e 's|total time:|time:|' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' '| tee -a "$SYSBENCH_DIR/sysbench-cpu-threads-1.log"
   else
       sysbench cpu --cpu-max-prime=${CPU_MAXPRIME} --threads=1 run | egrep 'sysbench |Number of threads:|Prime numbers limit:|events per second:|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's|Prime numbers limit|prime|' -e 's|events per second|events/s|' -e 's|total time:|time:|' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' '| tee -a "$SYSBENCH_DIR/sysbench-cpu-threads-1.log"
   fi
@@ -315,8 +321,8 @@ sysbench_cpu() {
     echo
     # echo "threads: $(nproc)";
     echo "sysbench cpu --cpu-max-prime=${CPU_MAXPRIME} --threads=$(nproc) run" | tee "$SYSBENCH_DIR/sysbench-cpu-threads-$(nproc).log"
-    if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-      LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench cpu --cpu-max-prime=${CPU_MAXPRIME} --threads=$(nproc) run | egrep 'sysbench |Number of threads:|Prime numbers limit:|events per second:|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's|Prime numbers limit|prime|' -e 's|events per second|events/s|' -e 's|total time:|time:|' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' '| tee -a "$SYSBENCH_DIR/sysbench-cpu-threads-$(nproc).log"
+    if [ -f "$JEMALLOC_FILE" ]; then
+      LD_PRELOAD="$JEMALLOC_FILE" sysbench cpu --cpu-max-prime=${CPU_MAXPRIME} --threads=$(nproc) run | egrep 'sysbench |Number of threads:|Prime numbers limit:|events per second:|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's|Prime numbers limit|prime|' -e 's|events per second|events/s|' -e 's|total time:|time:|' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' '| tee -a "$SYSBENCH_DIR/sysbench-cpu-threads-$(nproc).log"
     else
       sysbench cpu --cpu-max-prime=${CPU_MAXPRIME} --threads=$(nproc) run | egrep 'sysbench |Number of threads:|Prime numbers limit:|events per second:|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's|Prime numbers limit|prime|' -e 's|events per second|events/s|' -e 's|total time:|time:|' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' '| tee -a "$SYSBENCH_DIR/sysbench-cpu-threads-$(nproc).log"
     fi
@@ -337,8 +343,8 @@ sysbench_mem() {
   cd "$SYSBENCH_DIR"
   # echo "threads: 1";
   echo "sysbench memory --threads=1 --memory-block-size=${MEM_BLOCKSIZE}K --memory-scope=global --memory-total-size=${MEM_TOTALSIZE}G --memory-oper=read run" | tee "$SYSBENCH_DIR/sysbench-mem-threads-1.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-      LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench memory --threads=1 --memory-block-size=${MEM_BLOCKSIZE}K --memory-scope=global --memory-total-size=${MEM_TOTALSIZE}G --memory-oper=read run | egrep 'sysbench |Number of threads:|block size:|total size:|operation:|scope:|Total operations:|transferred|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's| size|-size|' -e 's|Total operations:|total-ops:|' -e 's|total time:|time:|' -e 's|1024.00 MiB||' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' '| tee -a "$SYSBENCH_DIR/sysbench-mem-threads-1.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+      LD_PRELOAD="$JEMALLOC_FILE" sysbench memory --threads=1 --memory-block-size=${MEM_BLOCKSIZE}K --memory-scope=global --memory-total-size=${MEM_TOTALSIZE}G --memory-oper=read run | egrep 'sysbench |Number of threads:|block size:|total size:|operation:|scope:|Total operations:|transferred|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's| size|-size|' -e 's|Total operations:|total-ops:|' -e 's|total time:|time:|' -e 's|1024.00 MiB||' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' '| tee -a "$SYSBENCH_DIR/sysbench-mem-threads-1.log"
   else
     sysbench memory --threads=1 --memory-block-size=${MEM_BLOCKSIZE}K --memory-scope=global --memory-total-size=${MEM_TOTALSIZE}G --memory-oper=read run | egrep 'sysbench |Number of threads:|block size:|total size:|operation:|scope:|Total operations:|transferred|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's| size|-size|' -e 's|Total operations:|total-ops:|' -e 's|total time:|time:|' -e 's|1024.00 MiB||' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' '| tee -a "$SYSBENCH_DIR/sysbench-mem-threads-1.log"
   fi
@@ -353,8 +359,8 @@ sysbench_mem() {
     echo
     # echo "threads: $(nproc)";
     echo "sysbench memory --threads=$(nproc) --memory-block-size=${MEM_BLOCKSIZE}K --memory-scope=global --memory-total-size=${MEM_TOTALSIZE}G --memory-oper=read run" | tee "$SYSBENCH_DIR/sysbench-mem-threads-$(nproc).log"
-    if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-      LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench memory --threads=$(nproc) --memory-block-size=${MEM_BLOCKSIZE}K --memory-scope=global --memory-total-size=${MEM_TOTALSIZE}G --memory-oper=read run | egrep 'sysbench |Number of threads:|block size:|total size:|operation:|scope:|Total operations:|transferred|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's| size|-size|' -e 's|Total operations:|total-ops:|' -e 's|total time:|time:|' -e 's|1024.00 MiB||' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' '| tee -a "$SYSBENCH_DIR/sysbench-mem-threads-$(nproc).log"
+    if [ -f "$JEMALLOC_FILE" ]; then
+      LD_PRELOAD="$JEMALLOC_FILE" sysbench memory --threads=$(nproc) --memory-block-size=${MEM_BLOCKSIZE}K --memory-scope=global --memory-total-size=${MEM_TOTALSIZE}G --memory-oper=read run | egrep 'sysbench |Number of threads:|block size:|total size:|operation:|scope:|Total operations:|transferred|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's| size|-size|' -e 's|Total operations:|total-ops:|' -e 's|total time:|time:|' -e 's|1024.00 MiB||' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' '| tee -a "$SYSBENCH_DIR/sysbench-mem-threads-$(nproc).log"
     else
       sysbench memory --threads=$(nproc) --memory-block-size=${MEM_BLOCKSIZE}K --memory-scope=global --memory-total-size=${MEM_TOTALSIZE}G --memory-oper=read run | egrep 'sysbench |Number of threads:|block size:|total size:|operation:|scope:|Total operations:|transferred|total time:|min:|avg:|max:|95th percentile:' | sed -e 's|Number of threads|threads|' -e 's| size|-size|' -e 's|Total operations:|total-ops:|' -e 's|total time:|time:|' -e 's|1024.00 MiB||' -e 's| percentile||' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -s ' '| tee -a "$SYSBENCH_DIR/sysbench-mem-threads-$(nproc).log"
     fi
@@ -409,8 +415,8 @@ sysbench_fileio() {
       sysbench fileio --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --threads=1 --percentile=99 prepare >/dev/null 2>&1
     echo
     echo "sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run" | tee "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1.log"
-    if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-      LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-raw.log"
+    if [ -f "$JEMALLOC_FILE" ]; then
+      LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-raw.log"
     else
       sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-raw.log"
     fi
@@ -438,8 +444,8 @@ sysbench_fileio() {
     echo
 
     echo "sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrd --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-1.log"  
-    if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-      LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrd --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-1-raw.log"
+    if [ -f "$JEMALLOC_FILE" ]; then
+      LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrd --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-1-raw.log"
     else
       sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrd --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-1-raw.log"
     fi
@@ -467,8 +473,8 @@ sysbench_fileio() {
     echo
 
     echo "sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqwr --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-1.log"  
-    if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-      LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqwr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-1-raw.log"
+    if [ -f "$JEMALLOC_FILE" ]; then
+      LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqwr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-1-raw.log"
     else
       sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqwr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-1-raw.log"
     fi
@@ -496,8 +502,8 @@ sysbench_fileio() {
     echo
 
     echo "sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrewr --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-1.log"  
-    if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-      LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrewr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-1-raw.log"
+    if [ -f "$JEMALLOC_FILE" ]; then
+      LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrewr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-1-raw.log"
     else
       sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrewr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-1-raw.log"
     fi
@@ -525,8 +531,8 @@ sysbench_fileio() {
     echo
 
     echo "sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrd --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-1.log"  
-    if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-      LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrd --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-1-raw.log"
+    if [ -f "$JEMALLOC_FILE" ]; then
+      LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrd --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-1-raw.log"
     else
       sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrd --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-1-raw.log"
     fi
@@ -554,8 +560,8 @@ sysbench_fileio() {
     echo
 
     echo "sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndwr --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-1.log"  
-    if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-      LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndwr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-1-raw.log"
+    if [ -f "$JEMALLOC_FILE" ]; then
+      LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndwr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-1-raw.log"
     else
       sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndwr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-1-raw.log"
     fi
@@ -583,8 +589,8 @@ sysbench_fileio() {
     echo
 
     echo "sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrw --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-1.log"  
-    if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-      LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrw --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-1-raw.log"
+    if [ -f "$JEMALLOC_FILE" ]; then
+      LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrw --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-1-raw.log"
     else
       sysbench fileio --threads=1 --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrw --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-1-raw.log"
     fi
@@ -614,8 +620,8 @@ sysbench_fileio() {
       echo
 
       echo "sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrd --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-$(nproc).log"    
-      if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-        LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrd --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-$(nproc)-raw.log"
+      if [ -f "$JEMALLOC_FILE" ]; then
+        LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrd --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-$(nproc)-raw.log"
       else
         sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrd --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqrd-threads-$(nproc)-raw.log"
       fi
@@ -643,8 +649,8 @@ sysbench_fileio() {
       echo
 
       echo "sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqwr --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-$(nproc).log"     
-      if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-        LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqwr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-$(nproc)-raw.log"
+      if [ -f "$JEMALLOC_FILE" ]; then
+        LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqwr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-$(nproc)-raw.log"
       else
         sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqwr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqwr-threads-$(nproc)-raw.log"
       fi
@@ -672,8 +678,8 @@ sysbench_fileio() {
       echo
 
       echo "sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrewr --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-$(nproc).log"     
-      if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-        LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrewr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-$(nproc)-raw.log"
+      if [ -f "$JEMALLOC_FILE" ]; then
+        LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrewr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-$(nproc)-raw.log"
       else
         sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=seqrewr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-seqrewr-threads-$(nproc)-raw.log"
       fi
@@ -701,8 +707,8 @@ sysbench_fileio() {
       echo
 
       echo "sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrd --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-$(nproc).log" 
-      if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-        LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrd --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-$(nproc)-raw.log"
+      if [ -f "$JEMALLOC_FILE" ]; then
+        LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrd --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-$(nproc)-raw.log"
       else
         sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrd --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndrd-threads-$(nproc)-raw.log"
       fi
@@ -730,8 +736,8 @@ sysbench_fileio() {
       echo
 
       echo "sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndwr --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-$(nproc).log"
-      if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-        LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndwr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-$(nproc)-raw.log"
+      if [ -f "$JEMALLOC_FILE" ]; then
+        LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndwr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-$(nproc)-raw.log"
       else
         sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndwr --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndwr-threads-$(nproc)-raw.log"
       fi
@@ -760,8 +766,8 @@ sysbench_fileio() {
       echo
 
       echo "sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrw --time=${FILEIO_TIME} --events=0 run" | tee "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-$(nproc).log"
-      if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-        LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrw --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-$(nproc)-raw.log"
+      if [ -f "$JEMALLOC_FILE" ]; then
+        LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrw --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-$(nproc)-raw.log"
       else
         sysbench fileio --threads=$(nproc) --file-num=${FILEIO_FILENUM} --file-total-size=${fileio_filesize}M --file-block-size=${FILEIO_BLOCKSIZE} --file-io-mode=${FILEIO_MODE} --file-extra-flags=${FILEIO_EXTRAFLAGS} --file-test-mode=rndrw --time=${FILEIO_TIME} --events=0 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-rndrw-threads-$(nproc)-raw.log"
       fi
@@ -866,8 +872,8 @@ sysbench_mysqloltp() {
   echo
   echo "sysbench prepare database: $MYSQL_DBNAME"
   echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare" | tee "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}.log"
   fi
@@ -885,8 +891,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql benchmark:"
   echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}.log"
   fi
@@ -926,8 +932,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql cleanup database: $MYSQL_DBNAME"
   echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup" | tee "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}.log"
   fi
@@ -953,8 +959,8 @@ sysbench_mysqlro() {
   echo
   echo "sysbench prepare database: $MYSQL_DBNAME"
   echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare" | tee "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-readonly.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-readonly.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-readonly.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-readonly.log"
   fi
@@ -972,8 +978,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql read only benchmark:"
   echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --oltp-read-only=on --oltp-skip-trx=on --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-readonly.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --oltp-read-only=on --oltp-skip-trx=on --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-readonly.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --oltp-read-only=on --oltp-skip-trx=on --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-readonly.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --oltp-read-only=on --oltp-skip-trx=on --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-readonly.log"
   fi
@@ -1013,8 +1019,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql cleanup database: $MYSQL_DBNAME"
   echo "sysbench oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup" | tee "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-readonly.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-readonly.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-readonly.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-readonly.log"
   fi
@@ -1040,8 +1046,8 @@ sysbench_mysqlinsert() {
   echo
   echo "sysbench prepare database: $MYSQL_DBNAME"
   echo "sysbench insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare" | tee "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-insert.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-insert.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-insert.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-insert.log"
   fi
@@ -1059,8 +1065,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql insert benchmark:"
   echo "sysbench insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-insert.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-insert.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-insert.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-insert.log"
   fi
@@ -1100,8 +1106,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql cleanup database: $MYSQL_DBNAME"
   echo "sysbench insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup" | tee "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-insert.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-insert.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-insert.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/insert.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-insert.log"
   fi
@@ -1127,8 +1133,8 @@ sysbench_mysqlupdateindex() {
   echo
   echo "sysbench prepare database: $MYSQL_DBNAME"
   echo "sysbench update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare" | tee "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-updateindex.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-updateindex.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-updateindex.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-updateindex.log"
   fi
@@ -1146,8 +1152,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql update index benchmark:"
   echo "sysbench update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updateindex.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updateindex.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updateindex.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updateindex.log"
   fi
@@ -1187,8 +1193,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql cleanup database: $MYSQL_DBNAME"
   echo "sysbench update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup" | tee "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-updateindex.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-updateindex.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-updateindex.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-updateindex.log"
   fi
@@ -1214,8 +1220,8 @@ sysbench_mysqlupdatenonindex() {
   echo
   echo "sysbench prepare database: $MYSQL_DBNAME"
   echo "sysbench update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare" | tee "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-updatenonindex.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-updatenonindex.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-updatenonindex.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-updatenonindex.log"
   fi
@@ -1233,8 +1239,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql update index benchmark:"
   echo "sysbench update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updatenonindex.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updatenonindex.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updatenonindex.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-updatenonindex.log"
   fi
@@ -1274,8 +1280,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql cleanup database: $MYSQL_DBNAME"
   echo "sysbench update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup" | tee "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-updatenonindex.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-updatenonindex.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-updatenonindex.log"
   else
     sysbench /usr/share/sysbench/tests/include/oltp_legacy/update_non_index.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-table-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --oltp-table-size=${MYSQL_OLTPTABLESIZE} --oltp-tables-count=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-updatenonindex.log"
   fi
@@ -1303,8 +1309,8 @@ sysbench_mysqloltp_new() {
   echo
   echo "sysbench prepare database: $MYSQL_DBNAME"
   echo "sysbench oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare" | tee "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
   else
     sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
   fi
@@ -1322,8 +1328,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql OLTP new benchmark:"
   echo "sysbench oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
   else
     sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
   fi
@@ -1363,8 +1369,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql cleanup database: $MYSQL_DBNAME"
   echo "sysbench oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup" | tee "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
   else
     sysbench /usr/share/sysbench/oltp_read_write.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-read-write-new.log"
   fi
@@ -1390,8 +1396,8 @@ sysbench_mysqlro_new() {
   echo
   echo "sysbench prepare database: $MYSQL_DBNAME"
   echo "sysbench oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare" | tee "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
   else
     sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
   fi
@@ -1409,8 +1415,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql OLTP read only new benchmark:"
   echo "sysbench oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
   else
     sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
   fi
@@ -1450,8 +1456,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql cleanup database: $MYSQL_DBNAME"
   echo "sysbench oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup" | tee "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
   else
     sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-read-only-new.log"
   fi
@@ -1477,8 +1483,8 @@ sysbench_mysqlwo_new() {
   echo
   echo "sysbench prepare database: $MYSQL_DBNAME"
   echo "sysbench oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare" | tee "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
   else
     sysbench /usr/share/sysbench/oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
   fi
@@ -1496,8 +1502,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql OLTP write only new benchmark:"
   echo "sysbench oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
   else
     sysbench /usr/share/sysbench/oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
   fi
@@ -1537,8 +1543,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql cleanup database: $MYSQL_DBNAME"
   echo "sysbench oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup" | tee "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
   else
     sysbench /usr/share/sysbench/oltp_write_only.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-write-only-new.log"
   fi
@@ -1564,8 +1570,8 @@ sysbench_mysqlpointselect_new() {
   echo
   echo "sysbench prepare database: $MYSQL_DBNAME"
   echo "sysbench oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare" | tee "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
   else
     sysbench /usr/share/sysbench/oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql prepare | tee -a "$SYSBENCH_DIR/sysbench-mysql-prepare-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
   fi
@@ -1583,8 +1589,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql OLTP POINT SELECT new benchmark:"
   echo "sysbench oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run" | tee "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
   else
     sysbench /usr/share/sysbench/oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql run | tee -a "$SYSBENCH_DIR/sysbench-mysql-run-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
   fi
@@ -1624,8 +1630,8 @@ CONCAT(ROUND(index_length/(1024*1024),2),'MB') AS 'Index Size' ,CONCAT(ROUND((da
   echo
   echo "sysbench mysql cleanup database: $MYSQL_DBNAME"
   echo "sysbench oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup" | tee "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
-  if [ -f /usr/lib64/libjemalloc.so.1 ]; then
-    LD_PRELOAD=/usr/lib64/libjemalloc.so.1 sysbench /usr/share/sysbench/oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
+  if [ -f "$JEMALLOC_FILE" ]; then
+    LD_PRELOAD="$JEMALLOC_FILE" sysbench /usr/share/sysbench/oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
   else
     sysbench /usr/share/sysbench/oltp_point_select.lua --mysql-host=${MYSQL_HOST} --mysql-port=${MYSQL_PORT}${MYSQL_USESOCKETOPT}${MYSQL_LOGINOPT} --mysql-db=${MYSQL_DBNAME} --mysql-storage-engine=${MYSQL_ENGINE} --time=${MYSQL_TIME} --threads=${MYSQL_THREADS} --report-interval=1 --rand-type=uniform --rand-seed=1 --table-size=${MYSQL_OLTPTABLESIZE} --tables=${MYSQL_TABLECOUNT} --db-driver=mysql cleanup | tee -a "$SYSBENCH_DIR/sysbench-mysql-cleanup-threads-${MYSQL_THREADS}-oltp-point-select-new.log"
   fi
