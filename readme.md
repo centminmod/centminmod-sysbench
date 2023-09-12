@@ -27,7 +27,7 @@
 
 ```
 sysbench --version
-sysbench 1.0.14
+sysbench 1.0.20
 ```
 
 # sysbench.sh notes

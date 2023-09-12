@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='1.8'
+VER='2.0'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -74,6 +74,10 @@ SYSBENCH_FILEIODIR="${SYSBENCH_DIR}/fileio"
 #########################################################
 SCRIPT_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
 #########################################################
+if [ -f /etc/os-release ]; then
+  ELID=$(grep '^VERSION_ID=' /etc/os-release | awk -F '=' '{print $2}' | sed -e 's|"||g' | cut -d . -f1)
+  OSID=$(grep '^ID=' /etc/os-release | awk -F '=' '{print $2}' | sed -e 's|"||g' | egrep -i 'almalinux|rocky'|uniq)
+fi
 
 if [ -f /usr/bin/apt ]; then
   MYSQL_SOCKET='/var/run/mysqld/mysqld.sock'
@@ -257,8 +261,39 @@ sysbench_update() {
   echo
 }
 
+sysbench_install_el9() {
+  # check for almalinux/rocky linux 9
+  if [ -f /etc/os-release ]; then
+    if [[ "$ELID" -eq '9' ]] && [[ "$OSID" = 'almalinux' || "$OSID" = 'rocky' ]]; then
+      # source compile for el9 OSes only
+      echo "Install sysbench dependencies..."
+      yum -q -y install make automake libtool pkgconfig libaio-devel
+      echo "sysbench dependencies installed"
+      echo
+      echo "Install sysbench for EL9"
+      echo
+      mkdir -p /svr-setup
+      pushd /svr-setup
+      wget https://github.com/akopytov/sysbench/archive/refs/tags/1.0.20.tar.gz -O sysbench-1.0.20.tar.gz
+      tar -xzf sysbench-1.0.20.tar.gz
+      cd sysbench-1.0.20
+      make clean
+      ./autogen.sh
+      ./configure
+      make -j$(nproc)
+      make install
+      popd
+    fi
+  fi
+}
+
 sysbench_install() {
-  if [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
+  # check for almalinux/rocky linux 9
+  if [[ ! -f /usr/local/bin/sysbench ]] && [[ "$ELID" -eq '9' ]] && [[ "$OSID" = 'almalinux' || "$OSID" = 'rocky' ]]; then
+    sysbench_install_el9
+  elif [[ -f /usr/local/bin/sysbench ]] && [[ "$ELID" -eq '9' ]] && [[ "$OSID" = 'almalinux' || "$OSID" = 'rocky' ]]; then
+    echo "/usr/local/bin/sysbench already installed"
+  elif [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
     if [ -d /etc/yum.repos.d ]; then
       echo
       echo "install sysbench from yum repo"
@@ -298,7 +333,11 @@ sysbench_install() {
 }
 
 sysbench_cpu() {
-  if [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
+  if [[ ! -f /usr/local/bin/sysbench ]] && [[ "$ELID" -eq '9' ]] && [[ "$OSID" = 'almalinux' || "$OSID" = 'rocky' ]]; then
+    sysbench_install_el9
+  elif [[ -f /usr/local/bin/sysbench ]] && [[ "$ELID" -eq '9' ]] && [[ "$OSID" = 'almalinux' || "$OSID" = 'rocky' ]]; then
+    echo
+  elif [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
     sysbench_install
   fi
   echo
@@ -336,7 +375,11 @@ sysbench_cpu() {
 }
 
 sysbench_mem() {
-  if [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
+  if [[ ! -f /usr/local/bin/sysbench ]] && [[ "$ELID" -eq '9' ]] && [[ "$OSID" = 'almalinux' || "$OSID" = 'rocky' ]]; then
+    sysbench_install_el9
+  elif [[ -f /usr/local/bin/sysbench ]] && [[ "$ELID" -eq '9' ]] && [[ "$OSID" = 'almalinux' || "$OSID" = 'rocky' ]]; then
+    echo
+  elif [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
     sysbench_install
   fi
   echo
@@ -375,7 +418,11 @@ sysbench_mem() {
 
 sysbench_fileio() {
   check_fsync=$1
-  if [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
+  if [[ ! -f /usr/local/bin/sysbench ]] && [[ "$ELID" -eq '9' ]] && [[ "$OSID" = 'almalinux' || "$OSID" = 'rocky' ]]; then
+    sysbench_install_el9
+  elif [[ -f /usr/local/bin/sysbench ]] && [[ "$ELID" -eq '9' ]] && [[ "$OSID" = 'almalinux' || "$OSID" = 'rocky' ]]; then
+    echo
+  elif [[ ! -f /usr/bin/sysbench || "$SYSBENCH_GETVER" -lt '100' ]]; then
     sysbench_install
   fi
   tt_ram=$(awk '/MemTotal:/ {print $2}' /proc/meminfo)
@@ -1642,6 +1689,9 @@ case "$1" in
   install )
     sysbench_install
     ;;
+  install-source-el9 )
+    sysbench_install_el9
+    ;;
   update )
     sysbench_update
     ;;
@@ -1708,6 +1758,7 @@ case "$1" in
     echo
     echo "Usage:"
     echo "$0 install"
+    echo "$0 install-source-el9"
     echo "$0 update"
     echo "$0 cpu"
     echo "$0 mem"
