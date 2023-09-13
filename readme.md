@@ -104,10 +104,15 @@ chmod +x sysbench.sh
 
 Usage:
 ./sysbench.sh install
+./sysbench.sh install-source-el9
 ./sysbench.sh update
 ./sysbench.sh cpu
 ./sysbench.sh mem
 ./sysbench.sh file
+./sysbench.sh file-16k
+./sysbench.sh file-64k
+./sysbench.sh file-512k
+./sysbench.sh file-1m
 ./sysbench.sh file-fsync
 ./sysbench.sh mysql
 ./sysbench.sh mysqlro
@@ -362,6 +367,16 @@ Markdown results table
 ## sysbench fileio
 
 sysbench fileio disk performance tests are conducted in directory `/home/sysbench/fileio` with the presumption that `/home` partition is usually the largest disk free space partition on the server to ensure you don't run out of disk space. This fileio test tests both single thread and max cpu core/thread count for comparison using a 2048MB file size.
+
+The default is to use 4K (4096 btes) block size, though with `sysbench.sh 2.1`, you can now also test with 16K, 64K, 512K, and 1M block sizes. Testing 16K block size would be closest to MySQL InnoDB database table's default 16K size.
+
+```
+./sysbench.sh file
+./sysbench.sh file-16k
+./sysbench.sh file-64k
+./sysbench.sh file-512k
+./sysbench.sh file-1m
+```
 
 ```
 ./sysbench.sh file                    

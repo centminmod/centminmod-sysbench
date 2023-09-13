@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='2.0'
+VER='2.1'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -431,6 +431,19 @@ sysbench_fileio() {
   #fileio_getfilesize=$(((($tt_ram)*105)/100))
   fileio_getfilesize=$(((($tt_ram)*10)/100))
   #fileio_filesize=$(($fileio_getfilesize/1024))
+  if [[ "$check_fsync" && "$check_fsync" != 'fsync' ]]; then
+    if [[ "$check_fsync" -eq '16' ]]; then
+      FILEIO_BLOCKSIZE=16384
+    elif [[ "$check_fsync" -eq '64' ]]; then
+      FILEIO_BLOCKSIZE=65536
+    elif [[ "$check_fsync" -eq '512' ]]; then
+      FILEIO_BLOCKSIZE=524288
+    elif [[ "$check_fsync" -eq '1024' ]]; then
+      FILEIO_BLOCKSIZE=1048576
+    else
+      FILEIO_BLOCKSIZE=${FILEIO_BLOCKSIZE}
+    fi
+  fi
   fileio_filesize=${FILEIO_FILESIZE}
   checkdisk_space=$(df -mP /home | tail -1 | awk '{print $4}')
   if [[ "$fileio_filesize" -ge "$checkdisk_space" ]]; then
@@ -458,14 +471,14 @@ sysbench_fileio() {
     FILEIO_RNDRW='n'
     echo
     echo "sysbench fileio fsync prepare"
-    echo "sysbench fileio --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --threads=1 --percentile=99 prepare"
-      sysbench fileio --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --threads=1 --percentile=99 prepare >/dev/null 2>&1
+    echo "sysbench fileio --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=${FILEIO_BLOCKSIZE} --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --threads=1 --percentile=99 prepare"
+      sysbench fileio --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=${FILEIO_BLOCKSIZE} --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --threads=1 --percentile=99 prepare >/dev/null 2>&1
     echo
-    echo "sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run" | tee "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1.log"
+    echo "sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=${FILEIO_BLOCKSIZE} --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run" | tee "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1.log"
     if [ -f "$JEMALLOC_FILE" ]; then
-      LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-raw.log"
+      LD_PRELOAD="$JEMALLOC_FILE" sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=${FILEIO_BLOCKSIZE} --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-raw.log"
     else
-      sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-raw.log"
+      sysbench fileio --threads=1 --time=$FILEIO_FSYNCTIME --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=${FILEIO_BLOCKSIZE} --file-fsync-all=on --file-test-mode=rndwr --file-fsync-freq=0 --file-fsync-end=0 --percentile=99 run 2>&1 > "$SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-raw.log"
     fi
     echo "raw log saved: $SYSBENCH_DIR/sysbench-fileio-fsync-threads-1-raw.log"
     echo
@@ -479,8 +492,8 @@ sysbench_fileio() {
     echo
     echo
     echo "sysbench fileio cleanup"
-    echo "sysbench fileio --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 cleanup"
-    sysbench fileio --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=4096 cleanup >/dev/null 2>&1
+    echo "sysbench fileio --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=${FILEIO_BLOCKSIZE} cleanup"
+    sysbench fileio --file-num=1 --file-extra-flags= --file-total-size=4096 --file-block-size=${FILEIO_BLOCKSIZE} cleanup >/dev/null 2>&1
   fi
   if [[ "$FILEIO_SEQRD" = [yY] ]]; then
     # sleep $FILEIO_SLEEP
@@ -1706,6 +1719,18 @@ case "$1" in
   file )
     sysbench_fileio
     ;;
+  file-16k )
+    sysbench_fileio 16
+    ;;
+  file-64k )
+    sysbench_fileio 64
+    ;;
+  file-512k )
+    sysbench_fileio 512
+    ;;
+  file-1m )
+    sysbench_fileio 1024
+    ;;
   file-fsync )
     sysbench_fileio fsync
     ;;
@@ -1763,6 +1788,10 @@ case "$1" in
     echo "$0 cpu"
     echo "$0 mem"
     echo "$0 file"
+    echo "$0 file-16k"
+    echo "$0 file-64k"
+    echo "$0 file-512k"
+    echo "$0 file-1m"
     echo "$0 file-fsync"
     echo "$0 mysql"
     echo "$0 mysqlro"
