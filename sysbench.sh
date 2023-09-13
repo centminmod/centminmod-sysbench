@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='2.1'
+VER='2.2'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -456,7 +456,12 @@ sysbench_fileio() {
   fi
   cd "${SYSBENCH_FILEIODIR}"
 
-  if [[ "$check_fsync" = 'fsync' ]]; then
+  if [[ "$check_fsync" = 'fsync' || "$check_fsync" = 'fsync-16' ]]; then
+    if [[ "$check_fsync" = 'fsync-16' ]]; then
+      FILEIO_BLOCKSIZE=16384
+    else
+      FILEIO_BLOCKSIZE=${FILEIO_BLOCKSIZE}
+    fi
     # sequential read
     FILEIO_SEQRD='n'
     # sequential write
@@ -1734,6 +1739,9 @@ case "$1" in
   file-fsync )
     sysbench_fileio fsync
     ;;
+  file-fsync-16k )
+    sysbench_fileio fsync-16
+    ;;
   mysql )
     sysbench_mysqloltp
     ;;
@@ -1793,6 +1801,7 @@ case "$1" in
     echo "$0 file-512k"
     echo "$0 file-1m"
     echo "$0 file-fsync"
+    echo "$0 file-fsync-16k"
     echo "$0 mysql"
     echo "$0 mysqlro"
     echo "$0 mysqlinsert"

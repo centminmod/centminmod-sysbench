@@ -114,6 +114,7 @@ Usage:
 ./sysbench.sh file-512k
 ./sysbench.sh file-1m
 ./sysbench.sh file-fsync
+./sysbench.sh file-fsync-16k
 ./sysbench.sh mysql
 ./sysbench.sh mysqlro
 ./sysbench.sh mysqlinsert
@@ -708,6 +709,13 @@ Markdown results table - random
 ## sysbench fileio fsync
 
 Added sysbench.sh fileio fsync benchmark as outlined [here](https://www.percona.com/blog/2018/07/18/why-consumer-ssd-reviews-are-useless-for-database-performance-use-case/). Test duration is controlled by variable `FILEIO_FSYNCTIME='30'` which is set to 30 seconds default.
+
+The default test uses 4K (4096 bytes) block size, though with `sysbench.sh 2.2`, you can now also test with 16K block sizes. Testing 16K block size would be closest to MySQL InnoDB database table's default 16K page size.
+
+```
+./sysbench.sh file-fsync
+./sysbench.sh file-fsync-16k
+```
 
 ```
 ./sysbench.sh file-fsync            
