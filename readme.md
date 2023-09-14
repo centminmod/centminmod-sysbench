@@ -131,6 +131,148 @@ Usage:
 
 sysbench cpu tests test both single thread and max cpu core/thread count for comparison. Note: `sysbench.sh 2.3` reverted the `--cpu-max-prime=20000` parameter back to sysbench defaults `--cpu-max-prime=10000` so cpu events/sec values would be roughly 2x higher than prior `sysbench.sh cpu` tests.
 
+New AlmaLinux 9.2 sysbench 1.0.20 cpu benchmark using `--cpu-max-prime=10000`
+
+```
+./sysbench.sh cpu
+-------------------------------------------
+System Information
+-------------------------------------------
+
+5.14.0-284.11.1.el9_2.x86_64
+
+AlmaLinux release 9.2 (Turquoise Kodkod)
+
+Centmin Mod 
+Architecture:            x86_64
+  CPU op-mode(s):        32-bit, 64-bit
+  Address sizes:         39 bits physical, 48 bits virtual
+  Byte Order:            Little Endian
+CPU(s):                  8
+  On-line CPU(s) list:   0-7
+Vendor ID:               GenuineIntel
+  BIOS Vendor ID:        Intel
+  Model name:            Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz
+    BIOS Model name:     Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz
+    CPU family:          6
+    Model:               60
+    Thread(s) per core:  2
+    Core(s) per socket:  4
+    Socket(s):           1
+    Stepping:            3
+    CPU max MHz:         4400.0000
+    CPU min MHz:         800.0000
+    BogoMIPS:            7981.67
+    Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse3
+                         6 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb r
+                         dtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology no
+                         nstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est
+                          tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe pop
+                         cnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm cpuid_fau
+                         lt epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpri
+                         ority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms inv
+                         pcid xsaveopt dtherm ida arat pln pts md_clear flush_l1d
+Virtualization features: 
+  Virtualization:        VT-x
+Caches (sum of all):     
+  L1d:                   128 KiB (4 instances)
+  L1i:                   128 KiB (4 instances)
+  L2:                    1 MiB (4 instances)
+  L3:                    8 MiB (1 instance)
+NUMA:                    
+  NUMA node(s):          1
+  NUMA node0 CPU(s):     0-7
+Vulnerabilities:         
+  Itlb multihit:         KVM: Mitigation: VMX disabled
+  L1tf:                  Mitigation; PTE Inversion; VMX conditional cache flushes, SMT vulnerab
+                         le
+  Mds:                   Mitigation; Clear CPU buffers; SMT vulnerable
+  Meltdown:              Mitigation; PTI
+  Mmio stale data:       Unknown: No mitigations
+  Retbleed:              Not affected
+  Spec store bypass:     Mitigation; Speculative Store Bypass disabled via prctl
+  Spectre v1:            Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+  Spectre v2:            Mitigation; Retpolines, IBPB conditional, IBRS_FW, STIBP conditional, 
+                         RSB filling, PBRSB-eIBRS Not affected
+  Srbds:                 Mitigation; Microcode
+  Tsx async abort:       Not affected
+
+CPU Flags
+ fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid xsaveopt dtherm ida arat pln pts md_clear flush_l1d
+
+CPU NODE SOCKET CORE L1d:L1i:L2:L3 ONLINE    MAXMHZ   MINMHZ      MHZ
+  0    0      0    0 0:0:0:0          yes 4400.0000 800.0000 4210.134
+  1    0      0    1 1:1:1:0          yes 4400.0000 800.0000 4400.000
+  2    0      0    2 2:2:2:0          yes 4400.0000 800.0000 4400.000
+  3    0      0    3 3:3:3:0          yes 4400.0000 800.0000 4400.000
+  4    0      0    0 0:0:0:0          yes 4400.0000 800.0000 4400.000
+  5    0      0    1 1:1:1:0          yes 4400.0000 800.0000 4400.000
+  6    0      0    2 2:2:2:0          yes 4400.0000 800.0000 4400.000
+  7    0      0    3 3:3:3:0          yes 4400.0000 800.0000 4400.000
+
+               total        used        free      shared  buff/cache   available
+Mem:           31977        4262        2321         684       26524       27715
+Low:           31977       29656        2321
+High:              0           0           0
+Swap:            511           3         508
+
+Filesystem      Size  Used Avail Use% Mounted on
+devtmpfs        4.0M     0  4.0M   0% /dev
+tmpfs            16G     0   16G   0% /dev/shm
+tmpfs           6.3G  680M  5.6G  11% /run
+/dev/sda3       222G   75G  148G  34% /
+/dev/sda2      1014M  201M  814M  20% /boot
+tmpfs           3.2G     0  3.2G   0% /run/user/1000
+tmpfs            16G  4.0K   16G   1% /tmp
+
+
+
+sysbench cpu --cpu-max-prime=10000 --threads=1 run
+sysbench 1.0.20 (using bundled LuaJIT 2.1.0-beta2)
+threads: 1
+prime: 10000
+events/s: 1264.57
+time: 10.0005s
+min: 0.78
+avg: 0.79
+max: 0.94
+95th: 0.81
+
+| cpu sysbench | threads: | events/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1.0.20 | 1 | 1264.57 | 10.0005s | 0.78 | 0.79 | 0.94 | 0.81 |
+
+sysbench,threads,events/s,time,min,avg,max,95th 
+1.0.20,1,1264.57,10.0005s,0.78,0.79,0.94,0.81 
+
+sysbench cpu --cpu-max-prime=10000 --threads=8 run
+sysbench 1.0.20 (using bundled LuaJIT 2.1.0-beta2)
+threads: 8
+prime: 10000
+events/s: 8761.19
+time: 10.0009s
+min: 0.83
+avg: 0.91
+max: 7.75
+95th: 0.92
+
+| cpu sysbench | threads: | events/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1.0.20 | 8 | 8761.19 | 10.0009s | 0.83 | 0.91 | 7.75 | 0.92 |
+
+sysbench,threads,events/s,time,min,avg,max,95th 
+1.0.20,8,8761.19,10.0009s,0.83,0.91,7.75,0.92 
+```
+
+Markdown results table
+
+| cpu sysbench | threads: | events/s: | time: | min: | avg: | max: | 95th: |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1.0.20 | 1 | 1264.57 | 10.0005s | 0.78 | 0.79 | 0.94 | 0.81 |
+| 1.0.20 | 8 | 8761.19 | 10.0009s | 0.83 | 0.91 | 7.75 | 0.92 |
+
+Old CentOS 7.4 sysbench 1.0.14 cpu benchmark using `--cpu-max-prime=20000`
+
 ```
 ./sysbench.sh cpu                     
 -------------------------------------------
