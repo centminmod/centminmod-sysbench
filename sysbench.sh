@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='2.2'
+VER='2.3'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -15,7 +15,7 @@ VER='2.2'
 # skip max cpu threads tests
 TEST_SINGLETHREAD='n'
 
-CPU_MAXPRIME='20000'
+CPU_MAXPRIME='10000'
 # 1K
 MEM_BLOCKSIZE='1'
 # gigabyte = G

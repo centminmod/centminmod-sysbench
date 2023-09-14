@@ -129,7 +129,7 @@ Usage:
 
 ## sysbench cpu
 
-sysbench cpu tests test both single thread and max cpu core/thread count for comparison
+sysbench cpu tests test both single thread and max cpu core/thread count for comparison. Note: `sysbench.sh 2.3` reverted the `--cpu-max-prime=20000` parameter back to sysbench defaults `--cpu-max-prime=10000` so cpu events/sec values would be roughly 2x higher than prior `sysbench.sh cpu` tests.
 
 ```
 ./sysbench.sh cpu                     
