@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='2.5'
+VER='2.6'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -1844,6 +1844,12 @@ case "$1" in
     sysbench_cpu
     sysbench_mem
     sysbench_fileio
+    sysbench_fileio 16
+    sysbench_fileio 64
+    sysbench_fileio 512
+    sysbench_fileio 1024
+    sysbench_fileio fsync
+    sysbench_fileio fsync-16
     sysbench_mysqloltp
     sysbench_mysqlro
     sysbench_mysqlupdateindex
