@@ -7,7 +7,7 @@
 # variables
 #############
 DT=$(date +"%d%m%y-%H%M%S")
-VER='2.4'
+VER='2.5'
 
 # default tests single thread + max cpu threads if set to
 # TEST_SINGLETHREAD='n'
@@ -282,6 +282,9 @@ sysbench_install_el9() {
       ./configure
       make -j$(nproc)
       make install
+      # lua files
+      mkdir -p /usr/share/sysbench/
+      \cp -fa tests /usr/share/sysbench/
       popd
     fi
   fi
