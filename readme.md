@@ -124,6 +124,17 @@ Usage:
 ./sysbench.sh mysqlreadonly-new
 ./sysbench.sh mysqlwriteonly-new
 ./sysbench.sh mysqlpointselect-new
+
+./sysbench.sh option [mysql ssl = y/n] [mysqlusername] [mysqlpassword] [mysqldbname]
+./sysbench.sh mysql y|n mysqlusername mysqlpassword mysqldbname
+./sysbench.sh mysqlro y|n mysqlusername mysqlpassword mysqldbname
+./sysbench.sh mysqlinsert y|n mysqlusername mysqlpassword mysqldbname
+./sysbench.sh mysqlupdateindex y|n mysqlusername mysqlpassword mysqldbname
+./sysbench.sh mysqlupdatenonindex y|n mysqlusername mysqlpassword mysqldbname
+./sysbench.sh mysqloltpnew y|n mysqlusername mysqlpassword mysqldbname
+./sysbench.sh mysqlreadonly-new y|n mysqlusername mysqlpassword mysqldbname
+./sysbench.sh mysqlwriteonly-new y|n mysqlusername mysqlpassword mysqldbname
+./sysbench.sh mysqlpointselect-new y|n mysqlusername mysqlpassword mysqldbname
 ./sysbench.sh all
 ```
 
