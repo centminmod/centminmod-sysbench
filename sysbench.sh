@@ -1744,6 +1744,18 @@ generate_html_report() {
         
         // FileIO Chart and Table
         const fileioData = ${FILEIO_DATA};
+
+        // Add this pre-processing to fix the total time issue
+        const processedFileioData = fileioData.filter(item => {
+            // Filter out any standalone "total" entries that were incorrectly split
+            return item.key !== "total" || (item.key === "total" && item.value !== "time:");
+        }).map(item => {
+            // Convert "total time:" entries to proper format if needed
+            if (item.key === "total time:") {
+                return { key: "total-time:", value: item.value };
+            }
+            return item;
+        });
         
         if (fileioData.length > 0) {
             // Create chart
@@ -1751,14 +1763,15 @@ generate_html_report() {
                 chart: { type: 'column', options3d: { enabled: true, alpha: 15, beta: 15 } },
                 title: { text: 'File I/O Benchmark Results' },
                 xAxis: { 
-                    categories: fileioData.map(d => {
-                        // Add units to category labels
-                        if (d.key === 'reads/s:') return 'Reads/s';
-                        if (d.key === 'writes/s:') return 'Writes/s';
-                        if (d.key === 'fsyncs/s:') return 'Fsyncs/s';
-                        if (d.key === 'total time:') return 'Total Time (s)';
-                        return d.key;
-                    }),
+                    categories: processedFileioData
+                        .filter(d => d.key !== 'total-time:') // Filter out total-time from chart
+                        .map(d => {
+                            // Add units to category labels
+                            if (d.key === 'reads/s:') return 'Reads/s';
+                            if (d.key === 'writes/s:') return 'Writes/s';
+                            if (d.key === 'fsyncs/s:') return 'Fsyncs/s';
+                            return d.key;
+                        }),
                     labels: { rotation: -45 }
                 },
                 yAxis: { title: { text: 'Operations per second' } },
@@ -1774,23 +1787,25 @@ generate_html_report() {
                 },
                 series: [{ 
                     name: 'Value', 
-                    data: fileioData.map(d => {
-                        const valueStr = d.value.toString();
-                        const numMatch = valueStr.match(/^[\d.]+/);
-                        return numMatch ? parseFloat(numMatch[0]) : 0;
-                    })
+                    data: processedFileioData
+                        .filter(d => d.key !== 'total-time:') // Filter out total-time from chart
+                        .map(d => {
+                            const valueStr = d.value.toString();
+                            const numMatch = valueStr.match(/^[\d.]+/);
+                            return numMatch ? parseFloat(numMatch[0]) : 0;
+                        })
                 }]
             });
             
-            // Populate table with units
+            // Populate table with units - use the complete dataset here
             let fileioTableHtml = '';
-            fileioData.forEach(d => {
+            processedFileioData.forEach(d => {
                 let metricName = d.key;
                 // Add appropriate units to metrics
                 if (d.key === 'reads/s:') metricName = 'Reads per second';
                 else if (d.key === 'writes/s:') metricName = 'Writes per second';
                 else if (d.key === 'fsyncs/s:') metricName = 'Fsyncs per second';
-                else if (d.key === 'total time:') metricName = 'Total Time (seconds)';
+                else if (d.key === 'total-time:') metricName = 'Total Time (seconds)';
                 
                 fileioTableHtml += '<tr><td>' + metricName + '</td><td>' + d.value + '</td></tr>';
             });
