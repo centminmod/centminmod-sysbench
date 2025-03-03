@@ -1594,7 +1594,7 @@ generate_html_report() {
             Highcharts.chart('cpu-chart', {
                 chart: { type: 'column', options3d: { enabled: true, alpha: 15, beta: 15 } },
                 title: { text: 'CPU Benchmark Results' },
-                xAxis: { categories: ['Threads', 'Events/s', 'Time', 'Min', 'Avg', 'Max', '95th'] },
+                xAxis: { categories: ['Events/s', 'Min', 'Avg', 'Max', '95th'] },
                 yAxis: { title: { text: 'Value' } },
                 plotOptions: {
                     column: {
@@ -1621,9 +1621,7 @@ generate_html_report() {
                     { 
                         name: 'Single Thread',
                         data: [
-                            cpuDataSingle.find(d => d.key === 'threads:')?.value ? parseFloat(cpuDataSingle.find(d => d.key === 'threads:')?.value) : 0,
                             cpuDataSingle.find(d => d.key === 'events/s:')?.value ? parseFloat(cpuDataSingle.find(d => d.key === 'events/s:')?.value) : 0,
-                            cpuDataSingle.find(d => d.key === 'time:')?.value ? parseFloat(cpuDataSingle.find(d => d.key === 'time:')?.value) : 0,
                             cpuDataSingle.find(d => d.key === 'min:')?.value ? parseFloat(cpuDataSingle.find(d => d.key === 'min:')?.value) : 0,
                             cpuDataSingle.find(d => d.key === 'avg:')?.value ? parseFloat(cpuDataSingle.find(d => d.key === 'avg:')?.value) : 0,
                             cpuDataSingle.find(d => d.key === 'max:')?.value ? parseFloat(cpuDataSingle.find(d => d.key === 'max:')?.value) : 0,
@@ -1633,9 +1631,7 @@ generate_html_report() {
                     {
                         name: 'Multi Thread',
                         data: [
-                            cpuDataMulti.find(d => d.key === 'threads:')?.value ? parseFloat(cpuDataMulti.find(d => d.key === 'threads:')?.value) : 0,
                             cpuDataMulti.find(d => d.key === 'events/s:')?.value ? parseFloat(cpuDataMulti.find(d => d.key === 'events/s:')?.value) : 0,
-                            cpuDataMulti.find(d => d.key === 'time:')?.value ? parseFloat(cpuDataMulti.find(d => d.key === 'time:')?.value) : 0,
                             cpuDataMulti.find(d => d.key === 'min:')?.value ? parseFloat(cpuDataMulti.find(d => d.key === 'min:')?.value) : 0,
                             cpuDataMulti.find(d => d.key === 'avg:')?.value ? parseFloat(cpuDataMulti.find(d => d.key === 'avg:')?.value) : 0,
                             cpuDataMulti.find(d => d.key === 'max:')?.value ? parseFloat(cpuDataMulti.find(d => d.key === 'max:')?.value) : 0,
@@ -1680,7 +1676,7 @@ generate_html_report() {
             Highcharts.chart('mem-chart', {
                 chart: { type: 'column', options3d: { enabled: true, alpha: 15, beta: 15 } },
                 title: { text: 'Memory Benchmark Results' },
-                xAxis: { categories: ['Threads', 'Transfer (MiB/s)', 'Time (s)', 'Min (ms)', 'Avg (ms)', 'Max (ms)', '95th (ms)'] },
+                xAxis: { categories: ['Transfer (MiB/s)', 'Min (ms)', 'Avg (ms)', 'Max (ms)', '95th (ms)'] },
                 yAxis: { title: { text: 'Value' } },
                 plotOptions: {
                     column: {
@@ -1699,9 +1695,7 @@ generate_html_report() {
                     { 
                         name: 'Single Thread',
                         data: [
-                            memDataSingle.find(d => d.key === 'threads:')?.value ? parseFloat(memDataSingle.find(d => d.key === 'threads:')?.value) : 0,
                             memDataSingle.find(d => d.key === 'transfer')?.value ? parseFloat(memDataSingle.find(d => d.key === 'transfer')?.value.match(/^[\d.]+/)?.[0] || 0) : 0,
-                            memDataSingle.find(d => d.key === 'time:')?.value ? parseFloat(memDataSingle.find(d => d.key === 'time:')?.value) : 0,
                             memDataSingle.find(d => d.key === 'min:')?.value ? parseFloat(memDataSingle.find(d => d.key === 'min:')?.value) : 0,
                             memDataSingle.find(d => d.key === 'avg:')?.value ? parseFloat(memDataSingle.find(d => d.key === 'avg:')?.value) : 0,
                             memDataSingle.find(d => d.key === 'max:')?.value ? parseFloat(memDataSingle.find(d => d.key === 'max:')?.value) : 0,
@@ -1711,9 +1705,7 @@ generate_html_report() {
                     {
                         name: 'Multi Thread',
                         data: [
-                            memDataMulti.find(d => d.key === 'threads:')?.value ? parseFloat(memDataMulti.find(d => d.key === 'threads:')?.value) : 0,
                             memDataMulti.find(d => d.key === 'transfer')?.value ? parseFloat(memDataMulti.find(d => d.key === 'transfer')?.value.match(/^[\d.]+/)?.[0] || 0) : 0,
-                            memDataMulti.find(d => d.key === 'time:')?.value ? parseFloat(memDataMulti.find(d => d.key === 'time:')?.value) : 0,
                             memDataMulti.find(d => d.key === 'min:')?.value ? parseFloat(memDataMulti.find(d => d.key === 'min:')?.value) : 0,
                             memDataMulti.find(d => d.key === 'avg:')?.value ? parseFloat(memDataMulti.find(d => d.key === 'avg:')?.value) : 0,
                             memDataMulti.find(d => d.key === 'max:')?.value ? parseFloat(memDataMulti.find(d => d.key === 'max:')?.value) : 0,
@@ -1899,14 +1891,12 @@ generate_html_report() {
                     xAxis: { 
                         categories: data.map(d => {
                             // Add units to category labels
-                            if (d.key === 'threads:') return 'Threads';
                             if (d.key === 'read:') return 'Read Ops';
                             if (d.key === 'write:') return 'Write Ops';
                             if (d.key === 'other:') return 'Other Ops';
                             if (d.key === 'total:') return 'Total Ops';
                             if (d.key === 'transactions:') return 'Transactions';
                             if (d.key === 'queries:') return 'Queries';
-                            if (d.key === 'time:') return 'Time (s)';
                             if (d.key === 'min:') return 'Min (ms)';
                             if (d.key === 'avg:') return 'Avg (ms)';
                             if (d.key === 'max:') return 'Max (ms)';
@@ -1932,11 +1922,13 @@ generate_html_report() {
                     },
                     series: [{ 
                         name: 'Value', 
-                        data: data.map(d => {
-                            const valueStr = d.value.toString();
-                            const numMatch = valueStr.match(/^[\d.]+/);
-                            return numMatch ? parseFloat(numMatch[0]) : 0;
-                        })
+                        data: data
+                            .filter(d => d.key !== 'threads:' && d.key !== 'time:')
+                            .map(d => {
+                                const valueStr = d.value.toString();
+                                const numMatch = valueStr.match(/^[\d.]+/);
+                                return numMatch ? parseFloat(numMatch[0]) : 0;
+                            })
                     }]
                 });
                 
