@@ -1527,10 +1527,20 @@ generate_html_report() {
   
   # Load FileIO Data
   local FILEIO_DATA="[]"
+  local FILEIO_FSYNC_DATA="[]"
+  local FILEIO_FSYNC_16K_DATA="[]"
   if [ -f "$SYSBENCH_DIR/fileio_seqwr-default.json" ]; then
     FILEIO_DATA=$(cat "$SYSBENCH_DIR/fileio_seqwr-default.json" 2>/dev/null || echo "[]")
   elif [ -f "$SYSBENCH_DIR/fileio_seqwr-16.json" ]; then
     FILEIO_DATA=$(cat "$SYSBENCH_DIR/fileio_seqwr-16.json" 2>/dev/null || echo "[]")
+  fi
+  # Load fsync data
+  if [ -f "$SYSBENCH_DIR/fileio_fsync-default.json" ]; then
+    FILEIO_FSYNC_DATA=$(cat "$SYSBENCH_DIR/fileio_fsync-default.json" 2>/dev/null || echo "[]")
+  fi
+  # Load fsync-16k data
+  if [ -f "$SYSBENCH_DIR/fileio_fsync-16.json" ]; then
+    FILEIO_FSYNC_16K_DATA=$(cat "$SYSBENCH_DIR/fileio_fsync-16.json" 2>/dev/null || echo "[]")
   fi
   
   # Instead of trying to embed the JSON directly, we'll load the files using Ajax
@@ -1578,6 +1588,22 @@ generate_html_report() {
         <table class="table table-striped">
             <thead><tr><th>Metric</th><th>Value</th></tr></thead>
             <tbody id="fileio-table"></tbody>
+        </table>
+
+        <!-- File I/O Fsync section -->
+        <h2>File I/O Fsync Performance</h2>
+        <div id="fileio-fsync-chart" class="chart-container" style="height: 400px;"></div>
+        <table class="table table-striped">
+            <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+            <tbody id="fileio-fsync-table"></tbody>
+        </table>
+
+        <!-- File I/O Fsync 16K section -->
+        <h2>File I/O Fsync 16K Performance</h2>
+        <div id="fileio-fsync-16k-chart" class="chart-container" style="height: 400px;"></div>
+        <table class="table table-striped">
+            <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+            <tbody id="fileio-fsync-16k-table"></tbody>
         </table>
         
         <!-- MySQL section -->
@@ -1813,6 +1839,152 @@ generate_html_report() {
         } else {
             document.getElementById('fileio-chart').innerHTML = '<div class="alert alert-warning">No File I/O benchmark data available</div>';
             document.getElementById('fileio-table').innerHTML = '<tr><td colspan="2">No data available</td></tr>';
+        }
+
+        // FileIO Fsync Chart and Table
+        const fileioFsyncData = ${FILEIO_FSYNC_DATA};
+
+        // Add this pre-processing to fix the total time issue
+        const processedFileioFsyncData = fileioFsyncData.filter(item => {
+            // Filter out any standalone "total" entries that were incorrectly split
+            return item.key !== "total" || (item.key === "total" && item.value !== "time:");
+        }).map(item => {
+            // Convert "total time:" entries to proper format if needed
+            if (item.key === "total time:") {
+                return { key: "total-time:", value: item.value };
+            }
+            return item;
+        });
+
+        if (fileioFsyncData.length > 0) {
+            // Create chart
+            Highcharts.chart('fileio-fsync-chart', {
+                chart: { type: 'column', options3d: { enabled: true, alpha: 15, beta: 15 } },
+                title: { text: 'File I/O Fsync Benchmark Results' },
+                xAxis: { 
+                    categories: processedFileioFsyncData
+                        .filter(d => d.key !== 'total-time:') // Filter out total-time from chart
+                        .map(d => {
+                            // Add units to category labels
+                            if (d.key === 'reads/s:') return 'Reads/s';
+                            if (d.key === 'writes/s:') return 'Writes/s';
+                            if (d.key === 'fsyncs/s:') return 'Fsyncs/s';
+                            return d.key;
+                        }),
+                    labels: { rotation: -45 }
+                },
+                yAxis: { title: { text: 'Operations per second' } },
+                plotOptions: {
+                    column: {
+                        dataLabels: {
+                            enabled: true,
+                            formatter: function() {
+                                return this.y.toFixed(2);
+                            }
+                        }
+                    }
+                },
+                series: [{ 
+                    name: 'Value', 
+                    data: processedFileioFsyncData
+                        .filter(d => d.key !== 'total-time:') // Filter out total-time from chart
+                        .map(d => {
+                            const valueStr = d.value.toString();
+                            const numMatch = valueStr.match(/^[\d.]+/);
+                            return numMatch ? parseFloat(numMatch[0]) : 0;
+                        })
+                }]
+            });
+            
+            // Populate table with units - use the complete dataset here
+            let fileioFsyncTableHtml = '';
+            processedFileioFsyncData.forEach(d => {
+                let metricName = d.key;
+                // Add appropriate units to metrics
+                if (d.key === 'reads/s:') metricName = 'Reads per second';
+                else if (d.key === 'writes/s:') metricName = 'Writes per second';
+                else if (d.key === 'fsyncs/s:') metricName = 'Fsyncs per second';
+                else if (d.key === 'total-time:') metricName = 'Total Time (seconds)';
+                
+                fileioFsyncTableHtml += '<tr><td>' + metricName + '</td><td>' + d.value + '</td></tr>';
+            });
+            document.getElementById('fileio-fsync-table').innerHTML = fileioFsyncTableHtml || '<tr><td colspan="2">No data available</td></tr>';
+        } else {
+            document.getElementById('fileio-fsync-chart').innerHTML = '<div class="alert alert-warning">No File I/O Fsync benchmark data available</div>';
+            document.getElementById('fileio-fsync-table').innerHTML = '<tr><td colspan="2">No data available</td></tr>';
+        }
+
+        // FileIO Fsync 16K Chart and Table
+        const fileioFsync16kData = ${FILEIO_FSYNC_16K_DATA};
+
+        // Add this pre-processing to fix the total time issue
+        const processedFileioFsync16kData = fileioFsync16kData.filter(item => {
+            // Filter out any standalone "total" entries that were incorrectly split
+            return item.key !== "total" || (item.key === "total" && item.value !== "time:");
+        }).map(item => {
+            // Convert "total time:" entries to proper format if needed
+            if (item.key === "total time:") {
+                return { key: "total-time:", value: item.value };
+            }
+            return item;
+        });
+
+        if (fileioFsync16kData.length > 0) {
+            // Create chart
+            Highcharts.chart('fileio-fsync-16k-chart', {
+                chart: { type: 'column', options3d: { enabled: true, alpha: 15, beta: 15 } },
+                title: { text: 'File I/O Fsync 16K Benchmark Results' },
+                xAxis: { 
+                    categories: processedFileioFsync16kData
+                        .filter(d => d.key !== 'total-time:') // Filter out total-time from chart
+                        .map(d => {
+                            // Add units to category labels
+                            if (d.key === 'reads/s:') return 'Reads/s';
+                            if (d.key === 'writes/s:') return 'Writes/s';
+                            if (d.key === 'fsyncs/s:') return 'Fsyncs/s';
+                            return d.key;
+                        }),
+                    labels: { rotation: -45 }
+                },
+                yAxis: { title: { text: 'Operations per second' } },
+                plotOptions: {
+                    column: {
+                        dataLabels: {
+                            enabled: true,
+                            formatter: function() {
+                                return this.y.toFixed(2);
+                            }
+                        }
+                    }
+                },
+                series: [{ 
+                    name: 'Value', 
+                    data: processedFileioFsync16kData
+                        .filter(d => d.key !== 'total-time:') // Filter out total-time from chart
+                        .map(d => {
+                            const valueStr = d.value.toString();
+                            const numMatch = valueStr.match(/^[\d.]+/);
+                            return numMatch ? parseFloat(numMatch[0]) : 0;
+                        })
+                }]
+            });
+            
+            // Populate table with units - use the complete dataset here
+            let fileioFsync16kTableHtml = '';
+            processedFileioFsync16kData.forEach(d => {
+                let metricName = d.key;
+                // Add appropriate units to metrics
+                if (d.key === 'reads/s:') metricName = 'Reads per second';
+                else if (d.key === 'writes/s:') metricName = 'Writes per second';
+                else if (d.key === 'fsyncs/s:') metricName = 'Fsyncs per second';
+                else if (d.key === 'total-time:') metricName = 'Total Time (seconds)';
+                
+                fileioFsync16kTableHtml += '<tr><td>' + metricName + '</td><td>' + d.value + '</td></tr>';
+            });
+            document.getElementById('fileio-fsync-16k-table').innerHTML = fileioFsync16kTableHtml || '<tr><td colspan="2">No data available</td></tr>';
+        } else {
+            document.getElementById('fileio-fsync-16k-chart').innerHTML = '<div class="alert alert-warning">No File I/O Fsync 16K benchmark data available</div>';
+            document.getElementById('fileio-fsync-16k-table').innerHTML = '<tr><td colspan="2">No data available</td></tr>';
         }
         
         // MySQL Section

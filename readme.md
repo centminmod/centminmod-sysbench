@@ -1465,6 +1465,8 @@ sysbench fileio --file-total-size=2048M cleanup
 ./sysbench.sh cpu
 ./sysbench.sh mem
 ./sysbench.sh fileio
+./sysbench.sh fileio-fsync
+./sysbench.sh fileio-fsync-16k
 ./sysbench.sh mysqloltpnew
 ./sysbench.sh --export-html $(pwd)
 ```
