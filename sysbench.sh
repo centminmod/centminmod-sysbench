@@ -1611,6 +1611,12 @@ generate_html_report() {
         <div id="mysql-sections"></div>
     </div>
     <script>
+        // Disable Highcharts credits for all charts
+        Highcharts.setOptions({
+            credits: {
+                enabled: false
+            }
+        });
         // CPU Chart and Table
         const cpuDataSingle = ${CPU_DATA_SINGLE};
         const cpuDataMulti = ${CPU_DATA_MULTI};
