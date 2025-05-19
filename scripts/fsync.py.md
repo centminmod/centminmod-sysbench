@@ -1,5 +1,15 @@
 Example results for `fsync.py`
 
+```markdown
+| Server # | CPU | OS | Kernel | Storage | Operations/sec | Avg time per op (ms) |
+|----------|-----|-------|--------|---------|---------------|----------------------|
+| 1 | Intel Xeon E-2276G | AlmaLinux 8.10 | 4.18.0-425.19.2.el8_7.x86_64 | 2x 960GB NVMe RAID 1 (Samsung PM983 + Kingston DC1500M) | 40,473.06 | 0.025 |
+| 2 | Intel Core i7-4790K | AlmaLinux 9.4 | 5.14.0-284.11.1.el9_2.x86_64 | 240GB Samsung PM863 SATA SSD | 25,394.32 | 0.039 |
+| 4 | Intel Xeon E3-1270 v6 | Rocky Linux 9.5 | 5.14.0-503.14.1.el9_5.x86_64 | 2x 450GB Intel DC P3520 NVMe RAID 1 | 2,026.88 | 0.493 |
+| 5 | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 1,001.50 | 0.999 |
+| 3 | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 442.55 | 2.260 |
+```
+
 ## Dedicated Server 1
 
 Intel Xeon E-2276G 6C/12T, 32GB memory and 2x 960GB NVMe raid 1:
