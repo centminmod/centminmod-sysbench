@@ -19,6 +19,12 @@ Intel Xeon E-2276G 6C/12T, 32GB memory and 2x 960GB NVMe raid 1:
 
 ```bash
 python /root/tools/fsync.py --non-interactive --force
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
 
 ============================================================
 System Information
@@ -42,7 +48,7 @@ nvme0n1  SAMSUNG   MZQLB960HAJR-00007  S437NA0N401292    disk
 Storage Sync Performance Test
 ============================================================
 Sync method:  fsync
-Memory size:  512 bytes
+Memory size:  4096 bytes
 Iterations:   1000
 Output file:  testfile
 Device:       /dev/md1 (determined from path)
@@ -62,10 +68,10 @@ Completed 1000/1000 iterations (100.0%)
 ============================================================
 Test Results:
 ============================================================
-Total time:        0.03 seconds
+Total time:        0.02 seconds
 Operations:        1000
-Operations/sec:    35704.41
-Avg time per op:   0.028 ms
+Operations/sec:    40473.06
+Avg time per op:   0.025 ms
 ============================================================
 ```
 
@@ -75,6 +81,12 @@ OVH Intel Core i7-4790K, 32GB, 240GB SATA SSD (Samsung PM863 Datacenter Grade SA
 
 ```bash
 python /root/tools/fsync.py --non-interactive --force
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
 
 ============================================================
 System Information
@@ -97,7 +109,7 @@ sda   SAMSUNG  MZ7LM240HCGR-00003  ATA     S1YFNXAG803838 disk
 Storage Sync Performance Test
 ============================================================
 Sync method:  fsync
-Memory size:  512 bytes
+Memory size:  4096 bytes
 Iterations:   1000
 Output file:  testfile
 Device:       /dev/sda
@@ -121,8 +133,8 @@ Test Results:
 ============================================================
 Total time:        0.04 seconds
 Operations:        1000
-Operations/sec:    25266.59
-Avg time per op:   0.040 ms
+Operations/sec:    25394.32
+Avg time per op:   0.039 ms
 ============================================================
 ```
 
@@ -132,6 +144,12 @@ AMD Ryzen 5950X, 32GB, 500GB SATA SSD (512GB Samsung 850 Pro).
 
 ```bash
 python /root/tools/fsync.py --non-interactive --force
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
 
 ============================================================
 System Information
@@ -154,7 +172,7 @@ sda   Samsung  SSD     850     PRO 512GB ATA      S39FNX0HB17146D disk
 Storage Sync Performance Test
 ============================================================
 Sync method:  fsync
-Memory size:  512 bytes
+Memory size:  4096 bytes
 Iterations:   1000
 Output file:  testfile
 Device:       /dev/mapper/almalinux-root (determined from path)
@@ -174,10 +192,10 @@ Completed 1000/1000 iterations (100.0%)
 ============================================================
 Test Results:
 ============================================================
-Total time:        2.31 seconds
+Total time:        2.26 seconds
 Operations:        1000
-Operations/sec:    432.79
-Avg time per op:   2.311 ms
+Operations/sec:    442.55
+Avg time per op:   2.260 ms
 ============================================================
 ```
 
@@ -187,6 +205,12 @@ OVH Intel E3-1270v6, 64GB, 2x450GB NVMe raid 1 (450GB Intel DC P3520 NVMe)
 
 ```bash
 python /root/tools/fsync.py --non-interactive --force
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
 
 ============================================================
 System Information
@@ -210,7 +234,7 @@ nvme1n1  INTEL  SSDPE2MX450G7  CVPF734300MV450RGN  disk
 Storage Sync Performance Test
 ============================================================
 Sync method:  fsync
-Memory size:  512 bytes
+Memory size:  4096 bytes
 Iterations:   1000
 Output file:  testfile
 Device:       /dev/md3 (determined from path)
@@ -230,10 +254,10 @@ Completed 1000/1000 iterations (100.0%)
 ============================================================
 Test Results:
 ============================================================
-Total time:        3.26 seconds
+Total time:        0.49 seconds
 Operations:        1000
-Operations/sec:    306.54
-Avg time per op:   3.262 ms
+Operations/sec:    2026.88
+Avg time per op:   0.493 ms
 ============================================================
 ```
 
@@ -243,6 +267,12 @@ Intel Xeon E-2236, 16GB, 512GB NVMe SSD (512GB Kingston KC3000 NVMe)
 
 ```bash
 python /root/tools/fsync.py --non-interactive --force
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
 
 ============================================================
 System Information
@@ -265,7 +295,7 @@ nvme0n1  KINGSTON  SKC3000S1024G  50026B7686B341DD  disk
 Storage Sync Performance Test
 ============================================================
 Sync method:  fsync
-Memory size:  512 bytes
+Memory size:  4096 bytes
 Iterations:   1000
 Output file:  testfile
 Device:       /dev/nvme0n1
@@ -287,10 +317,10 @@ Completed 1000/1000 iterations (100.0%)
 ============================================================
 Test Results:
 ============================================================
-Total time:        1.07 seconds
+Total time:        1.00 seconds
 Operations:        1000
-Operations/sec:    931.05
-Avg time per op:   1.074 ms
+Operations/sec:    1001.50
+Avg time per op:   0.999 ms
 ============================================================
 ```
 
