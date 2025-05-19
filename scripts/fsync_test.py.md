@@ -18,7 +18,7 @@ Intel Xeon E-2276G 6C/12T, 32GB memory and 2x 960GB NVMe raid 1:
   * Power: Idle: 6.30W Average read: 6.21W Average write: 11.40W Max read: 6.60W Max write: 12.24W
 
 ```bash
-python /root/tools/fsync.py
+python /root/tools/fsync.py --non-interactive --force
 
 ============================================================
 System Information
@@ -74,7 +74,7 @@ Avg time per op:   0.028 ms
 OVH Intel Core i7-4790K, 32GB, 240GB SATA SSD (Samsung PM863 Datacenter Grade SATA SSD)
 
 ```bash
-python /root/tools/fsync.py
+python /root/tools/fsync.py --non-interactive --force
 
 ============================================================
 System Information
@@ -131,7 +131,7 @@ Avg time per op:   0.040 ms
 AMD Ryzen 5950X, 32GB, 500GB SATA SSD (512GB Samsung 850 Pro).
 
 ```bash
-python /root/tools/fsync.py
+python /root/tools/fsync.py --non-interactive --force
 
 ============================================================
 System Information
@@ -186,7 +186,7 @@ Avg time per op:   2.311 ms
 OVH Intel E3-1270v6, 64GB, 2x450GB NVMe raid 1 (450GB Intel DC P3520 NVMe)
 
 ```bash
-python /root/tools/fsync.py
+python /root/tools/fsync.py --non-interactive --force
 
 ============================================================
 System Information
@@ -242,7 +242,7 @@ Avg time per op:   3.262 ms
 Intel Xeon E-2236, 16GB, 512GB NVMe SSD (512GB Kingston KC3000 NVMe)
 
 ```bash
-python /root/tools/fsync.py
+python /root/tools/fsync.py --non-interactive --force
 
 ============================================================
 System Information

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 fsync_test.py - Benchmark tool for testing fsync/fdatasync performance on storage devices
 
@@ -81,8 +81,7 @@ def is_safe_output_path(output_file_path, debug=False):
         try:
             mode = os.stat(real_path).st_mode
             if stat.S_ISBLK(mode) or stat.S_ISCHR(mode):
-                print("Error: Output path '{}' (resolves to '{}') is a block or character device.".format(
-                    output_file_path, real_path))
+                print("Error: Output path '{}' (resolves to '{}') is a block or character device.".format(output_file_path, real_path))
                 print("Writing directly to device files can cause severe data corruption. Aborting.")
                 return False
         except OSError as e:
@@ -120,8 +119,8 @@ def is_safe_output_path(output_file_path, debug=False):
                     break
                     
             if not allowed:
-                print("Error: Output path '{}' (resolves to '{}') appears to be within a critical system directory ({}{}{})"
-                      .format(output_file_path, real_path, os.sep, top_level_dir, os.sep))
+                print("Error: Output path '{}' (resolves to '{}') appears to be within a critical system directory ({}{}{})".format(
+    output_file_path, real_path, os.sep, top_level_dir, os.sep))
                 print("Writing to such locations is highly discouraged and can lead to system instability or data loss. Aborting.")
                 return False
 
@@ -132,8 +131,8 @@ def is_safe_output_path(output_file_path, debug=False):
     effective_parent_dir = parent_dir if parent_dir else os.getcwd()
 
     if not os.path.isdir(effective_parent_dir):
-        print("Error: The parent directory '{}' for the output file '{}' does not exist or is not a directory."
-              .format(effective_parent_dir, output_file_path))
+        print("Error: The parent directory '{}' for the output file '{}' does not exist or is not a directory.".format(
+    effective_parent_dir, output_file_path))
         print("Please ensure the target directory exists. Aborting.")
         return False
         
