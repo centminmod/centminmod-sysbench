@@ -10,7 +10,7 @@ Based on the original script from Percona's blog post:
 https://www.percona.com/blog/fsync-performance-storage-devices/
 
 Usage examples:
-    # Run with default settings (fsync, 512 bytes, 1000 iterations)
+    # Run with default settings (fsync, 4096 bytes, 1000 iterations)
     python fsync_test.py
     
     # Test with fdatasync instead of fsync
@@ -30,6 +30,12 @@ Usage examples:
     
     # Run test on a specific device (automatically detects the device for the file)
     python fsync_test.py --output /mnt/ssd/testfile
+    
+    # Run with debug output
+    python fsync_test.py --debug
+    
+    # Delete the test file after completion
+    python fsync_test.py --cleanup
 """
 
 from __future__ import print_function  # For Python 2 compatibility
@@ -41,11 +47,143 @@ import time
 import subprocess
 import re
 import platform
+import stat
 
 # Detect Python version
 PY3 = sys.version_info[0] == 3
 if not PY3:
     input = raw_input
+
+
+def is_safe_output_path(output_file_path, debug=False):
+    """
+    Checks if the proposed output file path is safe to write to.
+    Prevents writing to device files or critical system directories.
+    
+    Args:
+        output_file_path (str): The path to check
+        debug (bool): Enable debug output
+        
+    Returns:
+        bool: True if safe, False otherwise
+    """
+    abs_path = os.path.abspath(output_file_path)
+    # Resolve symlinks to get the true path
+    real_path = os.path.realpath(abs_path)
+
+    if debug:
+        print("Debug: Safety check for output path '{}'".format(output_file_path))
+        print("Debug: Absolute path: '{}'".format(abs_path))
+        print("Debug: Real path: '{}'".format(real_path))
+
+    # 1. Check if the path (or what it resolves to) is an existing device file
+    if os.path.exists(real_path):
+        try:
+            mode = os.stat(real_path).st_mode
+            if stat.S_ISBLK(mode) or stat.S_ISCHR(mode):
+                print("Error: Output path '{}' (resolves to '{}') is a block or character device.".format(
+                    output_file_path, real_path))
+                print("Writing directly to device files can cause severe data corruption. Aborting.")
+                return False
+        except OSError as e:
+            if debug:
+                print("Debug: Could not stat existing real_path '{}': {}".format(real_path, e))
+            print("Warning: Could not check if existing path '{}' is a device file: {}".format(real_path, e))
+            print("Proceeding with caution, but be aware of potential risks.")
+
+    # 2. Check if the intended path is in a dangerous top-level directory
+    normalized_real_path = os.path.normpath(real_path)
+    path_components = normalized_real_path.split(os.sep)
+
+    # Check for absolute path
+    if len(path_components) > 1:
+        top_level_dir = path_components[1]
+        
+        # Highly restricted top-level directories
+        critical_dirs = ["bin", "boot", "dev", "etc", "lib", "proc", "root", "sbin", "sys", "usr", "var"]
+        
+        if top_level_dir in critical_dirs:
+            # Allow /dev/shm as it's a common tmpfs for IPC and temporary files
+            # Allow /var/tmp as it's a standard temp directory
+            allowed_exceptions = [
+                (["dev", "shm"], "/dev/shm is acceptable"),
+                (["var", "tmp"], "/var/tmp is acceptable")
+            ]
+            
+            allowed = False
+            for exception_parts, reason in allowed_exceptions:
+                if (len(path_components) > len(exception_parts) and 
+                    path_components[1:len(exception_parts)+1] == exception_parts):
+                    if debug:
+                        print("Debug: Path '{}' is in {}, which is {}".format(real_path, os.sep.join([''] + exception_parts), reason))
+                    allowed = True
+                    break
+                    
+            if not allowed:
+                print("Error: Output path '{}' (resolves to '{}') appears to be within a critical system directory ({}{}{})"
+                      .format(output_file_path, real_path, os.sep, top_level_dir, os.sep))
+                print("Writing to such locations is highly discouraged and can lead to system instability or data loss. Aborting.")
+                return False
+
+    # 3. Check if the parent directory for the output file exists
+    parent_dir = os.path.dirname(abs_path)
+    
+    # If parent_dir is empty, it means output_file_path is a relative filename in CWD
+    effective_parent_dir = parent_dir if parent_dir else os.getcwd()
+
+    if not os.path.isdir(effective_parent_dir):
+        print("Error: The parent directory '{}' for the output file '{}' does not exist or is not a directory."
+              .format(effective_parent_dir, output_file_path))
+        print("Please ensure the target directory exists. Aborting.")
+        return False
+        
+    return True
+
+
+def check_alignment(output_file, mmap_size, debug=False):
+    """
+    Check if the mmap_size is aligned with the filesystem block size.
+    
+    Args:
+        output_file (str): Path to the output file
+        mmap_size (int): Size of memory map in bytes
+        debug (bool): Enable debug output
+        
+    Returns:
+        tuple: (is_aligned, recommended_size) - Boolean indicating if aligned and recommended size
+    """
+    try:
+        # Get the directory path
+        dir_path = os.path.dirname(os.path.abspath(output_file))
+        if not dir_path:
+            dir_path = os.getcwd()
+            
+        # Get filesystem information
+        st = os.statvfs(dir_path)
+        block_size = st.f_bsize
+        
+        if debug:
+            print("Debug: Filesystem block size: {} bytes".format(block_size))
+            print("Debug: Current mmap_size: {} bytes".format(mmap_size))
+        
+        # Check alignment
+        if mmap_size % block_size == 0:
+            if debug:
+                print("Debug: mmap_size is correctly aligned with filesystem block size")
+            return True, mmap_size
+        else:
+            # Calculate recommended size (round up to next multiple of block_size)
+            recommended_size = ((mmap_size + block_size - 1) // block_size) * block_size
+            if debug:
+                print("Debug: mmap_size is not aligned with filesystem block size")
+                print("Debug: Recommended size: {} bytes (next multiple of {})".format(
+                    recommended_size, block_size))
+            return False, recommended_size
+            
+    except Exception as e:
+        print("Warning: Could not check filesystem alignment: {}".format(e))
+        print("Proceeding with the specified mmap_size, but be aware this might cause issues with O_DIRECT")
+        return True, mmap_size  # Assume aligned to avoid blocking the test
 
 
 def get_storage_devices():
@@ -244,7 +382,7 @@ def run_sync_test(sync_method_func, output_file, mmap_size, iterations):
     # Open a file with direct I/O to bypass the kernel page cache
     # O_DIRECT ensures data is written directly to the physical device
     try:
-        fd = os.open(output_file, os.O_RDWR|os.O_CREAT|os.O_DIRECT)
+        fd = os.open(output_file, os.O_RDWR|os.O_CREAT|os.O_DIRECT|os.O_TRUNC, 0o600)
     except OSError as e:
         print("Error opening file:", e)
         print("Note: O_DIRECT may not be supported on all file systems or platforms")
@@ -288,6 +426,7 @@ def run_sync_test(sync_method_func, output_file, mmap_size, iterations):
         # Don't return here, let the elapsed_time calculation happen
     finally:
         # Close the file descriptor to release resources
+        m.close()
         os.close(fd)
     
     elapsed_time = time.time() - start_time
@@ -412,14 +551,20 @@ def main():
     )
     parser.add_argument('--sync-method', choices=['fsync', 'fdatasync'], default='fsync',
                       help='Sync method to use (fsync or fdatasync)')
-    parser.add_argument('--mmap-size', type=int, default=512,
-                      help='Size of memory map in bytes (default: 512)')
+    parser.add_argument('--mmap-size', type=int, default=4096,
+                      help='Size of memory map in bytes (default: 4096)')
     parser.add_argument('--iterations', type=int, default=1000,
                       help='Number of iterations (default: 1000)')
     parser.add_argument('--output', default='testfile',
                       help='Output file name (default: testfile)')
     parser.add_argument('--debug', action='store_true',
                       help='Enable debug output')
+    parser.add_argument('--cleanup', action='store_true',
+                      help='Delete the test file after completion')
+    parser.add_argument('--force', action='store_true',
+                      help='Bypass safety checks (USE WITH EXTREME CAUTION)')
+    parser.add_argument('--non-interactive', action='store_true',
+                      help='Skip prompts for scripting')
     args = parser.parse_args()
     
     # Validate arguments
@@ -430,6 +575,49 @@ def main():
     if args.iterations <= 0:
         print("Error: Number of iterations must be greater than 0")
         sys.exit(1)
+    
+    # Safety checks for the output file
+    if not args.force and not is_safe_output_path(args.output, args.debug):
+        print("\nIf you're absolutely sure you want to proceed, run again with --force")
+        print("WARNING: Using --force can potentially cause system damage or data loss!")
+        sys.exit(1)
+    
+    # Check if running as root, warn user
+    if os.geteuid() == 0:
+        print("-" * 60)
+        print("WARNING: This script is running as root!")
+        print("Please be absolutely sure that the output path is correct:")
+        print("  Output file: {}".format(os.path.abspath(args.output)))
+        print("Incorrect paths can lead to severe data loss or system damage.")
+        
+        # Ask for confirmation if not forcing
+        if not args.force:
+            try:
+                confirm = input("Type 'yes' to proceed if you are sure: ")
+                if confirm.lower() != 'yes':
+                    print("Aborting.")
+                    sys.exit(1)
+            except (KeyboardInterrupt, EOFError):
+                print("\nAborted.")
+                sys.exit(1)
+        print("-" * 60)
+    
+    # Check alignment for O_DIRECT
+    is_aligned, recommended_size = check_alignment(args.output, args.mmap_size, args.debug)
+    if not is_aligned:
+        print("Warning: The specified mmap-size ({}) is not aligned with the filesystem block size.".format(args.mmap_size))
+        print("This may cause errors with O_DIRECT. Recommended size: {} bytes".format(recommended_size))
+        
+        # Ask if user wants to use the recommended size
+        try:
+            use_recommended = input("Use recommended size of {} bytes instead? (yes/no): ".format(recommended_size))
+            if use_recommended.lower() in ['y', 'yes']:
+                args.mmap_size = recommended_size
+                print("Using recommended mmap-size: {} bytes".format(args.mmap_size))
+            else:
+                print("Proceeding with original mmap-size: {} bytes".format(args.mmap_size))
+        except (KeyboardInterrupt, EOFError):
+            print("\nUsing original mmap-size: {} bytes".format(args.mmap_size))
     
     # Print system information
     print_system_info()
@@ -519,6 +707,14 @@ def main():
         avg_ms = (elapsed_time * 1000) / float(args.iterations)
         print("Avg time per op:   {:.3f} ms".format(avg_ms))
         print("="*60)
+        
+        # Cleanup if requested
+        if args.cleanup:
+            try:
+                os.unlink(args.output)
+                print("\nCleanup: Removed test file '{}'".format(args.output))
+            except Exception as e:
+                print("\nError during cleanup: Could not remove test file '{}': {}".format(args.output, e))
     except Exception as e:
         print("Error running test:", e)
 
