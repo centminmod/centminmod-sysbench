@@ -1,4 +1,22 @@
-Example results for `fsync.py`
+## 💾 Why Drive `fsync()` Performance Matters
+
+When applications save data, they often rely on a system call called `fsync()` to ensure that data is physically written to the storage device. This is crucial for data integrity, especially in databases where losing recent transactions can be catastrophic.
+
+**Key Points:**
+
+* **Data Durability:** `fsync()` ensures that data is safely stored on disk, protecting against data loss during unexpected events like power failures.
+
+* **Performance Impact:** The speed of `fsync()` operations varies across storage devices. Traditional hard drives (HDDs) have slower `fsync()` times compared to solid-state drives (SSDs), affecting how quickly applications can confirm data is saved.
+
+* **Database Operations:** In databases like MySQL, `fsync()` is used to write transaction logs and data files. Slow `fsync()` performance can lead to increased latency for transactions, affecting overall database responsiveness.
+
+* **Storage Choices:** Choosing storage with better `fsync()` performance (like enterprise-grade SSDs) can significantly improve application and database performance.
+
+Understanding and optimizing `fsync()` performance is essential for building reliable and efficient systems.
+
+## Examples
+
+Example results for `fsync.py` to test various dedicated servers' drives and their fsync performance as outlined at https://www.percona.com/blog/fsync-performance-storage-devices/. You can see that datacenter or enterprise NVMe/SATA SSD have much faster fsync performance that regularly consumer SATA SSD or consumer NVMe drives.
 
 | Server # | CPU | OS | Kernel | Storage | Operations/sec | Avg time per op (ms) |
 |----------|-----|-------|--------|---------|---------------|----------------------|
@@ -8,7 +26,7 @@ Example results for `fsync.py`
 | 5 | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 1,001.50 | 0.999 |
 | 3 | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 442.55 | 2.260 |
 
-## Dedicated Server 1
+### Dedicated Server 1
 
 Intel Xeon E-2276G 6C/12T, 32GB memory and 2x 960GB NVMe raid 1:
 
@@ -83,7 +101,7 @@ Avg time per op:   0.025 ms
 ============================================================
 ```
 
-## Dedicated Server 2
+### Dedicated Server 2
 
 OVH Intel Core i7-4790K, 32GB, 240GB SATA SSD (Samsung PM863 Datacenter Grade SATA SSD)
 
@@ -146,7 +164,7 @@ Avg time per op:   0.039 ms
 ============================================================
 ```
 
-## Dedicated Server 3
+### Dedicated Server 3
 
 AMD Ryzen 5950X, 32GB, 500GB SATA SSD (512GB Samsung 850 Pro).
 
@@ -207,7 +225,7 @@ Avg time per op:   2.260 ms
 ============================================================
 ```
 
-## Dedicated Server 4
+### Dedicated Server 4
 
 OVH Intel E3-1270v6, 64GB, 2x450GB NVMe raid 1 (450GB Intel DC P3520 NVMe)
 
@@ -269,7 +287,7 @@ Avg time per op:   0.493 ms
 ============================================================
 ```
 
-## Dedicated Server 5
+### Dedicated Server 5
 
 Intel Xeon E-2236, 16GB, 512GB NVMe SSD (512GB Kingston KC3000 NVMe)
 
