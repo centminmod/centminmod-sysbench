@@ -16,7 +16,7 @@ Understanding and optimizing `fsync()` performance is essential for building rel
 
 ## Examples
 
-Example results for [fsync.py](https://github.com/centminmod/centminmod-sysbench/blob/master/scripts/fsync.py) to test various dedicated servers' drives and their fsync performance as outlined at https://www.percona.com/blog/fsync-performance-storage-devices/. You can see that datacenter or enterprise NVMe/SATA SSD have much faster fsync performance than regularly consumer SATA SSD or consumer NVMe drives.
+Example results for [fsync.py](https://github.com/centminmod/centminmod-sysbench/blob/master/scripts/fsync.py) (alternative to [sysbench fsync benchmark test](https://github.com/centminmod/centminmod-sysbench/tree/master#sysbench-fileio-fsync)) to test various dedicated servers' drives and their fsync performance as outlined at https://www.percona.com/blog/fsync-performance-storage-devices/. You can see that datacenter or enterprise NVMe/SATA SSD have much faster fsync performance than regularly consumer SATA SSD or consumer NVMe drives.
 
 For `4096 bytes` fsync test:
 
