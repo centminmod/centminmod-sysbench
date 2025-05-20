@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-fsync_test.py - Benchmark tool for testing fsync/fdatasync performance on storage devices
+fsync.py - Benchmark tool for testing fsync/fdatasync performance on storage devices
 
 This script tests the performance of fsync() and fdatasync() system calls on different
 storage devices by repeatedly writing to a file and forcing the data to be synchronized
@@ -11,31 +11,31 @@ https://www.percona.com/blog/fsync-performance-storage-devices/
 
 Usage examples:
     # Run with default settings (fsync, 4096 bytes, 1000 iterations)
-    python fsync_test.py
+    python fsync.py
     
     # Test with fdatasync instead of fsync
-    python fsync_test.py --sync-method fdatasync
+    python fsync.py --sync-method fdatasync
     
     # Test with a larger memory map size (1MB)
-    python fsync_test.py --mmap-size 1048576
+    python fsync.py --mmap-size 1048576
     
     # Run a quick test with fewer iterations
-    python fsync_test.py --iterations 100
+    python fsync.py --iterations 100
     
     # Specify a different output file
-    python fsync_test.py --output /tmp/testfile
+    python fsync.py --output /tmp/testfile
     
     # Combine multiple options
-    python fsync_test.py --sync-method fdatasync --mmap-size 4096 --iterations 500
+    python fsync.py --sync-method fdatasync --mmap-size 4096 --iterations 500
     
     # Run test on a specific device (automatically detects the device for the file)
-    python fsync_test.py --output /mnt/ssd/testfile
+    python fsync.py --output /mnt/ssd/testfile
     
     # Run with debug output
-    python fsync_test.py --debug
+    python fsync.py --debug
     
     # Delete the test file after completion
-    python fsync_test.py --cleanup
+    python fsync.py --cleanup
 """
 
 from __future__ import print_function  # For Python 2 compatibility
