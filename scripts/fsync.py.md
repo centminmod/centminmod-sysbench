@@ -31,6 +31,7 @@ For `4096 bytes` fsync test:
 | [7b](#dedicated-server-7) | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 1TB Kingston KC3000 NVMe Raid 10 | 1,280.95 | 0.781 |
 | [5](#dedicated-server-5) | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 1,001.50 | 0.999 |
 | [3](#dedicated-server-3) | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 442.55 | 2.260 |
+| [8](#dedicated-server-8) | AMD Ryzen 7 PRO 8700GE | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 2x 512GB Samsung PM9A1 NVMe raid 1 SSD | 167.49 | 5.970 |
 
 For `16384 bytes` fsync test:
 
@@ -45,6 +46,7 @@ For `16384 bytes` fsync test:
 | [7b](#dedicated-server-7) | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 1TB Kingston KC3000 NVMe Raid 10 | 1,222.16 | 0.818 |
 | [5](#dedicated-server-5) | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 986.98 | 1.013 |
 | [3](#dedicated-server-3) | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 396.10 | 2.525 |
+| [8](#dedicated-server-8) | AMD Ryzen 7 PRO 8700GE | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 2x 512GB Samsung PM9A1 NVMe raid 1 SSD | 164.78 | 6.069 |
 
 ### Dedicated Server 1
 
@@ -1236,5 +1238,127 @@ Total time:        0.50 seconds
 Operations:        1000
 Operations/sec:    1988.64
 Avg time per op:   0.503 ms
+============================================================
+```
+
+### Dedicated Server 8
+
+Hetzner AX42 - AMD Ryzen 7 PRO 8700GE, 64GB, 2x 512GB Samsung PM9A1 NVMe raid 1
+
+```bash
+python /root/tools/fsync.py --non-interactive --force
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            AlmaLinux 9.5 (Teal Serval)
+Kernel:        5.14.0-503.23.1.el9_5.x86_64
+CPU:           AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics
+Memory:        60.30 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME     MODEL    VENDOR              SERIAL          TYPE
+----------------------------------------------------------
+nvme0n1  SAMSUNG  MZVL2512HCJQ-00B07  S63CNF0W5305XX  disk
+nvme1n1  SAMSUNG  MZVL2512HCJQ-00B07  S63CNF0W5296XX  disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  4096 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/md3 (determined from path)
+============================================================
+
+Completed 100/1000 iterations (10.0%)
+Completed 200/1000 iterations (20.0%)
+Completed 300/1000 iterations (30.0%)
+Completed 400/1000 iterations (40.0%)
+Completed 500/1000 iterations (50.0%)
+Completed 600/1000 iterations (60.0%)
+Completed 700/1000 iterations (70.0%)
+Completed 800/1000 iterations (80.0%)
+Completed 900/1000 iterations (90.0%)
+Completed 1000/1000 iterations (100.0%)
+
+============================================================
+Test Results:
+============================================================
+Total time:        5.97 seconds
+Operations:        1000
+Operations/sec:    167.49
+Avg time per op:   5.970 ms
+============================================================
+```
+
+`--mmap-size 16384` 16KB test
+
+```bash
+python /root/tools/fsync.py --non-interactive --force --mmap-size 16384
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            AlmaLinux 9.5 (Teal Serval)
+Kernel:        5.14.0-503.23.1.el9_5.x86_64
+CPU:           AMD Ryzen 7 PRO 8700GE w/ Radeon 780M Graphics
+Memory:        60.30 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME     MODEL    VENDOR              SERIAL          TYPE
+----------------------------------------------------------
+nvme0n1  SAMSUNG  MZVL2512HCJQ-00B07  S63CNF0W5305XX  disk
+nvme1n1  SAMSUNG  MZVL2512HCJQ-00B07  S63CNF0W5296XX  disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  16384 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/md3 (determined from path)
+============================================================
+
+Completed 100/1000 iterations (10.0%)
+Completed 200/1000 iterations (20.0%)
+Completed 300/1000 iterations (30.0%)
+Completed 400/1000 iterations (40.0%)
+Completed 500/1000 iterations (50.0%)
+Completed 600/1000 iterations (60.0%)
+Completed 700/1000 iterations (70.0%)
+Completed 800/1000 iterations (80.0%)
+Completed 900/1000 iterations (90.0%)
+Completed 1000/1000 iterations (100.0%)
+
+============================================================
+Test Results:
+============================================================
+Total time:        6.07 seconds
+Operations:        1000
+Operations/sec:    164.78
+Avg time per op:   6.069 ms
 ============================================================
 ```
