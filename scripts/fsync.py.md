@@ -24,9 +24,11 @@ For `4096 bytes` fsync test:
 |----------|-----|-------|--------|---------|---------------|----------------------|
 | 1 | Intel Xeon E-2276G | AlmaLinux 8.10 | 4.18.0-425.19.2.el8_7.x86_64 | 2x 960GB NVMe RAID 1 (Samsung PM983 + Kingston DC1500M) | 40,473.06 | 0.025 |
 | 2 | Intel Core i7-4790K | AlmaLinux 9.5 | 5.14.0-284.11.1.el9_2.x86_64 | 240GB Samsung PM863 SATA SSD | 25,394.32 | 0.039 |
-| 7 | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 1TB Kingston KC3000 NVMe RAID 10 | 3602.94 | 0.278 |
+| 7a | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 2x 960GB Kingston DC600M SATA SSD raid 1 | 3602.94 | 0.278 |
+| 7c | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 960GB Kingston DC600M SATA SSD Raid 10 | 2077.99| 0.481 |
 | 4 | Intel Xeon E3-1270 v6 | Rocky Linux 9.5 | 5.14.0-503.14.1.el9_5.x86_64 | 2x 450GB Intel DC P3520 NVMe RAID 1 | 2,026.88 | 0.493 |
 | 6 | AMD EPYC 7452 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 2x 2TB Kingston KC3000 NVMe RAID 1 | 1691.09 | 0.591 |
+| 7b | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 1TB Kingston KC3000 NVMe Raid 10 | 1280.95 | 0.781 |
 | 5 | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 1,001.50 | 0.999 |
 | 3 | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 442.55 | 2.260 |
 
@@ -36,9 +38,11 @@ For `16384 bytes` fsync test:
 |----------|-----|-------|--------|---------|---------------|----------------------|
 | 1 | Intel Xeon E-2276G | AlmaLinux 8.10 | 4.18.0-425.19.2.el8_7.x86_64 | 2x 960GB NVMe RAID 1 (Samsung PM983 + Kingston DC1500M) | 30,369.08 | 0.033 |
 | 2 | Intel Core i7-4790K | AlmaLinux 9.5 | 5.14.0-284.11.1.el9_2.x86_64 | 240GB Samsung PM863 SATA SSD | 13,476.93 | 0.074 |
-| 7 | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 1TB Kingston KC3000 NVMe RAID 10 | 3209.11| 0.312 |
+| 7a | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 2x 960GB Kingston DC600M SATA SSD raid 1 | 3209.11| 0.312 |
+| 7c | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 960GB Kingston DC600M SATA SSD Raid 10 | 1988.64| 0.503 |
 | 4 | Intel Xeon E3-1270 v6 | Rocky Linux 9.5 | 5.14.0-503.14.1.el9_5.x86_64 | 2x 450GB Intel DC P3520 NVMe RAID 1 | 1,750.92 | 0.571 |
 | 6 | AMD EPYC 7452 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 2x 2TB Kingston KC3000 NVMe RAID 1 | 1,506.84 | 0.664 |
+| 7b | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 1TB Kingston KC3000 NVMe Raid 10 | 1222.16 | 0.818 |
 | 5 | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 986.98 | 1.013 |
 | 3 | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 396.10 | 2.525 |
 
@@ -794,6 +798,36 @@ Avg time per op:   0.664 ms
 AMD EPYC 7302P, 128GB, 4x1TB NVMe Raid 10 (4x1TB Kingston KC3000 NVMe) + 6x960GB SATA SSD (Kingston DC600M datacenter grade SATA SSD)
 
 ```bash
+cat /proc/mdstat 
+Personalities : [raid1] [raid10] 
+md122 : active raid1 sdb4[0] sda4[1]
+      525248 blocks super 1.0 [2/2] [UU]
+      bitmap: 0/1 pages [0KB], 65536KB chunk
+
+md123 : active raid10 sdf1[0] sde1[3] sdc1[1] sdd1[2]
+      1875118080 blocks super 1.2 512K chunks 2 near-copies [4/4] [UUUU]
+      bitmap: 0/14 pages [0KB], 65536KB chunk
+
+md124 : active raid10 nvme3n1p1[3] nvme2n1p1[0] nvme1n1p1[2] nvme0n1p1[1]
+      2000142336 blocks super 1.2 512K chunks 2 near-copies [4/4] [UUUU]
+      bitmap: 3/15 pages [12KB], 65536KB chunk
+
+md125 : active raid1 sdb2[0] sda2[1]
+      4193280 blocks super 1.2 [2/2] [UU]
+      
+md126 : active raid1 sda1[1] sdb1[0]
+      931134464 blocks super 1.2 [2/2] [UU]
+      bitmap: 0/7 pages [0KB], 65536KB chunk
+
+md127 : active raid1 sda3[1] sdb3[0]
+      1047552 blocks super 1.2 [2/2] [UU]
+      bitmap: 0/1 pages [0KB], 65536KB chunk
+
+```
+
+2x 960GB Kingston DC600M SATA SSD raid 1
+
+```bash
 python /root/tools/fsync.py --non-interactive --force
 ------------------------------------------------------------
 WARNING: This script is running as root!
@@ -858,6 +892,8 @@ Operations/sec:    3602.94
 Avg time per op:   0.278 ms
 ============================================================
 ```
+
+2x 960GB Kingston DC600M SATA SSD raid 1
 
 `--mmap-size 16384` 16KB test
 
@@ -924,5 +960,281 @@ Total time:        0.31 seconds
 Operations:        1000
 Operations/sec:    3209.11
 Avg time per op:   0.312 ms
+============================================================
+```
+
+4x 1TB Kingston KC3000 NVMe Raid 10
+
+```bash
+python /root/tools/fsync.py --non-interactive --force --output /var/testfile
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /var/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            AlmaLinux 9.5 (Teal Serval)
+Kernel:        5.14.0-427.13.1.el9_4.x86_64
+CPU:           AMD EPYC 7302P 16-Core Processor
+Memory:        125.15 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME     MODEL     VENDOR         SERIAL            TYPE                 
+-------------------------------------------------------------------------
+sda      KINGSTON  SEDC600M960G   ATA               50026B7686ED91XX disk
+sdb      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sdc      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sdd      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sde      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sdf      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+nvme0n1  KINGSTON  SKC3000S1024G  50026B7685E0BFXX  disk                 
+nvme1n1  KINGSTON  SKC3000S1024G  50026B7686B183XX  disk                 
+nvme3n1  KINGSTON  SKC3000S1024G  50026B7686C27AXX  disk                 
+nvme2n1  KINGSTON  SKC3000S1024G  50026B7686B3D9XX  disk                    
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  4096 bytes
+Iterations:   1000
+Output file:  /var/testfile
+Device:       /dev/md124 (determined from path)
+============================================================
+
+Completed 100/1000 iterations (10.0%)
+Completed 200/1000 iterations (20.0%)
+Completed 300/1000 iterations (30.0%)
+Completed 400/1000 iterations (40.0%)
+Completed 500/1000 iterations (50.0%)
+Completed 600/1000 iterations (60.0%)
+Completed 700/1000 iterations (70.0%)
+Completed 800/1000 iterations (80.0%)
+Completed 900/1000 iterations (90.0%)
+Completed 1000/1000 iterations (100.0%)
+
+============================================================
+Test Results:
+============================================================
+Total time:        0.78 seconds
+Operations:        1000
+Operations/sec:    1280.95
+Avg time per op:   0.781 ms
+============================================================
+```
+
+4x 1TB Kingston KC3000 NVMe Raid 10
+
+`--mmap-size 16384` 16KB test
+
+```bash
+python /root/tools/fsync.py --non-interactive --force  --mmap-size 16384 --output /var/testfile
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /var/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            AlmaLinux 9.5 (Teal Serval)
+Kernel:        5.14.0-427.13.1.el9_4.x86_64
+CPU:           AMD EPYC 7302P 16-Core Processor
+Memory:        125.15 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME     MODEL     VENDOR         SERIAL            TYPE                 
+-------------------------------------------------------------------------
+sda      KINGSTON  SEDC600M960G   ATA               50026B7686ED91XX disk
+sdb      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sdc      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sdd      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sde      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sdf      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+nvme0n1  KINGSTON  SKC3000S1024G  50026B7685E0BFXX  disk                 
+nvme1n1  KINGSTON  SKC3000S1024G  50026B7686B183XX  disk                 
+nvme3n1  KINGSTON  SKC3000S1024G  50026B7686C27AXX  disk                 
+nvme2n1  KINGSTON  SKC3000S1024G  50026B7686B3D9XX  disk                    
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  16384 bytes
+Iterations:   1000
+Output file:  /var/testfile
+Device:       /dev/md124 (determined from path)
+============================================================
+
+Completed 100/1000 iterations (10.0%)
+Completed 200/1000 iterations (20.0%)
+Completed 300/1000 iterations (30.0%)
+Completed 400/1000 iterations (40.0%)
+Completed 500/1000 iterations (50.0%)
+Completed 600/1000 iterations (60.0%)
+Completed 700/1000 iterations (70.0%)
+Completed 800/1000 iterations (80.0%)
+Completed 900/1000 iterations (90.0%)
+Completed 1000/1000 iterations (100.0%)
+
+============================================================
+Test Results:
+============================================================
+Total time:        0.82 seconds
+Operations:        1000
+Operations/sec:    1222.16
+Avg time per op:   0.818 ms
+============================================================
+```
+
+4x 960GB Kingston DC600M SATA SSD Raid 10
+
+```bash
+python /root/tools/fsync.py --non-interactive --force --output /home/testfile
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /home/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            AlmaLinux 9.5 (Teal Serval)
+Kernel:        5.14.0-427.13.1.el9_4.x86_64
+CPU:           AMD EPYC 7302P 16-Core Processor
+Memory:        125.15 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME     MODEL     VENDOR         SERIAL            TYPE                 
+-------------------------------------------------------------------------
+sda      KINGSTON  SEDC600M960G   ATA               50026B7686ED91XX disk
+sdb      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sdc      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sdd      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sde      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sdf      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+nvme0n1  KINGSTON  SKC3000S1024G  50026B7685E0BFXX  disk                 
+nvme1n1  KINGSTON  SKC3000S1024G  50026B7686B183XX  disk                 
+nvme3n1  KINGSTON  SKC3000S1024G  50026B7686C27AXX  disk                 
+nvme2n1  KINGSTON  SKC3000S1024G  50026B7686B3D9XX  disk                   
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  4096 bytes
+Iterations:   1000
+Output file:  /home/testfile
+Device:       /dev/md123 (determined from path)
+============================================================
+
+Completed 100/1000 iterations (10.0%)
+Completed 200/1000 iterations (20.0%)
+Completed 300/1000 iterations (30.0%)
+Completed 400/1000 iterations (40.0%)
+Completed 500/1000 iterations (50.0%)
+Completed 600/1000 iterations (60.0%)
+Completed 700/1000 iterations (70.0%)
+Completed 800/1000 iterations (80.0%)
+Completed 900/1000 iterations (90.0%)
+Completed 1000/1000 iterations (100.0%)
+
+============================================================
+Test Results:
+============================================================
+Total time:        0.48 seconds
+Operations:        1000
+Operations/sec:    2077.99
+Avg time per op:   0.481 ms
+============================================================
+```
+
+4x 960GB Kingston DC600M SATA SSD Raid 10
+
+`--mmap-size 16384` 16KB test
+
+```bash
+python /root/tools/fsync.py --non-interactive --force  --mmap-size 16384 --output /home/testfile
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /home/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            AlmaLinux 9.5 (Teal Serval)
+Kernel:        5.14.0-427.13.1.el9_4.x86_64
+CPU:           AMD EPYC 7302P 16-Core Processor
+Memory:        125.15 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME     MODEL     VENDOR         SERIAL            TYPE                 
+-------------------------------------------------------------------------
+sda      KINGSTON  SEDC600M960G   ATA               50026B7686ED91XX disk
+sdb      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sdc      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sdd      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sde      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+sdf      KINGSTON  SEDC600M960G   ATA               50026B7686ED92XX disk
+nvme0n1  KINGSTON  SKC3000S1024G  50026B7685E0BFXX  disk                 
+nvme1n1  KINGSTON  SKC3000S1024G  50026B7686B183XX  disk                 
+nvme3n1  KINGSTON  SKC3000S1024G  50026B7686C27AXX  disk                 
+nvme2n1  KINGSTON  SKC3000S1024G  50026B7686B3D9XX  disk                   
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  16384 bytes
+Iterations:   1000
+Output file:  /home/testfile
+Device:       /dev/md123 (determined from path)
+============================================================
+
+Completed 100/1000 iterations (10.0%)
+Completed 200/1000 iterations (20.0%)
+Completed 300/1000 iterations (30.0%)
+Completed 400/1000 iterations (40.0%)
+Completed 500/1000 iterations (50.0%)
+Completed 600/1000 iterations (60.0%)
+Completed 700/1000 iterations (70.0%)
+Completed 800/1000 iterations (80.0%)
+Completed 900/1000 iterations (90.0%)
+Completed 1000/1000 iterations (100.0%)
+
+============================================================
+Test Results:
+============================================================
+Total time:        0.50 seconds
+Operations:        1000
+Operations/sec:    1988.64
+Avg time per op:   0.503 ms
 ============================================================
 ```
