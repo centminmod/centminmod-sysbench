@@ -39,7 +39,7 @@ For `16384 bytes` fsync test:
 | [1](#dedicated-server-1) | Intel Xeon E-2276G | AlmaLinux 8.10 | 4.18.0-425.19.2.el8_7.x86_64 | 2x 960GB NVMe RAID 1 (Samsung PM983 + Kingston DC1500M) | 30,369.08 | 0.033 |
 | [2](#dedicated-server-2) | Intel Core i7-4790K | AlmaLinux 9.5 | 5.14.0-284.11.1.el9_2.x86_64 | 240GB Samsung PM863 SATA SSD | 13,476.93 | 0.074 |
 | [7a](#dedicated-server-7) | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 2x 960GB Kingston DC600M SATA SSD raid 1 | 3,209.11| 0.312 |
-| [7c](#dedicated-server-7) | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 960GB Kingston DC600M SATA SSD Raid 10 | 19,88.64| 0.503 |
+| [7c](#dedicated-server-7) | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 960GB Kingston DC600M SATA SSD Raid 10 | 1,988.64| 0.503 |
 | [4](#dedicated-server-4) | Intel Xeon E3-1270 v6 | Rocky Linux 9.5 | 5.14.0-503.14.1.el9_5.x86_64 | 2x 450GB Intel DC P3520 NVMe RAID 1 | 1,750.92 | 0.571 |
 | [6](#dedicated-server-6) | AMD EPYC 7452 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 2x 2TB Kingston KC3000 NVMe RAID 1 | 1,506.84 | 0.664 |
 | [7b](#dedicated-server-7) | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 1TB Kingston KC3000 NVMe Raid 10 | 1,222.16 | 0.818 |
