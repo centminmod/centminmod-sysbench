@@ -46,6 +46,7 @@ import platform
 import stat
 import json
 import tempfile
+import datetime  # For timestamp in log file names
 
 # Detect Python version
 PY3 = sys.version_info[0] == 3
@@ -335,7 +336,7 @@ def get_device_for_path(path, devices, debug=False):
     return None
 
 
-def run_sync_test_fio(sync_method, output_file, block_size, iterations, debug=False):
+def run_sync_test_fio(sync_method, output_file, block_size, iterations, debug=False, log_dir=None):
     """
     Run the synchronization test using fio with the specified parameters.
     
@@ -345,6 +346,7 @@ def run_sync_test_fio(sync_method, output_file, block_size, iterations, debug=Fa
         block_size (int): Size of the blocks in bytes
         iterations (int): Number of write and sync operations to perform
         debug (bool): Enable debug output
+        log_dir (str): Directory to write log files to (None to disable logging)
     
     Returns:
         tuple: (elapsed_time, metrics_dict) where metrics_dict contains all the performance metrics
@@ -391,13 +393,15 @@ log_avg_msec=1000
         
         start_time = time.time()
         
-        # Create a process with fio
-        with subprocess.Popen(
+        # Python 2.7 compatible process handling (without context manager)
+        process = subprocess.Popen(
             ["fio", job_file_path, "--output-format=json"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             universal_newlines=True
-        ) as process:
+        )
+        
+        try:
             # Print progress information
             iterations_per_10_percent = max(1, iterations // 10)
             for i in range(1, 11):
@@ -416,9 +420,36 @@ log_avg_msec=1000
                 print("Debug: fio stdout:", stdout)
                 print("Debug: fio stderr:", stderr)
             
+            # Log the raw FIO output to a file if log_dir is specified
+            if log_dir:
+                try:
+                    # Create log directory if it doesn't exist
+                    if not os.path.exists(log_dir):
+                        os.makedirs(log_dir)
+                    
+                    # Create timestamp for log file name
+                    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                    log_file_name = os.path.join(log_dir, "fio_{}_{}_{}b_{}.json".format(
+                        sync_method, timestamp, block_size, iterations))
+                    
+                    # Write the raw JSON output to the log file
+                    with open(log_file_name, 'w') as log_file:
+                        log_file.write(stdout)
+                        
+                    if debug:
+                        print("Debug: FIO output logged to", log_file_name)
+                        
+                except Exception as e:
+                    print("Warning: Failed to log FIO output:", e)
+            
             if process.returncode != 0:
                 print("Error: fio command failed:", stderr)
                 return None, None
+        finally:
+            # Ensure the process is terminated
+            if process.poll() is None:
+                process.terminate()
+                process.wait()
             
         # Parse the JSON output from fio
         try:
@@ -431,6 +462,34 @@ log_avg_msec=1000
             # Get sync stats
             sync_stats = job_data['sync']
             
+            # For CentOS 7 compatibility (Python 2.7), avoid using underscores in numeric literals
+            NANO_TO_SEC = 1000000000  # 1 billion nanoseconds in a second
+            NANO_TO_MS = 1000000      # 1 million nanoseconds in a millisecond
+            
+            # Check if we're using newer FIO (3.16+) with lat_ns or older FIO with just 'lat'
+            if 'lat_ns' in sync_stats:
+                # Newer FIO format
+                sync_lat_mean = sync_stats['lat_ns'].get('mean', 0)
+                sync_lat_min = sync_stats['lat_ns'].get('min', 0)
+                sync_lat_max = sync_stats['lat_ns'].get('max', 0)
+                sync_lat_stddev = sync_stats['lat_ns'].get('stddev', 0)
+                
+                # Handle percentiles which could be in different formats
+                percentiles = sync_stats['lat_ns'].get('percentile', {})
+            else:
+                # Older FIO format - convert microseconds to nanoseconds
+                sync_lat_mean = sync_stats.get('lat', 0) * 1000
+                sync_lat_min = sync_stats.get('lat_min', 0) * 1000
+                sync_lat_max = sync_stats.get('lat_max', 0) * 1000
+                sync_lat_stddev = sync_stats.get('lat_stddev', 0) * 1000
+                
+                # Handle percentiles which could be in different formats
+                percentiles = {}
+                if 'percentile' in sync_stats:
+                    for key, value in sync_stats['percentile'].items():
+                        # Convert microseconds to nanoseconds
+                        percentiles[key] = value * 1000
+            
             # Collect all the metrics in a dictionary
             metrics = {
                 # Write performance
@@ -439,46 +498,80 @@ log_avg_msec=1000
                 'write_bw_bytes': write_stats.get('bw_bytes', 0),  # B/s
                 
                 # Sync performance
-                'sync_lat_ns_min': sync_stats['lat_ns'].get('min', 0),
-                'sync_lat_ns_max': sync_stats['lat_ns'].get('max', 0),
-                'sync_lat_ns_mean': sync_stats['lat_ns'].get('mean', 0),
-                'sync_lat_ns_stddev': sync_stats['lat_ns'].get('stddev', 0),
+                'sync_lat_ns_min': sync_lat_min,
+                'sync_lat_ns_max': sync_lat_max,
+                'sync_lat_ns_mean': sync_lat_mean,
+                'sync_lat_ns_stddev': sync_lat_stddev,
                 
                 # Percentile data if available
-                'sync_lat_ns_p1': sync_stats['lat_ns'].get('percentile', {}).get('1.000000', 
-                                  sync_stats.get('percentile', {}).get('1.000000', 0)),
-                'sync_lat_ns_p50': sync_stats['lat_ns'].get('percentile', {}).get('50.000000',
-                                   sync_stats.get('percentile', {}).get('50.000000', 0)),
-                'sync_lat_ns_p99': sync_stats['lat_ns'].get('percentile', {}).get('99.000000',
-                                   sync_stats.get('percentile', {}).get('99.000000', 0)),
+                'sync_lat_ns_p1': percentiles.get('1.000000', 0),
+                'sync_lat_ns_p50': percentiles.get('50.000000', 0),
+                'sync_lat_ns_p99': percentiles.get('99.000000', 0),
                 
                 # Convert to more readable formats
-                'sync_lat_sec_mean': sync_stats['lat_ns'].get('mean', 0) / 1_000_000_000,  # seconds
-                'sync_lat_sec_p99': sync_stats['lat_ns'].get('percentile', {}).get('99.000000', 
-                                    sync_stats.get('percentile', {}).get('99.000000', 0)) / 1_000_000_000,  # seconds
+                'sync_lat_sec_mean': sync_lat_mean / float(NANO_TO_SEC),  # seconds
+                'sync_lat_sec_p99': percentiles.get('99.000000', 0) / float(NANO_TO_SEC),  # seconds
                 
                 # Runtime
-                'runtime_ms': job_data.get('elapsed', 0),  # milliseconds
+                'runtime_ms': job_data['write'].get('runtime', job_data.get('elapsed', 0) * 1000),
             }
             
             # Calculate human readable bandwidth values
             bw_bytes = metrics['write_bw_bytes']
             if bw_bytes > 0:
-                metrics['write_bw_mib_s'] = bw_bytes / (1024 * 1024)  # MiB/s
-                metrics['write_bw_mb_s'] = bw_bytes / (1000 * 1000)   # MB/s
+                metrics['write_bw_mib_s'] = bw_bytes / float(1024 * 1024)  # MiB/s
+                metrics['write_bw_mb_s'] = bw_bytes / float(1000 * 1000)   # MB/s
+            else:
+                # Use fallback calculation from kibytes if bw_bytes is not available (older FIO)
+                bw_kibytes = metrics['write_bw_kibytes']
+                metrics['write_bw_mib_s'] = bw_kibytes / float(1024)  # KiB -> MiB
+                metrics['write_bw_mb_s'] = (bw_kibytes * 1024) / float(1000 * 1000)  # KiB -> B -> MB
+            
             
             # Get the total elapsed time
             elapsed_time = time.time() - start_time
             
+            # Log the parsed metrics if log_dir is specified
+            if log_dir:
+                try:
+                    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                    metrics_log_file = os.path.join(log_dir, "fio_metrics_{}_{}_{}b_{}.txt".format(
+                        sync_method, timestamp, block_size, iterations))
+                    
+                    with open(metrics_log_file, 'w') as log_file:
+                        log_file.write("FIO Metrics Summary:\n")
+                        log_file.write("===================\n")
+                        log_file.write("Total time: {:.2f} seconds\n".format(elapsed_time))
+                        log_file.write("Operations: {}\n".format(iterations))
+                        log_file.write("Write IOPS: {:.2f}\n".format(metrics['write_iops']))
+                        log_file.write("Bandwidth: {:.2f} MiB/s ({:.2f} MB/s)\n".format(
+                            metrics['write_bw_mib_s'], metrics['write_bw_mb_s']))
+                        log_file.write("Sync latency (min): {:.9f} seconds\n".format(metrics['sync_lat_ns_min'] / float(NANO_TO_SEC)))
+                        log_file.write("Sync latency (avg): {:.9f} seconds\n".format(metrics['sync_lat_sec_mean']))
+                        log_file.write("Sync latency (max): {:.9f} seconds\n".format(metrics['sync_lat_ns_max'] / float(NANO_TO_SEC)))
+                        log_file.write("Sync latency (p99): {:.9f} seconds\n".format(metrics['sync_lat_sec_p99']))
+                        log_file.write("Sync latency (stddev): {:.9f} seconds\n".format(metrics['sync_lat_ns_stddev'] / float(NANO_TO_SEC)))
+                        log_file.write("Theoretical max ops/s: {:.2f}\n".format(1.0 / metrics['sync_lat_sec_mean']))
+                        log_file.write("FIO runtime: {:.3f} seconds\n".format(metrics['runtime_ms'] / 1000))
+                        log_file.write("\nRaw Metrics Dictionary:\n")
+                        for key, value in sorted(metrics.items()):
+                            log_file.write("{}: {}\n".format(key, value))
+                    
+                    if debug:
+                        print("Debug: Metrics logged to", metrics_log_file)
+                        
+                except Exception as e:
+                    print("Warning: Failed to log metrics:", e)
+            
             return elapsed_time, metrics
             
-        except (json.JSONDecodeError, KeyError) as e:
+        except (ValueError, KeyError) as e:
             if debug:
                 print("Debug: Error parsing fio JSON output:", e)
             print("Error: Failed to parse fio results:", e)
             return None, None
             
-    except subprocess.SubprocessError as e:
+    except (subprocess.CalledProcessError, OSError) as e:
         print("Error running fio command:", e)
         return None, None
     finally:
@@ -613,6 +706,8 @@ def main():
                       help='Number of iterations (default: 1000)')
     parser.add_argument('--output', default='testfile',
                       help='Output file name (default: testfile)')
+    parser.add_argument('--log-dir', default=None,
+                      help='Directory to write log files (default: disabled)')
     parser.add_argument('--debug', action='store_true',
                       help='Enable debug output')
     parser.add_argument('--cleanup', action='store_true',
@@ -738,7 +833,8 @@ def main():
             args.output,
             args.mmap_size,
             args.iterations,
-            args.debug
+            args.debug,
+            args.log_dir
         )
         
         if elapsed_time is None or metrics is None:
@@ -763,12 +859,15 @@ def main():
         print("Bandwidth:               {:.2f} MiB/s ({:.2f} MB/s)".format(
             metrics['write_bw_mib_s'], metrics['write_bw_mb_s']))
         
+        # For CentOS 7 compatibility (Python 2.7), avoid using underscores in numeric literals
+        NANO_TO_SEC = 1000000000  # 1 billion nanoseconds in a second
+        
         # FIO measured metrics - sync performance
-        print("Sync latency (min):      {:.9f} seconds".format(metrics['sync_lat_ns_min'] / 1_000_000_000))
+        print("Sync latency (min):      {:.9f} seconds".format(metrics['sync_lat_ns_min'] / float(NANO_TO_SEC)))
         print("Sync latency (avg):      {:.9f} seconds".format(metrics['sync_lat_sec_mean']))
-        print("Sync latency (max):      {:.9f} seconds".format(metrics['sync_lat_ns_max'] / 1_000_000_000))
+        print("Sync latency (max):      {:.9f} seconds".format(metrics['sync_lat_ns_max'] / float(NANO_TO_SEC)))
         print("Sync latency (p99):      {:.9f} seconds".format(metrics['sync_lat_sec_p99']))
-        print("Sync latency (stddev):   {:.9f} seconds".format(metrics['sync_lat_ns_stddev'] / 1_000_000_000))
+        print("Sync latency (stddev):   {:.9f} seconds".format(metrics['sync_lat_ns_stddev'] / float(NANO_TO_SEC)))
         
         # Theoretical max operations per second based on average latency
         if metrics['sync_lat_sec_mean'] > 0:
@@ -777,6 +876,9 @@ def main():
         
         # FIO reported runtime in milliseconds
         print("FIO runtime:             {:.3f} seconds".format(metrics['runtime_ms'] / 1000))
+        
+        if args.log_dir:
+            print("Log directory:           {}".format(args.log_dir))
         
         print("="*80)
         
