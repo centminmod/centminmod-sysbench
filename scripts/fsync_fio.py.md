@@ -30,7 +30,7 @@ For `4096 bytes` fsync test:
 | [7c](#dedicated-server-7) | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 960GB Kingston DC600M SATA SSD Raid 10 | 766.28 | 0.000360230 |
 | [6](#dedicated-server-6) | AMD EPYC 7452 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 2x 2TB Kingston KC3000 NVMe RAID 1 | 758.73 | 0.000120319 |
 | [5](#dedicated-server-5) | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 701.26 | 0.000128123 |
-| [3](#dedicated-server-3) | AMD EPYC-Milan | AlmaLinux 9.5 | 5.14.0-503.16.1.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 390.78 | 0.000050542 |
+| [3](#dedicated-server-3) | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.16.1.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 390.78 | 0.000050542 |
 
 For `16384 bytes` fsync test:
 
@@ -44,7 +44,7 @@ For `16384 bytes` fsync test:
 | [6](#dedicated-server-6) | AMD EPYC 7452 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 2x 2TB Kingston KC3000 NVMe RAID 1 | 780.64 | 0.000116798 |
 | [7c](#dedicated-server-7) | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 960GB Kingston DC600M SATA SSD Raid 10 | 742.39 | 0.000362114 |
 | [5](#dedicated-server-5) | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 703.23 | 0.000129106 |
-| [3](#dedicated-server-3) | AMD EPYC-Milan | AlmaLinux 9.5 | 5.14.0-503.16.1.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 330.80 | 0.000052424 |
+| [3](#dedicated-server-3) | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.16.1.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 330.80 | 0.000052424 |
 
 ### Dedicated Server 1
 
