@@ -29,6 +29,17 @@ For `4096 bytes` fsync test:
 | 5 | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 1,001.50 | 0.999 |
 | 3 | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 442.55 | 2.260 |
 
+For `16384 bytes` fsync test:
+
+| Server # | CPU | OS | Kernel | Storage | Fsync Operations/sec | Avg time per op (ms) |
+|----------|-----|-------|--------|---------|---------------|----------------------|
+| 1 | Intel Xeon E-2276G | AlmaLinux 8.10 | 4.18.0-425.19.2.el8_7.x86_64 | 2x 960GB NVMe RAID 1 (Samsung PM983 + Kingston DC1500M) | 30,369.08 | 0.033 |
+| 2 | Intel Core i7-4790K | AlmaLinux 9.4 | 5.14.0-284.11.1.el9_2.x86_64 | 240GB Samsung PM863 SATA SSD | 13,476.93 | 0.074 |
+| 4 | Intel Xeon E3-1270 v6 | Rocky Linux 9.5 | 5.14.0-503.14.1.el9_5.x86_64 | 2x 450GB Intel DC P3520 NVMe RAID 1 | 1,750.92 | 0.571 |
+| 6 | AMD EPYC 7452 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 2x 2TB Kingston KC3000 NVMe RAID 1 | 1,506.84 | 0.664 |
+| 5 | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 986.98 | 1.013 |
+| 3 | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 396.10 | 2.525 |
+
 ### Dedicated Server 1
 
 Intel Xeon E-2276G 6C/12T, 32GB memory and 2x 960GB NVMe raid 1:
@@ -104,6 +115,66 @@ Avg time per op:   0.025 ms
 ============================================================
 ```
 
+`--mmap-size 16384` 16KB test
+
+```bash
+python /root/tools/fsync.py --non-interactive --force --mmap-size 16384
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            AlmaLinux 8.10 (Cerulean Leopard)
+Kernel:        4.18.0-425.19.2.el8_7.x86_64
+CPU:           Intel(R) Xeon(R) E-2276G CPU @ 3.80GHz
+Memory:        31.07 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME     MODEL     VENDOR              SERIAL            TYPE
+-------------------------------------------------------------
+nvme1n1  KINGSTON  SEDC1500M960G       50026B7282926537  disk
+nvme0n1  SAMSUNG   MZQLB960HAJR-00007  S437NA0N401292    disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  16384 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/md1 (determined from path)
+============================================================
+
+Completed 100/1000 iterations (10.0%)
+Completed 200/1000 iterations (20.0%)
+Completed 300/1000 iterations (30.0%)
+Completed 400/1000 iterations (40.0%)
+Completed 500/1000 iterations (50.0%)
+Completed 600/1000 iterations (60.0%)
+Completed 700/1000 iterations (70.0%)
+Completed 800/1000 iterations (80.0%)
+Completed 900/1000 iterations (90.0%)
+Completed 1000/1000 iterations (100.0%)
+
+============================================================
+Test Results:
+============================================================
+Total time:        0.03 seconds
+Operations:        1000
+Operations/sec:    30369.08
+Avg time per op:   0.033 ms
+============================================================
+```
+
 ### Dedicated Server 2
 
 OVH Intel Core i7-4790K, 32GB, 240GB SATA SSD (Samsung PM863 Datacenter Grade SATA SSD)
@@ -164,6 +235,67 @@ Total time:        0.04 seconds
 Operations:        1000
 Operations/sec:    25394.32
 Avg time per op:   0.039 ms
+============================================================
+```
+
+`--mmap-size 16384` 16KB test
+
+```bash
+python /root/tools/fsync.py --non-interactive --force --mmap-size 16384
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            AlmaLinux 9.5 (Teal Serval)
+Kernel:        5.14.0-284.11.1.el9_2.x86_64
+CPU:           Intel(R) Core(TM) i7-4790K CPU @ 4.00GHz
+Memory:        31.23 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME  MODEL    VENDOR              SERIAL  TYPE               
+--------------------------------------------------------------
+sda   SAMSUNG  MZ7LM240HCGR-00003  ATA     S1YFNXAG803838 disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  16384 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/sda
+Model:        SAMSUNG
+Vendor:       MZ7LM240HCGR-00003
+============================================================
+
+Completed 100/1000 iterations (10.0%)
+Completed 200/1000 iterations (20.0%)
+Completed 300/1000 iterations (30.0%)
+Completed 400/1000 iterations (40.0%)
+Completed 500/1000 iterations (50.0%)
+Completed 600/1000 iterations (60.0%)
+Completed 700/1000 iterations (70.0%)
+Completed 800/1000 iterations (80.0%)
+Completed 900/1000 iterations (90.0%)
+Completed 1000/1000 iterations (100.0%)
+
+============================================================
+Test Results:
+============================================================
+Total time:        0.07 seconds
+Operations:        1000
+Operations/sec:    13476.93
+Avg time per op:   0.074 ms
 ============================================================
 ```
 
@@ -228,6 +360,65 @@ Avg time per op:   2.260 ms
 ============================================================
 ```
 
+`--mmap-size 16384` 16KB test
+
+```bash
+python /root/tools/fsync.py --non-interactive --force --mmap-size 16384
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            AlmaLinux 9.5 (Teal Serval)
+Kernel:        5.14.0-503.23.2.el9_5.x86_64
+CPU:           AMD Ryzen 9 5950X 16-Core Processor
+Memory:        30.98 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME  MODEL    VENDOR  SERIAL  TYPE                                   
+----------------------------------------------------------------------
+sda   Samsung  SSD     850     PRO 512GB ATA      S39FNX0HB17146D disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  16384 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/mapper/almalinux-root (determined from path)
+============================================================
+
+Completed 100/1000 iterations (10.0%)
+Completed 200/1000 iterations (20.0%)
+Completed 300/1000 iterations (30.0%)
+Completed 400/1000 iterations (40.0%)
+Completed 500/1000 iterations (50.0%)
+Completed 600/1000 iterations (60.0%)
+Completed 700/1000 iterations (70.0%)
+Completed 800/1000 iterations (80.0%)
+Completed 900/1000 iterations (90.0%)
+Completed 1000/1000 iterations (100.0%)
+
+============================================================
+Test Results:
+============================================================
+Total time:        2.52 seconds
+Operations:        1000
+Operations/sec:    396.10
+Avg time per op:   2.525 ms
+============================================================
+```
+
 ### Dedicated Server 4
 
 OVH Intel E3-1270v6, 64GB, 2x450GB NVMe raid 1 (450GB Intel DC P3520 NVMe)
@@ -287,6 +478,66 @@ Total time:        0.49 seconds
 Operations:        1000
 Operations/sec:    2026.88
 Avg time per op:   0.493 ms
+============================================================
+```
+
+`--mmap-size 16384` 16KB test
+
+```bash
+python /root/tools/fsync.py --non-interactive --force --mmap-size 16384
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            Rocky Linux 9.5 (Blue Onyx)
+Kernel:        5.14.0-503.14.1.el9_5.x86_64
+CPU:           Intel(R) Xeon(R) CPU E3-1270 v6 @ 3.80GHz
+Memory:        62.24 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME     MODEL  VENDOR         SERIAL              TYPE
+-------------------------------------------------------
+nvme0n1  INTEL  SSDPE2MX450G7  CVPF733600JC450RGN  disk
+nvme1n1  INTEL  SSDPE2MX450G7  CVPF734300MV450RGN  disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  16384 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/md3 (determined from path)
+============================================================
+
+Completed 100/1000 iterations (10.0%)
+Completed 200/1000 iterations (20.0%)
+Completed 300/1000 iterations (30.0%)
+Completed 400/1000 iterations (40.0%)
+Completed 500/1000 iterations (50.0%)
+Completed 600/1000 iterations (60.0%)
+Completed 700/1000 iterations (70.0%)
+Completed 800/1000 iterations (80.0%)
+Completed 900/1000 iterations (90.0%)
+Completed 1000/1000 iterations (100.0%)
+
+============================================================
+Test Results:
+============================================================
+Total time:        0.57 seconds
+Operations:        1000
+Operations/sec:    1750.92
+Avg time per op:   0.571 ms
 ============================================================
 ```
 
@@ -353,6 +604,67 @@ Avg time per op:   0.999 ms
 ============================================================
 ```
 
+`--mmap-size 16384` 16KB test
+
+```bash
+python /root/tools/fsync.py --non-interactive --force --mmap-size 16384
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            CentOS Linux 7 (Core)
+Kernel:        3.10.0-1160.118.1.el7.x86_64
+CPU:           Intel(R) Xeon(R) E-2236 CPU @ 3.40GHz
+Memory:        15.42 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME     MODEL     VENDOR         SERIAL            TYPE
+--------------------------------------------------------
+nvme0n1  KINGSTON  SKC3000S1024G  50026B7686B341XX  disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  16384 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/nvme0n1
+Model:        KINGSTON
+Vendor:       SKC3000S1024G
+============================================================
+
+Completed 100/1000 iterations (10.0%)
+Completed 200/1000 iterations (20.0%)
+Completed 300/1000 iterations (30.0%)
+Completed 400/1000 iterations (40.0%)
+Completed 500/1000 iterations (50.0%)
+Completed 600/1000 iterations (60.0%)
+Completed 700/1000 iterations (70.0%)
+Completed 800/1000 iterations (80.0%)
+Completed 900/1000 iterations (90.0%)
+Completed 1000/1000 iterations (100.0%)
+
+============================================================
+Test Results:
+============================================================
+Total time:        1.01 seconds
+Operations:        1000
+Operations/sec:    986.98
+Avg time per op:   1.013 ms
+============================================================
+```
+
 ### Dedicated Server 6
 
 AMD EPYC 7452, 128GB, 2x2TB NVMe raid 1 (2x2TB Kingston KC3000 NVMe)
@@ -412,6 +724,66 @@ Total time:        0.59 seconds
 Operations:        1000
 Operations/sec:    1691.09
 Avg time per op:   0.591 ms
+============================================================
+```
+
+`--mmap-size 16384` 16KB test
+
+```bash
+python /root/tools/fsync.py --non-interactive --force --mmap-size 16384
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            CentOS Linux 7 (Core)
+Kernel:        3.10.0-1160.118.1.el7.x86_64
+CPU:           AMD EPYC 7452 32-Core Processor
+Memory:        125.68 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME     MODEL     VENDOR         SERIAL            TYPE
+--------------------------------------------------------
+nvme0n1  KINGSTON  SKC3000D2048G  50026B7686B1A1XX  disk
+nvme1n1  KINGSTON  SKC3000D2048G  50026B7686B1A0XX  disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  16384 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/md126 (determined from path)
+============================================================
+
+Completed 100/1000 iterations (10.0%)
+Completed 200/1000 iterations (20.0%)
+Completed 300/1000 iterations (30.0%)
+Completed 400/1000 iterations (40.0%)
+Completed 500/1000 iterations (50.0%)
+Completed 600/1000 iterations (60.0%)
+Completed 700/1000 iterations (70.0%)
+Completed 800/1000 iterations (80.0%)
+Completed 900/1000 iterations (90.0%)
+Completed 1000/1000 iterations (100.0%)
+
+============================================================
+Test Results:
+============================================================
+Total time:        0.66 seconds
+Operations:        1000
+Operations/sec:    1506.84
+Avg time per op:   0.664 ms
 ============================================================
 ```
 
