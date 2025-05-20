@@ -18,11 +18,14 @@ Understanding and optimizing `fsync()` performance is essential for building rel
 
 Example results for `fsync.py` to test various dedicated servers' drives and their fsync performance as outlined at https://www.percona.com/blog/fsync-performance-storage-devices/. You can see that datacenter or enterprise NVMe/SATA SSD have much faster fsync performance that regularly consumer SATA SSD or consumer NVMe drives.
 
+For `4096 bytes` fsync test:
+
 | Server # | CPU | OS | Kernel | Storage | Operations/sec | Avg time per op (ms) |
 |----------|-----|-------|--------|---------|---------------|----------------------|
 | 1 | Intel Xeon E-2276G | AlmaLinux 8.10 | 4.18.0-425.19.2.el8_7.x86_64 | 2x 960GB NVMe RAID 1 (Samsung PM983 + Kingston DC1500M) | 40,473.06 | 0.025 |
 | 2 | Intel Core i7-4790K | AlmaLinux 9.4 | 5.14.0-284.11.1.el9_2.x86_64 | 240GB Samsung PM863 SATA SSD | 25,394.32 | 0.039 |
 | 4 | Intel Xeon E3-1270 v6 | Rocky Linux 9.5 | 5.14.0-503.14.1.el9_5.x86_64 | 2x 450GB Intel DC P3520 NVMe RAID 1 | 2,026.88 | 0.493 |
+| 6 | AMD EPYC 7452 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 2x 2TB Kingston KC3000 NVMe RAID 1 | 1691.09 | 0.591 |
 | 5 | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 1,001.50 | 0.999 |
 | 3 | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 442.55 | 2.260 |
 
@@ -314,7 +317,7 @@ Storage Devices
 ============================================================
 NAME     MODEL     VENDOR         SERIAL            TYPE
 --------------------------------------------------------
-nvme0n1  KINGSTON  SKC3000S1024G  50026B7686B341DD  disk
+nvme0n1  KINGSTON  SKC3000S1024G  50026B7686B341XX  disk
 ============================================================
 
 ============================================================
@@ -350,8 +353,66 @@ Avg time per op:   0.999 ms
 ============================================================
 ```
 
-```bash
+### Dedicated Server 6
 
+AMD EPYC 7452, 128GB, 2x2TB NVMe raid 1 (2x2TB Kingston KC3000 NVMe)
+
+```bash
+python /root/tools/fsync.py --non-interactive --force
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            CentOS Linux 7 (Core)
+Kernel:        3.10.0-1160.118.1.el7.x86_64
+CPU:           AMD EPYC 7452 32-Core Processor
+Memory:        125.68 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME     MODEL     VENDOR         SERIAL            TYPE
+--------------------------------------------------------
+nvme0n1  KINGSTON  SKC3000D2048G  50026B7686B1A1XX  disk
+nvme1n1  KINGSTON  SKC3000D2048G  50026B7686B1A0XX  disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  4096 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/md126 (determined from path)
+============================================================
+
+Completed 100/1000 iterations (10.0%)
+Completed 200/1000 iterations (20.0%)
+Completed 300/1000 iterations (30.0%)
+Completed 400/1000 iterations (40.0%)
+Completed 500/1000 iterations (50.0%)
+Completed 600/1000 iterations (60.0%)
+Completed 700/1000 iterations (70.0%)
+Completed 800/1000 iterations (80.0%)
+Completed 900/1000 iterations (90.0%)
+Completed 1000/1000 iterations (100.0%)
+
+============================================================
+Test Results:
+============================================================
+Total time:        0.59 seconds
+Operations:        1000
+Operations/sec:    1691.09
+Avg time per op:   0.591 ms
+============================================================
 ```
 
 ```bash
