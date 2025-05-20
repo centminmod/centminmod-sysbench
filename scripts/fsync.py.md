@@ -16,11 +16,11 @@ Understanding and optimizing `fsync()` performance is essential for building rel
 
 ## Examples
 
-Example results for `fsync.py` to test various dedicated servers' drives and their fsync performance as outlined at https://www.percona.com/blog/fsync-performance-storage-devices/. You can see that datacenter or enterprise NVMe/SATA SSD have much faster fsync performance that regularly consumer SATA SSD or consumer NVMe drives.
+Example results for `fsync.py` to test various dedicated servers' drives and their fsync performance as outlined at https://www.percona.com/blog/fsync-performance-storage-devices/. You can see that datacenter or enterprise NVMe/SATA SSD have much faster fsync performance than regularly consumer SATA SSD or consumer NVMe drives.
 
 For `4096 bytes` fsync test:
 
-| Server # | CPU | OS | Kernel | Storage | Operations/sec | Avg time per op (ms) |
+| Server # | CPU | OS | Kernel | Storage | Fsync Operations/sec | Avg time per op (ms) |
 |----------|-----|-------|--------|---------|---------------|----------------------|
 | 1 | Intel Xeon E-2276G | AlmaLinux 8.10 | 4.18.0-425.19.2.el8_7.x86_64 | 2x 960GB NVMe RAID 1 (Samsung PM983 + Kingston DC1500M) | 40,473.06 | 0.025 |
 | 2 | Intel Core i7-4790K | AlmaLinux 9.4 | 5.14.0-284.11.1.el9_2.x86_64 | 240GB Samsung PM863 SATA SSD | 25,394.32 | 0.039 |
