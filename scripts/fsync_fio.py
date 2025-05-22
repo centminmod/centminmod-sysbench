@@ -47,6 +47,8 @@ import stat
 import json
 import tempfile
 import datetime  # For timestamp in log file names
+import threading
+import select
 
 # Detect Python version
 PY3 = sys.version_info[0] == 3
@@ -336,6 +338,84 @@ def get_device_for_path(path, devices, debug=False):
     return None
 
 
+def parse_fio_status_output(line, debug=False):
+    """
+    Parse FIO status output line to extract progress information.
+    
+    Args:
+        line (str): Status line from FIO
+        debug (bool): Enable debug output
+        
+    Returns:
+        dict or None: Progress information if parsed successfully, None otherwise
+    """
+    # FIO status output format varies, but typically includes progress percentage
+    # Look for patterns like: "Jobs: 1 (f=1): [W(1)][25.0%][w=1234KiB/s][w=308 IOPS][eta 00m:30s]"
+    
+    # Try to extract percentage
+    percent_match = re.search(r'\[(\d+\.?\d*)%\]', line)
+    if percent_match:
+        try:
+            percentage = float(percent_match.group(1))
+            if debug:
+                print("Debug: Parsed progress: {:.1f}%".format(percentage))
+            return {"percentage": percentage}
+        except ValueError:
+            pass
+    
+    # Try alternative format: "job_name: (groupid=0, jobs=1): err= 0: pid=12345: (25.0%) [W][r=0,w=1234,o=0,f=0][w=1234KiB/s,308iops][eta 00m:30s]"
+    alt_percent_match = re.search(r'\((\d+\.?\d*)%\)', line)
+    if alt_percent_match:
+        try:
+            percentage = float(alt_percent_match.group(1))
+            if debug:
+                print("Debug: Parsed progress (alt format): {:.1f}%".format(percentage))
+            return {"percentage": percentage}
+        except ValueError:
+            pass
+    
+    return None
+
+
+def monitor_fio_progress(process, debug=False):
+    """
+    Monitor FIO process and display real progress updates.
+    
+    Args:
+        process: Subprocess running FIO
+        debug (bool): Enable debug output
+    """
+    last_percentage = 0
+    
+    try:
+        # Use select to check if there's data available on stderr (where FIO writes status)
+        while process.poll() is None:
+            # For Python 2 compatibility, use select for non-blocking read
+            if hasattr(select, 'select'):
+                ready, _, _ = select.select([process.stderr], [], [], 0.1)
+                if ready:
+                    line = process.stderr.readline()
+                    if line:
+                        line = line.strip()
+                        if debug:
+                            print("Debug: FIO stderr line:", line)
+                        
+                        progress_info = parse_fio_status_output(line, debug)
+                        if progress_info and 'percentage' in progress_info:
+                            current_percentage = progress_info['percentage']
+                            # Only update if we've made significant progress
+                            if current_percentage >= last_percentage + 5:  # Update every 5%
+                                print("Progress: {:.1f}% complete".format(current_percentage))
+                                last_percentage = current_percentage
+            else:
+                # Fallback for systems without select (Windows)
+                time.sleep(0.5)
+                
+    except Exception as e:
+        if debug:
+            print("Debug: Error monitoring FIO progress:", e)
+
+
 def run_sync_test_fio(sync_method, output_file, block_size, iterations, debug=False, log_dir=None):
     """
     Run the synchronization test using fio with the specified parameters.
@@ -386,39 +466,49 @@ log_avg_msec=1000
         ))
     
     try:
-        # Run fio with the job file, capture its output
+        # Run fio with the job file and status reporting
         if debug:
             print("Debug: Running fio with job file:", job_file_path)
-            print("Debug: fio command: fio", job_file_path, "--output-format=json")
+            print("Debug: fio command: fio", job_file_path, "--output-format=json --status-interval=3")
         
         start_time = time.time()
         
-        # Python 2.7 compatible process handling (without context manager)
+        # Use status reporting for real progress updates
+        cmd = ["fio", job_file_path, "--output-format=json", "--status-interval=3"]
+        
+        # Python 2.7 compatible process handling
         process = subprocess.Popen(
-            ["fio", job_file_path, "--output-format=json"],
+            cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             universal_newlines=True
         )
         
         try:
-            # Print progress information
-            iterations_per_10_percent = max(1, iterations // 10)
-            for i in range(1, 11):
-                # Simulate progress based on percentage
-                time.sleep((time.time() - start_time) / 10)
-                completed = i * iterations_per_10_percent
-                if completed > iterations:
-                    completed = iterations
-                print("Completed {0}/{1} iterations ({2:.1f}%)".format(
-                    completed, iterations, completed/float(iterations)*100))
+            print("Running {} test with {} iterations...".format(sync_method, iterations))
+            
+            # Start a thread to monitor progress if we have threading support
+            progress_thread = None
+            try:
+                progress_thread = threading.Thread(target=monitor_fio_progress, args=(process, debug))
+                progress_thread.daemon = True
+                progress_thread.start()
+            except Exception as e:
+                if debug:
+                    print("Debug: Could not start progress monitoring thread:", e)
+                print("Running test (progress monitoring unavailable)...")
             
             # Get the output from fio
             stdout, stderr = process.communicate()
             
+            # Wait for progress thread to finish
+            if progress_thread and progress_thread.is_alive():
+                progress_thread.join(timeout=1.0)
+            
             if debug:
                 print("Debug: fio stdout:", stdout)
-                print("Debug: fio stderr:", stderr)
+                if stderr:
+                    print("Debug: fio stderr:", stderr)
             
             # Log the raw FIO output to a file if log_dir is specified
             if log_dir:
@@ -443,7 +533,9 @@ log_avg_msec=1000
                     print("Warning: Failed to log FIO output:", e)
             
             if process.returncode != 0:
-                print("Error: fio command failed:", stderr)
+                print("Error: fio command failed with return code", process.returncode)
+                if stderr:
+                    print("Error details:", stderr)
                 return None, None
         finally:
             # Ensure the process is terminated
@@ -563,6 +655,7 @@ log_avg_msec=1000
                 except Exception as e:
                     print("Warning: Failed to log metrics:", e)
             
+            print("Test completed successfully!")
             return elapsed_time, metrics
             
         except (ValueError, KeyError) as e:

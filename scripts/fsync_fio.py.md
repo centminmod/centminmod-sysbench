@@ -100,16 +100,8 @@ Output file:  testfile
 Device:       /dev/md1 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -167,16 +159,8 @@ Output file:  testfile
 Device:       /dev/md1 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -237,16 +221,8 @@ Model:        SAMSUNG
 Vendor:       MZ7LM240HCGR-00003
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -305,16 +281,8 @@ Model:        SAMSUNG
 Vendor:       MZ7LM240HCGR-00003
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -371,16 +339,8 @@ Output file:  testfile
 Device:       /dev/vda4 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -435,16 +395,8 @@ Output file:  testfile
 Device:       /dev/vda4 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -504,16 +456,8 @@ Output file:  testfile
 Device:       /dev/md3 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -571,16 +515,8 @@ Output file:  testfile
 Device:       /dev/md3 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -641,16 +577,8 @@ Model:        KINGSTON
 Vendor:       SKC3000S1024G
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -709,16 +637,8 @@ Model:        KINGSTON
 Vendor:       SKC3000S1024G
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -778,16 +698,8 @@ Output file:  testfile
 Device:       /dev/md126 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -845,16 +757,8 @@ Output file:  testfile
 Device:       /dev/md126 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -952,16 +856,8 @@ Output file:  testfile
 Device:       /dev/md126 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -1029,16 +925,8 @@ Output file:  testfile
 Device:       /dev/md126 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -1104,16 +992,8 @@ Output file:  /var/testfile
 Device:       /dev/md124 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -1181,16 +1061,8 @@ Output file:  /var/testfile
 Device:       /dev/md124 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -1256,16 +1128,8 @@ Output file:  /home/testfile
 Device:       /dev/md123 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
@@ -1333,16 +1197,8 @@ Output file:  /home/testfile
 Device:       /dev/md123 (determined from path)
 ============================================================
 
-Completed 100/1000 iterations (10.0%)
-Completed 200/1000 iterations (20.0%)
-Completed 300/1000 iterations (30.0%)
-Completed 400/1000 iterations (40.0%)
-Completed 500/1000 iterations (50.0%)
-Completed 600/1000 iterations (60.0%)
-Completed 700/1000 iterations (70.0%)
-Completed 800/1000 iterations (80.0%)
-Completed 900/1000 iterations (90.0%)
-Completed 1000/1000 iterations (100.0%)
+Running fsync test with 1000 iterations...
+Test completed successfully!
 
 ================================================================================
 Test Results:
