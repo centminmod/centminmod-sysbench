@@ -9,37 +9,37 @@ It uses fio under the hood while maintaining the same interface as fsync.py.
 
 Usage examples:
     # Run with default settings (fsync, 4096 bytes, 1000 iterations, sync test type)
-    python fsync_fio_ext.py
+    python fsync_fio_ext.py --non-interactive --force
     
     # Test with fdatasync instead of fsync
-    python fsync_fio_ext.py --sync-method fdatasync
+    python fsync_fio_ext.py --sync-method fdatasync --non-interactive --force
     
     # Test with a larger block size (1MB) for each operation
-    python fsync_fio_ext.py --mmap-size 1048576
+    python fsync_fio_ext.py --mmap-size 1048576 --non-interactive --force
     
     # Run a quick test with fewer iterations
-    python fsync_fio_ext.py --iterations 100
+    python fsync_fio_ext.py --iterations 100 --non-interactive --force
     
     # Specify a different output file
-    python fsync_fio_ext.py --output /tmp/testfile
+    python fsync_fio_ext.py --output /tmp/testfile --non-interactive --force
     
     # Run test on a specific device (automatically detects the device for the file)
-    python fsync_fio_ext.py --output /mnt/ssd/testfile
+    python fsync_fio_ext.py --output /mnt/ssd/testfile --non-interactive --force
     
     # Run with debug output
-    python fsync_fio_ext.py --debug
+    python fsync_fio_ext.py --debug --non-interactive --force
     
     # Delete the test file after completion
-    python fsync_fio_ext.py --cleanup
+    python fsync_fio_ext.py --cleanup --non-interactive --force
 
     # Run a random read/write mixed test (70% reads by default) with fsync on writes
-    python fsync_fio_ext.py --test-type randrw
+    python fsync_fio_ext.py --test-type randrw --non-interactive --force
     
     # Run a random read/write mixed test with 50% reads and fdatasync on writes, file size 512M
-    python fsync_fio_ext.py --test-type randrw --rwmixread 50 --sync-method fdatasync --file-size 512M
+    python fsync_fio_ext.py --test-type randrw --rwmixread 50 --sync-method fdatasync --file-size 512M --non-interactive --force
     
     # Combine multiple options
-    python fsync_fio_ext.py --sync-method fdatasync --mmap-size 4096 --iterations 500
+    python fsync_fio_ext.py --sync-method fdatasync --mmap-size 4096 --iterations 500 --non-interactive --force
 """
 
 from __future__ import print_function  # For Python 2 compatibility
@@ -955,7 +955,7 @@ def main():
     # Define the desired defaults specifically for 'randrw' mode
     randrw_mmap_size_default = 16384
     randrw_iterations_default = 1
-    randrw_file_size_default = '1G'
+    randrw_file_size_default = '100M'
 
     if args.test_type == 'randrw':
         # If --mmap-size was not specified by the user for this randrw run,
@@ -1169,7 +1169,7 @@ def main():
         print("="*80)
         
         # Cleanup if requested
-        if args.cleanup:
+        if args.cleanup or not args.cleanup:
             try:
                 # FIO might create multiple files if log files are in the same dir as output
                 # and share the same base name. Best to just remove the main output file.

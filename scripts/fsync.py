@@ -11,31 +11,31 @@ https://www.percona.com/blog/fsync-performance-storage-devices/
 
 Usage examples:
     # Run with default settings (fsync, 4096 bytes, 1000 iterations)
-    python fsync.py
+    python fsync.py --non-interactive --force
     
     # Test with fdatasync instead of fsync
-    python fsync.py --sync-method fdatasync
+    python fsync.py --sync-method fdatasync --non-interactive --force
     
     # Test with a larger memory map size (1MB)
-    python fsync.py --mmap-size 1048576
+    python fsync.py --mmap-size 1048576 --non-interactive --force
     
     # Run a quick test with fewer iterations
-    python fsync.py --iterations 100
+    python fsync.py --iterations 100 --non-interactive --force
     
     # Specify a different output file
-    python fsync.py --output /tmp/testfile
+    python fsync.py --output /tmp/testfile --non-interactive --force
     
     # Combine multiple options
-    python fsync.py --sync-method fdatasync --mmap-size 4096 --iterations 500
+    python fsync.py --sync-method fdatasync --mmap-size 4096 --iterations 500 --non-interactive --force
     
     # Run test on a specific device (automatically detects the device for the file)
-    python fsync.py --output /mnt/ssd/testfile
+    python fsync.py --output /mnt/ssd/testfile --non-interactive --force
     
     # Run with debug output
-    python fsync.py --debug
+    python fsync.py --debug --non-interactive --force
     
     # Delete the test file after completion
-    python fsync.py --cleanup
+    python fsync.py --cleanup --non-interactive --force
 """
 
 from __future__ import print_function  # For Python 2 compatibility

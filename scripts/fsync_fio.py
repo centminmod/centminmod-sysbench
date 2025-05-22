@@ -8,31 +8,31 @@ to disk. It uses fio under the hood while maintaining the same interface as fsyn
 
 Usage examples:
     # Run with default settings (fsync, 4096 bytes, 1000 iterations)
-    python fsync_fio.py
+    python fsync_fio.py --non-interactive --force
     
     # Test with fdatasync instead of fsync
-    python fsync_fio.py --sync-method fdatasync
+    python fsync_fio.py --sync-method fdatasync --non-interactive --force
     
     # Test with a larger block size (1MB)
-    python fsync_fio.py --mmap-size 1048576
+    python fsync_fio.py --mmap-size 1048576 --non-interactive --force
     
     # Run a quick test with fewer iterations
-    python fsync_fio.py --iterations 100
+    python fsync_fio.py --iterations 100 --non-interactive --force
     
     # Specify a different output file
-    python fsync_fio.py --output /tmp/testfile
+    python fsync_fio.py --output /tmp/testfile --non-interactive --force
     
     # Combine multiple options
-    python fsync_fio.py --sync-method fdatasync --mmap-size 4096 --iterations 500
+    python fsync_fio.py --sync-method fdatasync --mmap-size 4096 --iterations 500 --non-interactive --force
     
     # Run test on a specific device (automatically detects the device for the file)
-    python fsync_fio.py --output /mnt/ssd/testfile
+    python fsync_fio.py --output /mnt/ssd/testfile --non-interactive --force
     
     # Run with debug output
-    python fsync_fio.py --debug
+    python fsync_fio.py --debug --non-interactive --force
     
     # Delete the test file after completion
-    python fsync_fio.py --cleanup
+    python fsync_fio.py --cleanup --non-interactive --force
 """
 
 from __future__ import print_function  # For Python 2 compatibility
