@@ -14,6 +14,12 @@ When applications save data, they often rely on a system call called `fsync()` t
 
 Understanding and optimizing `fsync()` performance is essential for building reliable and efficient systems.
 
+## The Tests:
+
+* [fsync.py](https://github.com/centminmod/centminmod-sysbench/blob/master/scripts/fsync.py.md) - based on extended version of Percona's fsync test script
+* [fsync_fio.py](https://github.com/centminmod/centminmod-sysbench/blob/master/scripts/fsync_fio.py.md) - uses underlying FIO tool which the original tests for [sysbench.sh FIO tests](https://github.com/centminmod/centminmod-sysbench#sysbench-fileio-fsync) - just with different parameters for 4K and 16K tests.
+* [fsync_fio_ext.py](https://github.com/centminmod/centminmod-sysbench/blob/master/scripts/fsync_fio_ext.py.md) - FIO tool just with random read + random fsync write 70/30 percent mix.
+
 ## Replicate Below Tests
 
 
