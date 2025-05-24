@@ -32,7 +32,7 @@ Example results for [fsync_fio.py](https://github.com/centminmod/centminmod-sysb
 | [5](#dedicated-server-5) | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 701.26 | 0.000128123 |
 | [9](#dedicated-server-9) | Intel Xeon E5-1650 v4 | CentOS Linux 7 | 3.10.0-957.10.1.el7.x86_64 | 2x 256GB Micron 1100 SATA SSD RAID 1 | 605.69 | 0.000050385 |
 | [3](#dedicated-server-3) | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.16.1.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 390.78 | 0.000050542 |
-| [8](#dedicated-server-8) | Dual Intel Xeon Gold 6226R | CentOS Linux 7 | 3.10.0-1160.95.1.el7.x86_64 | 4x 2TB Samsung 860 EVO SATA SSD Hardware RAID 10 | 85.87 | 0.000004307 |
+| [8](#dedicated-server-8) | Dual Intel Xeon Gold 6226R | CentOS Linux 7 | 3.10.0-1160.95.1.el7.x86_64 | 4x 2TB Samsung 860 EVO SATA SSD Hardware RAID 10 (AVAGO MegaRAID SAS 9341-4i) | 85.87 | 0.000004307 |
 
 **For `16384 bytes` fsync test:**
 
@@ -48,7 +48,7 @@ Example results for [fsync_fio.py](https://github.com/centminmod/centminmod-sysb
 | [5](#dedicated-server-5) | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 703.23 | 0.000129106 |
 | [9](#dedicated-server-9) | Intel Xeon E5-1650 v4 | CentOS Linux 7 | 3.10.0-957.10.1.el7.x86_64 | 2x 256GB Micron 1100 SATA SSD RAID 1 | 597.01 | 0.000053753 |
 | [3](#dedicated-server-3) | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.16.1.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 330.80 | 0.000052424 |
-| [8](#dedicated-server-8) | Dual Intel Xeon Gold 6226R | CentOS Linux 7 | 3.10.0-1160.95.1.el7.x86_64 | 4x 2TB Samsung 860 EVO SATA SSD Hardware RAID 10 | 83.13 | 0.000003555 |
+| [8](#dedicated-server-8) | Dual Intel Xeon Gold 6226R | CentOS Linux 7 | 3.10.0-1160.95.1.el7.x86_64 | 4x 2TB Samsung 860 EVO SATA SSD Hardware RAID 10 (AVAGO MegaRAID SAS 9341-4i) | 83.13 | 0.000003555 |
 
 ### Dedicated Server 1
 

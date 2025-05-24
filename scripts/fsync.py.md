@@ -33,7 +33,7 @@ Example results for [fsync.py](https://github.com/centminmod/centminmod-sysbench
 | [10](#dedicated-server-10) | Intel Xeon E5-1650 v4 | CentOS Linux 7 | 3.10.0-957.10.1.el7.x86_64 | 2x 256GB Micron 1100 SATA SSD RAID 1 | 652.10 | 1.534 |
 | [3](#dedicated-server-3) | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 442.55 | 2.260 |
 | [8](#dedicated-server-8) | AMD Ryzen 7 PRO 8700GE | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 2x 512GB Samsung PM9A1 NVMe raid 1 SSD | 167.49 | 5.970 |
-| [9](#dedicated-server-9) | Dual Intel Xeon Gold 6226R | CentOS Linux 7 | 3.10.0-1160.95.1.el7.x86_64 | 4x 2TB Samsung 860 EVO SATA SSD RAID 10 | 83.04 | 12.043 |
+| [9](#dedicated-server-9) | Dual Intel Xeon Gold 6226R | CentOS Linux 7 | 3.10.0-1160.95.1.el7.x86_64 | 4x 2TB Samsung 860 EVO SATA SSD RAID 10 (AVAGO MegaRAID SAS 9341-4i) | 83.04 | 12.043 |
 
 **For `16384 bytes` fsync test:**
 
@@ -50,7 +50,7 @@ Example results for [fsync.py](https://github.com/centminmod/centminmod-sysbench
 | [10](#dedicated-server-10) | Intel Xeon E5-1650 v4 | CentOS Linux 7 | 3.10.0-957.10.1.el7.x86_64 | 2x 256GB Micron 1100 SATA SSD RAID 1 | 640.79 | 1.561 |
 | [3](#dedicated-server-3) | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 396.10 | 2.525 |
 | [8](#dedicated-server-8) | AMD Ryzen 7 PRO 8700GE | AlmaLinux 9.5 | 5.14.0-503.23.2.el9_5.x86_64 | 2x 512GB Samsung PM9A1 NVMe raid 1 SSD | 164.78 | 6.069 |
-| [9](#dedicated-server-9) | Dual Intel Xeon Gold 6226R | CentOS Linux 7 | 3.10.0-1160.95.1.el7.x86_64 | 4x 2TB Samsung 860 EVO SATA SSD RAID 10 | 79.19 | 12.629 |
+| [9](#dedicated-server-9) | Dual Intel Xeon Gold 6226R | CentOS Linux 7 | 3.10.0-1160.95.1.el7.x86_64 | 4x 2TB Samsung 860 EVO SATA SSD RAID 10 (AVAGO MegaRAID SAS 9341-4i) | 79.19 | 12.629 |
 
 ### Dedicated Server 1
 

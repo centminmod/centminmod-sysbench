@@ -30,7 +30,7 @@ The following table presents results for a random read/write (70% read/30% write
 | [Server 4](#dedicated-server-4)      | Intel Xeon E3-1270 v6      | Rocky Linux 9.5   | 2x450G Intel P3520 NVMe RAID1                   | 726.21         | 0.371                        | 325.55          | 1.201                         |
 | [Server 3](#dedicated-server-3)      | AMD Ryzen 9 5950X          | AlmaLinux 9.6     | 512GB Samsung 850 Pro SATA SSD                  | 567.78         | 0.068                        | 254.53          | 2.750                         |
 | [Server 7](#dedicated-server-7)      | Intel Xeon E5-1650 v4      | CentOS Linux 7    | 2x256GB Micron 1100 SATA RAID1                  | 349.13         | 0.190                        | 156.51          | 3.532                         |
-| [Server 6](#dedicated-server-6)      | Dual Intel Xeon Gold 6226R | CentOS Linux 7    | 4x2TB Samsung 860 EVO SATA RAID10               | 126.83         | 0.222                        | 56.86           | 11.737                        |
+| [Server 6](#dedicated-server-6)      | Dual Intel Xeon Gold 6226R | CentOS Linux 7    | 4x2TB Samsung 860 EVO SATA RAID10 (AVAGO MegaRAID SAS 9341-4i)               | 126.83         | 0.222                        | 56.86           | 11.737                        |
 
 ### Dedicated Server 1
 
