@@ -14,6 +14,19 @@ When applications save data, they often rely on a system call called `fsync()` t
 
 Understanding and optimizing `fsync()` performance is essential for building reliable and efficient systems.
 
+## Replicate Below Tests
+
+
+```bash
+mkdir -p /root/tools
+cd /root/tools
+wget -4 -O fsync_fio.py https://github.com/centminmod/centminmod-sysbench/raw/refs/heads/master/scripts/fsync_fio.py
+chmod +x fsync_fio.py
+# may need to use python3 instead of python
+python /root/tools/fsync_fio.py --non-interactive --force
+python /root/tools/fsync_fio.py --non-interactive --force --mmap-size 16384
+```
+
 ## Examples
 
 Example results for [fsync_fio.py](https://github.com/centminmod/centminmod-sysbench/blob/master/scripts/fsync_fio.py) (alternative to [sysbench fsync benchmark test using FIO tool](https://github.com/centminmod/centminmod-sysbench/tree/master#sysbench-fileio-fsync)) to test various dedicated servers' drives and their fsync performance as outlined at https://www.percona.com/blog/fsync-performance-storage-devices/. You can see that datacenter or enterprise NVMe/SATA SSD have much faster fsync performance than regularly consumer SATA SSD or consumer NVMe drives.

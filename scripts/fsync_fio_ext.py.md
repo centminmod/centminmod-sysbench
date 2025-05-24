@@ -14,6 +14,18 @@ When applications save data, they often rely on a system call called `fsync()` t
 
 Understanding and optimizing `fsync()` performance is essential for building reliable and efficient systems.
 
+## Replicate Below Tests
+
+
+```bash
+mkdir -p /root/tools
+cd /root/tools
+wget -4 -O fsync_fio_ext.py https://github.com/centminmod/centminmod-sysbench/raw/refs/heads/master/scripts/fsync_fio_ext.py
+chmod +x fsync_fio_ext.py
+# may need to use python3 instead of python
+python /root/tools/fsync_fio_ext.py --test-type randrw --non-interactive --force
+```
+
 ## Examples
 
 Example results for [fsync_fio_ext.py](https://github.com/centminmod/centminmod-sysbench/blob/master/scripts/fsync_fio_ext.py) (FIO read/write fsync test support)). These tests help evaluate drive performance under mixed workloads with synchronous writes, relevant for database-like scenarios as outlined at [https://www.percona.com/blog/fsync-performance-storage-devices/](https://www.percona.com/blog/fsync-performance-storage-devices/). Datacenter or enterprise NVMe/SATA SSDs generally exhibit superior `fsync` and mixed I/O performance.
