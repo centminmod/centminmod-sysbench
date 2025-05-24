@@ -20,7 +20,7 @@ Example results for [fsync_fio_ext.py](https://github.com/centminmod/centminmod-
 
 The following table presents results for a random read/write (70% read/30% write) test with `fsync` on writes, using a 16KB block size over a 100MB file region (approximating the script's conditional default parameters for `randrw`: `--test-type randrw --mmap-size 16384 --file-size 100M --loops 1 --rwmixread 70 --sync-method fsync`). Results are ordered by Random Write IOPS (descending):
 
-Check [fsync_fio_ext.py - Mixed Read/Write Workload Analysis](#fsync_fio_ext.py---mixed-readwrite-workload-analysis)
+Check [fsync_fio_ext.py - Mixed Read/Write Workload Analysis](#fsync_fio_extpy---mixed-readwrite-workload-analysis)
 
 | Server #                           | CPU                          | OS                | Storage                                         | Rand Read IOPS | Rand Read Latency (avg) (ms) | Rand Write IOPS | Rand Write Latency (avg) (ms) |
 | :--------------------------------- | :--------------------------- | :---------------- | :---------------------------------------------- | -------------: | ---------------------------: | --------------: | ----------------------------: |
