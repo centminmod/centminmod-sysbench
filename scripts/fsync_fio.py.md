@@ -1623,7 +1623,7 @@ END;
 -- Suitable for: Major e-commerce platforms during Black Friday, 
 --               Financial trading systems, Large-scale SaaS platforms
 
--- Server 6 InnoDB Survival Configuration (83 IOPS sustained):
+-- Server 8 InnoDB Survival Configuration (83 IOPS sustained):
 SET GLOBAL innodb_buffer_pool_size = 4GB;           -- Minimal buffer pool
 SET GLOBAL innodb_log_file_size = 128MB;            -- Small logs to reduce I/O
 SET GLOBAL innodb_log_buffer_size = 32MB;           -- Conservative buffer
@@ -1633,7 +1633,7 @@ SET GLOBAL innodb_io_capacity_max = 100;            -- Limited peak capacity
 SET GLOBAL innodb_adaptive_flushing = OFF;          -- Disable to reduce overhead
 SET GLOBAL innodb_max_dirty_pages_pct = 50;         -- Force early flushing
 
--- Server 6 Sustained Performance Analysis:
+-- Server 8 Sustained Performance Analysis:
 -- Based on 83 sustained IOPS from FIO test:
 -- Expected sustained TPS: 40-60 transactions/second
 -- Peak burst TPS: 80-100 transactions/second (brief)
@@ -1775,7 +1775,7 @@ END$$
 -- Suitable for: Major stock exchanges, large investment banks, HFT firms
 -- Business impact: Can handle full market session load without degradation
 
--- Server 6 Sustained Trading Performance:
+-- Server 8 Sustained Trading Performance:
 -- Based on 83 sustained IOPS:
 -- Sustained trading TPS: 15-20 trades/second maximum
 -- Total trades processed: 54,000-72,000 trades/hour
@@ -1847,7 +1847,7 @@ max_prepared_transactions = 2000               -- Support for distributed transa
 -- Suitable for sustained workloads: Large-scale web applications, data warehouses, 
 --                                   analytics platforms, enterprise applications
 
--- Server 6 PostgreSQL Configuration (83 sustained IOPS):
+-- Server 8 PostgreSQL Configuration (83 sustained IOPS):
 -- Survival configuration for very limited I/O capacity
 
 -- Conservative WAL Configuration
@@ -2062,7 +2062,7 @@ $$ LANGUAGE plpgsql;
 -- Checkpoint impact: <15% performance reduction during checkpoints
 -- Suitable for: Google Analytics scale, large IoT platforms, enterprise BI systems
 
--- Server 6 Sustained Analytics Performance (83 IOPS):
+-- Server 8 Sustained Analytics Performance (83 IOPS):
 -- Can process 5,000 events per batch every 30-45 seconds
 -- Sustained throughput: 100-150 events/second maximum
 -- Total events processed: 400,000-500,000 events/hour
@@ -2560,7 +2560,7 @@ async def run_sustained_load_comparison():
     print("SUSTAINED LOAD TEST - SERVER 6 (Poor-Performance Storage)")
     print("=" * 60)
     
-    # Server 6 Test (Poor-performance storage)
+    # Server 8 Test (Poor-performance storage)
     app_server_6 = SustainedWebApplicationLoad('server_6')
     results_server_6 = await app_server_6.simulate_sustained_web_load(1)  # 1 hour test
     
@@ -2613,7 +2613,7 @@ sustained_web_server_1 = {
     'availability': '99.99% uptime achievable with proper architecture'
 }
 
-# Server 6 Sustained Web Performance (83 IOPS):
+# Server 8 Sustained Web Performance (83 IOPS):
 sustained_web_server_6 = {
     'sustained_requests_per_second': 60,
     'peak_burst_capability': 100,  # Brief bursts cause instability

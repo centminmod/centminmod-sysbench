@@ -1683,7 +1683,7 @@ SET GLOBAL innodb_max_dirty_pages_pct = 90;         -- Allow high dirty page %
 -- Recovery time after crash: 1-2 minutes
 -- Suitable for: Major e-commerce platforms, financial systems, SaaS platforms
 
--- Server 6 (83 fsync ops/sec) - Survival Configuration:
+-- Server 9 (83 fsync ops/sec) - Survival Configuration:
 SET GLOBAL innodb_log_file_size = 64MB;             -- Minimal log files
 SET GLOBAL innodb_log_buffer_size = 16MB;           -- Small buffer to reduce impact
 SET GLOBAL innodb_flush_log_at_trx_commit = 2;      -- Compromise durability for usability
@@ -1825,7 +1825,7 @@ END$$
 -- Daily volume capacity: ~250 million trades/day
 -- Suitable for: NYSE, NASDAQ, major broker-dealers, high-frequency trading firms
 
--- Server 6 Trading Performance:
+-- Server 9 Trading Performance:
 -- 83 fsync ops/sec ÷ 6 ops/trade = 13 trades/second theoretical maximum
 -- Real-world: 5-8 trades/second maximum
 -- Latency per trade: 150ms+ average, >500ms 99th percentile
@@ -2023,7 +2023,7 @@ END$$
 -- Peak holiday traffic: Can handle 5,000+ orders/second bursts
 -- Suitable for: Amazon, eBay, major e-commerce platforms, flash sales
 
--- Server 6 E-commerce Performance:
+-- Server 9 E-commerce Performance:
 -- 83 fsync ops/sec ÷ 12 ops/order = 6 orders/second theoretical maximum
 -- Real-world: 2-4 orders/second maximum
 -- Order processing latency: 3000ms+ average, >10 seconds 99th percentile
@@ -2086,7 +2086,7 @@ max_prepared_transactions = 1000                # For distributed transactions
 -- Concurrent connections: 800+ active connections sustainable
 -- Suitable for: Enterprise applications, large-scale web services, data warehouses
 
--- Server 6 (83 fsync ops/sec) - Survival PostgreSQL Configuration:
+-- Server 9 (83 fsync ops/sec) - Survival PostgreSQL Configuration:
 
 -- Conservative WAL Configuration
 wal_level = minimal                              # Disable replication to reduce overhead
@@ -2290,7 +2290,7 @@ $$ LANGUAGE plpgsql;
 -- Real-time analytics: Sub-second dashboard updates
 -- Suitable for: Google Analytics scale, large-scale IoT platforms, financial market data
 
--- Server 6 Analytics Performance:
+-- Server 9 Analytics Performance:
 -- 83 fsync ops/sec ÷ 75 avg ops/batch = 1.1 batches/second
 -- 10,000 records/batch × 1.1 batches/sec = 11,000 records/second processing
 -- Hourly data processing: 39.6 million records/hour
@@ -2645,7 +2645,7 @@ session_performance_server_1 = {
     'user_experience': 'Instantaneous response to user actions'
 }
 
-# Server 6 Session Performance (83 fsync ops/sec):
+# Server 9 Session Performance (83 fsync ops/sec):
 session_performance_server_6 = {
     'login_operations_per_second': 83 // 3,      # 27 logins/second maximum
     'cart_operations_per_second': 83 // 2,       # 41 cart operations/second maximum
@@ -3038,7 +3038,7 @@ content_performance_server_1 = {
     'user_experience': 'Content appears live immediately after publish'
 }
 
-# Server 6 Content Performance (83 fsync ops/sec):
+# Server 9 Content Performance (83 fsync ops/sec):
 content_performance_server_6 = {
     'single_article_publish_time': '3-5 seconds',
     'articles_published_per_second': 83 // 15,  # ~5 articles/second (15 fsync ops per publish)
