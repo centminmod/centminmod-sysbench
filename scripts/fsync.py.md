@@ -1435,7 +1435,6 @@ Avg time per op:   12.043 ms
 
 ```bash
 python /root/tools/fsync.py --non-interactive --force --mmap-size 16384
-python /root/tools/fsync.py --non-interactive --force --mmap-size 16384
 ------------------------------------------------------------
 WARNING: This script is running as root!
 Please be absolutely sure that the output path is correct:
