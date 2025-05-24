@@ -18,7 +18,7 @@ Understanding and optimizing `fsync()` performance is essential for building rel
 
 Example results for [fsync_fio.py](https://github.com/centminmod/centminmod-sysbench/blob/master/scripts/fsync_fio.py) (alternative to [sysbench fsync benchmark test using FIO tool](https://github.com/centminmod/centminmod-sysbench/tree/master#sysbench-fileio-fsync)) to test various dedicated servers' drives and their fsync performance as outlined at https://www.percona.com/blog/fsync-performance-storage-devices/. You can see that datacenter or enterprise NVMe/SATA SSD have much faster fsync performance than regularly consumer SATA SSD or consumer NVMe drives.
 
-For `4096 bytes` fsync test:
+**For `4096 bytes` fsync test:**
 
 | Server # | CPU | OS | Kernel | Storage | IOPS | Sync latency (avg) (seconds) |
 |----------|-----|-------|--------|---------|---------------|----------------------|
@@ -30,9 +30,11 @@ For `4096 bytes` fsync test:
 | [7c](#dedicated-server-7) | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 960GB Kingston DC600M SATA SSD Raid 10 | 766.28 | 0.000360230 |
 | [6](#dedicated-server-6) | AMD EPYC 7452 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 2x 2TB Kingston KC3000 NVMe RAID 1 | 758.73 | 0.000120319 |
 | [5](#dedicated-server-5) | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 701.26 | 0.000128123 |
+| [9](#dedicated-server-9) | Intel Xeon E5-1650 v4 | CentOS Linux 7 | 3.10.0-957.10.1.el7.x86_64 | 2x 256GB Micron 1100 SATA SSD RAID 1 | 605.69 | 0.000050385 |
 | [3](#dedicated-server-3) | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.16.1.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 390.78 | 0.000050542 |
+| [8](#dedicated-server-8) | Dual Intel Xeon Gold 6226R | CentOS Linux 7 | 3.10.0-1160.95.1.el7.x86_64 | 4x 2TB Samsung 860 EVO SATA SSD Hardware RAID 10 | 85.87 | 0.000004307 |
 
-For `16384 bytes` fsync test:
+**For `16384 bytes` fsync test:**
 
 | Server # | CPU | OS | Kernel | Storage | IOPS | Sync latency (avg) (seconds) |
 |----------|-----|-------|--------|---------|---------------|----------------------|
@@ -44,7 +46,9 @@ For `16384 bytes` fsync test:
 | [6](#dedicated-server-6) | AMD EPYC 7452 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 2x 2TB Kingston KC3000 NVMe RAID 1 | 780.64 | 0.000116798 |
 | [7c](#dedicated-server-7) | AMD EPYC 7302P | AlmaLinux 9.5 | 5.14.0-427.13.1.el9_4.x86_64 | 4x 960GB Kingston DC600M SATA SSD Raid 10 | 742.39 | 0.000362114 |
 | [5](#dedicated-server-5) | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 703.23 | 0.000129106 |
+| [9](#dedicated-server-9) | Intel Xeon E5-1650 v4 | CentOS Linux 7 | 3.10.0-957.10.1.el7.x86_64 | 2x 256GB Micron 1100 SATA SSD RAID 1 | 597.01 | 0.000053753 |
 | [3](#dedicated-server-3) | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.16.1.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 330.80 | 0.000052424 |
+| [8](#dedicated-server-8) | Dual Intel Xeon Gold 6226R | CentOS Linux 7 | 3.10.0-1160.95.1.el7.x86_64 | 4x 2TB Samsung 860 EVO SATA SSD Hardware RAID 10 | 83.13 | 0.000003555 |
 
 ### Dedicated Server 1
 
@@ -1217,3 +1221,250 @@ FIO runtime:             1.347 seconds
 ================================================================================
 ```
 
+### Dedicated Server 8
+
+Dual Intel Xeon Gold 6226R, 128GB, 4x 2TB Samsung 860 EVO SATA SSD hardware Raid 10 with AVAGO MegaRAID SAS 9341-4i controller
+
+```bash
+python /root/tools/fsync_fio.py --non-interactive --force
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            CentOS Linux 7 (Core)
+Kernel:        3.10.0-1160.95.1.el7.x86_64
+CPU:           Intel(R) Xeon(R) Gold 6226R CPU @ 2.90GHz
+Memory:        125.25 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME  MODEL             VENDOR  SERIAL                            TYPE
+----------------------------------------------------------------------
+sda   ST8000NM000A-2KE  ATA     WSD5MM7D                          disk
+sdb   MR9341-4i         AVAGO   600605b00fb85ea029ce853005cb1967  disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  4096 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/sdb
+Model:        MR9341-4i
+Vendor:       AVAGO
+============================================================
+
+Running fsync test with 1000 iterations...
+Test completed successfully!
+
+================================================================================
+Test Results:
+================================================================================
+Total time:              12.37 seconds
+Operations:              1000
+Write IOPS:              85.87
+Bandwidth:               0.34 MiB/s (0.35 MB/s)
+Sync latency (min):      0.000001410 seconds
+Sync latency (avg):      0.000004307 seconds
+Sync latency (max):      0.000049283 seconds
+Sync latency (p99):      0.000006816 seconds
+Sync latency (stddev):   0.000002132 seconds
+Theoretical max ops/s:   232178.82
+FIO runtime:             11.646 seconds
+================================================================================
+```
+
+`--mmap-size 16384` 16KB test
+
+```bash
+python /root/tools/fsync_fio.py --non-interactive --force --mmap-size 16384
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            CentOS Linux 7 (Core)
+Kernel:        3.10.0-1160.95.1.el7.x86_64
+CPU:           Intel(R) Xeon(R) Gold 6226R CPU @ 2.90GHz
+Memory:        125.25 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME  MODEL             VENDOR  SERIAL                            TYPE
+----------------------------------------------------------------------
+sda   ST8000NM000A-2KE  ATA     WSD5MM7D                          disk
+sdb   MR9341-4i         AVAGO   600605b00fb85ea029ce853005cb1967  disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  16384 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/sdb
+Model:        MR9341-4i
+Vendor:       AVAGO
+============================================================
+
+Running fsync test with 1000 iterations...
+Test completed successfully!
+
+================================================================================
+Test Results:
+================================================================================
+Total time:              12.73 seconds
+Operations:              1000
+Write IOPS:              83.13
+Bandwidth:               1.30 MiB/s (1.36 MB/s)
+Sync latency (min):      0.000000733 seconds
+Sync latency (avg):      0.000003555 seconds
+Sync latency (max):      0.000020256 seconds
+Sync latency (p99):      0.000007648 seconds
+Sync latency (stddev):   0.000001974 seconds
+Theoretical max ops/s:   281301.48
+FIO runtime:             12.030 seconds
+================================================================================
+```
+
+### Dedicated Server 9
+
+Intel Xeon E5-1650 v4, 32GB, 2 sets of 2x256GB Micron 1100 SATA SSD software Raid 1
+
+```bash
+python /root/tools/fsync_fio.py --non-interactive --force
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            CentOS Linux 7 (Core)
+Kernel:        3.10.0-957.10.1.el7.x86_64
+CPU:           Intel(R) Xeon(R) CPU E5-1650 v4 @ 3.60GHz
+Memory:        31.15 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME  MODEL             VENDOR   SERIAL            TYPE
+-------------------------------------------------------
+sda   Micron_1100_MTFD  ATA      170415823026      disk
+sdb   Micron_1100_MTFD  ATA      171917973393      disk
+sdc   ST1000NM0033-9ZM  ATA      Z1W1NN1C          disk
+sdd   SQL               ASR8405  acf0067c00d00000  disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  4096 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/md127 (determined from path)
+============================================================
+
+Running fsync test with 1000 iterations...
+Test completed successfully!
+
+================================================================================
+Test Results:
+================================================================================
+Total time:              2.11 seconds
+Operations:              1000
+Write IOPS:              605.69
+Bandwidth:               2.37 MiB/s (2.48 MB/s)
+Sync latency (min):      0.000043095 seconds
+Sync latency (avg):      0.000050385 seconds
+Sync latency (max):      0.003294274 seconds
+Sync latency (p99):      0.000056576 seconds
+Sync latency (stddev):   0.000073417 seconds
+Theoretical max ops/s:   19847.36
+FIO runtime:             1.651 seconds
+================================================================================
+```
+
+`--mmap-size 16384` 16KB test
+
+```bash
+python /root/tools/fsync_fio.py --non-interactive --force --mmap-size 16384
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            CentOS Linux 7 (Core)
+Kernel:        3.10.0-957.10.1.el7.x86_64
+CPU:           Intel(R) Xeon(R) CPU E5-1650 v4 @ 3.60GHz
+Memory:        31.15 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME  MODEL             VENDOR   SERIAL            TYPE
+-------------------------------------------------------
+sda   Micron_1100_MTFD  ATA      170415823026      disk
+sdb   Micron_1100_MTFD  ATA      171917973393      disk
+sdc   ST1000NM0033-9ZM  ATA      Z1W1NN1C          disk
+sdd   SQL               ASR8405  acf0067c00d00000  disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  16384 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/md127 (determined from path)
+============================================================
+
+Running fsync test with 1000 iterations...
+Test completed successfully!
+
+================================================================================
+Test Results:
+================================================================================
+Total time:              2.13 seconds
+Operations:              1000
+Write IOPS:              597.01
+Bandwidth:               9.33 MiB/s (9.78 MB/s)
+Sync latency (min):      0.000042656 seconds
+Sync latency (avg):      0.000053753 seconds
+Sync latency (max):      0.007382830 seconds
+Sync latency (p99):      0.000057600 seconds
+Sync latency (stddev):   0.000166945 seconds
+Theoretical max ops/s:   18603.62
+FIO runtime:             1.675 seconds
+================================================================================
+```

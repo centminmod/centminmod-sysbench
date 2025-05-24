@@ -469,12 +469,12 @@ log_avg_msec=1000
         # Run fio with the job file and status reporting
         if debug:
             print("Debug: Running fio with job file:", job_file_path)
-            print("Debug: fio command: fio", job_file_path, "--output-format=json --status-interval=3")
+            print("Debug: fio command: fio", job_file_path, "--output-format=json")
         
         start_time = time.time()
         
         # Use status reporting for real progress updates
-        cmd = ["fio", job_file_path, "--output-format=json", "--status-interval=3"]
+        cmd = ["fio", job_file_path, "--output-format=json"]
         
         # Python 2.7 compatible process handling
         process = subprocess.Popen(
@@ -489,14 +489,14 @@ log_avg_msec=1000
             
             # Start a thread to monitor progress if we have threading support
             progress_thread = None
-            try:
-                progress_thread = threading.Thread(target=monitor_fio_progress, args=(process, debug))
-                progress_thread.daemon = True
-                progress_thread.start()
-            except Exception as e:
-                if debug:
-                    print("Debug: Could not start progress monitoring thread:", e)
-                print("Running test (progress monitoring unavailable)...")
+            # try:
+            #     progress_thread = threading.Thread(target=monitor_fio_progress, args=(process, debug))
+            #     progress_thread.daemon = True
+            #     progress_thread.start()
+            # except Exception as e:
+            #     if debug:
+            #         print("Debug: Could not start progress monitoring thread:", e)
+            #     print("Running test (progress monitoring unavailable)...")
             
             # Get the output from fio
             stdout, stderr = process.communicate()

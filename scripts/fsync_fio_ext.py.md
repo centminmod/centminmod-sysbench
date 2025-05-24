@@ -29,6 +29,8 @@ The following table presents results for a random read/write (70% read/30% write
 | [Server 5c](#dedicated-server-5)     | AMD EPYC 7302P               | AlmaLinux 9.5     | 4x960G Kingston DC600M SATA RAID10                      | 924.67         | 0.227                        | 414.52          | 0.623                         |
 | [Server 4](#dedicated-server-4)      | Intel Xeon E3-1270 v6      | Rocky Linux 9.5   | 2x450G Intel P3520 NVMe RAID1                   | 726.21         | 0.371                        | 325.55          | 1.201                         |
 | [Server 3](#dedicated-server-3)      | AMD Ryzen 9 5950X          | AlmaLinux 9.6     | 512GB Samsung 850 Pro SATA SSD                  | 567.78         | 0.068                        | 254.53          | 2.750                         |
+| [Server 7](#dedicated-server-7)      | Intel Xeon E5-1650 v4      | CentOS Linux 7    | 2x256GB Micron 1100 SATA RAID1                  | 349.13         | 0.190                        | 156.51          | 3.532                         |
+| [Server 6](#dedicated-server-6)      | Dual Intel Xeon Gold 6226R | CentOS Linux 7    | 4x2TB Samsung 860 EVO SATA RAID10               | 126.83         | 0.222                        | 56.86           | 11.737                        |
 
 ### Dedicated Server 1
 
@@ -628,4 +630,156 @@ FIO job runtime:         5.000 seconds
 ================================================================================
 
 Cleanup: Removed test file '/home/testfile'
+```
+
+### Dedicated Server 6
+
+Dual Intel Xeon Gold 6226R, 128GB, 4x 2TB Samsung 860 EVO SATA SSD hardware Raid 10 with AVAGO MegaRAID SAS 9341-4i controller
+
+```bash
+python /root/tools/fsync_fio_ext.py --test-type randrw --non-interactive --force
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please verify the output path is correct:
+  Output file: /root/tools/testfile.fio
+Incorrect paths can cause severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            CentOS Linux 7 (Core)
+Kernel:        3.10.0-1160.95.1.el7.x86_64
+CPU:           Intel(R) Xeon(R) Gold 6226R CPU @ 2.90GHz
+Memory:        125.25 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME  MODEL             VENDOR  SERIAL                            TYPE
+----------------------------------------------------------------------
+sda   ST8000NM000A-2KE  ATA     WSD5MM7D                          disk
+sdb   MR9341-4i         AVAGO   600605b00fb85ea029ce853005cb1967  disk
+============================================================
+
+============================================================
+FIO Storage Performance Test
+============================================================
+Test Type:    randrw
+Sync method:  fsync (for writes)
+Op size:      16384 bytes (fio bs)
+Operations:   1 (fio loops)
+File size:    100M (fio size)
+Read mix %:   70
+Output file:  testfile.fio
+Device:       /dev/sdb5 (determined from path)
+============================================================
+
+Running randrw test (sync method: fsync, ops: 1)...
+Test completed successfully!
+
+================================================================================
+Test Results (randrw, fsync):
+================================================================================
+Total script time:       36.43 seconds
+Operations requested:    1
+
+--- Write Performance ---
+Write IOPS:              56.86
+Write Bandwidth:         0.89 MiB/s (0.93 MB/s)
+Write Latency (avg):     11.737 ms
+
+--- Read Performance ---
+Read IOPS:               126.83
+Read Bandwidth:          1.98 MiB/s (2.08 MB/s)
+Read Latency (avg):      0.222 ms
+
+--- Sync Performance (for writes) ---
+Sync latency (min):      0.000000593 seconds
+Sync latency (avg):      0.001652814 seconds
+Sync latency (max):      0.017895878 seconds
+Sync latency (p99):      0.008847360 seconds
+Sync latency (stddev):   0.003192769 seconds
+Theoretical max sync ops/s: 605.03 (based on avg sync latency)
+
+FIO job runtime:         35.000 seconds
+================================================================================
+```
+
+### Dedicated Server 7
+
+Intel Xeon E5-1650 v4, 32GB, 2 sets of 2x256GB Micron 1100 SATA SSD software Raid 1
+
+```bash
+python /root/tools/fsync_fio_ext.py --test-type randrw --non-interactive --force
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please verify the output path is correct:
+  Output file: /root/tools/testfile.fio
+Incorrect paths can cause severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            CentOS Linux 7 (Core)
+Kernel:        3.10.0-957.10.1.el7.x86_64
+CPU:           Intel(R) Xeon(R) CPU E5-1650 v4 @ 3.60GHz
+Memory:        31.15 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME  MODEL             VENDOR   SERIAL            TYPE
+-------------------------------------------------------
+sda   Micron_1100_MTFD  ATA      170415823026      disk
+sdb   Micron_1100_MTFD  ATA      171917973393      disk
+sdc   ST1000NM0033-9ZM  ATA      Z1W1NN1C          disk
+sdd   SQL               ASR8405  acf0067c00d00000  disk
+============================================================
+
+============================================================
+FIO Storage Performance Test
+============================================================
+Test Type:    randrw
+Sync method:  fsync (for writes)
+Op size:      16384 bytes (fio bs)
+Operations:   1 (fio loops)
+File size:    100M (fio size)
+Read mix %:   70
+Output file:  testfile.fio
+Device:       /dev/md127 (determined from path)
+============================================================
+
+Running randrw test (sync method: fsync, ops: 1)...
+Test completed successfully!
+
+================================================================================
+Test Results (randrw, fsync):
+================================================================================
+Total script time:       13.88 seconds
+Operations requested:    1
+
+--- Write Performance ---
+Write IOPS:              156.51
+Write Bandwidth:         2.45 MiB/s (2.56 MB/s)
+Write Latency (avg):     3.532 ms
+
+--- Read Performance ---
+Read IOPS:               349.13
+Read Bandwidth:          5.46 MiB/s (5.72 MB/s)
+Read Latency (avg):      0.190 ms
+
+--- Sync Performance (for writes) ---
+Sync latency (min):      0.000041473 seconds
+Sync latency (avg):      0.000751178 seconds
+Sync latency (max):      0.023317714 seconds
+Sync latency (p99):      0.010289152 seconds
+Sync latency (stddev):   0.001958001 seconds
+Theoretical max sync ops/s: 1331.24 (based on avg sync latency)
+
+FIO job runtime:         13.000 seconds
+================================================================================
 ```
