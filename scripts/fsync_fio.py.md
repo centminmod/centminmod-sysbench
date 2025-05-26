@@ -53,6 +53,7 @@ Check [fsync_fio.py - FIO-Based Sustained Performance Analysis](#fsync_fiopy---f
 | [5](#dedicated-server-5) | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 701.26 | 0.000128123 |
 | [9](#dedicated-server-9) | Intel Xeon E5-1650 v4 | CentOS Linux 7 | 3.10.0-957.10.1.el7.x86_64 | 2x 256GB Micron 1100 SATA SSD RAID 1 | 605.69 | 0.000050385 |
 | [3](#dedicated-server-3) | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.16.1.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 390.78 | 0.000050542 |
+| [10](#dedicated-server-10) | AMD Ryzen 9 9950X | AlmaLinux 9.5 | 5.14.0-570.12.1.el9_6.x86_64 | 2x 2TB Samsung 990 Pro NVMe RAID 1 | 175.65 | 0.000638931 |
 | [8](#dedicated-server-8) | Dual Intel Xeon Gold 6226R | CentOS Linux 7 | 3.10.0-1160.95.1.el7.x86_64 | 4x 2TB Samsung 860 EVO SATA SSD Hardware RAID 10 (AVAGO MegaRAID SAS 9341-4i) | 85.87 | 0.000004307 |
 
 **For `16384 bytes` fsync test:**
@@ -69,6 +70,7 @@ Check [fsync_fio.py - FIO-Based Sustained Performance Analysis](#fsync_fiopy---f
 | [5](#dedicated-server-5) | Intel Xeon E-2236 | CentOS Linux 7 | 3.10.0-1160.118.1.el7.x86_64 | 512GB Kingston KC3000 NVMe | 703.23 | 0.000129106 |
 | [9](#dedicated-server-9) | Intel Xeon E5-1650 v4 | CentOS Linux 7 | 3.10.0-957.10.1.el7.x86_64 | 2x 256GB Micron 1100 SATA SSD RAID 1 | 597.01 | 0.000053753 |
 | [3](#dedicated-server-3) | AMD Ryzen 9 5950X | AlmaLinux 9.5 | 5.14.0-503.16.1.el9_5.x86_64 | 512GB Samsung 850 Pro SATA SSD | 330.80 | 0.000052424 |
+| [10](#dedicated-server-10) | AMD Ryzen 9 9950X | AlmaLinux 9.5 | 5.14.0-570.12.1.el9_6.x86_64 | 2x 2TB Samsung 990 Pro NVMe RAID 1 | 152.67 | 0.000858186 |
 | [8](#dedicated-server-8) | Dual Intel Xeon Gold 6226R | CentOS Linux 7 | 3.10.0-1160.95.1.el7.x86_64 | 4x 2TB Samsung 860 EVO SATA SSD Hardware RAID 10 (AVAGO MegaRAID SAS 9341-4i) | 83.13 | 0.000003555 |
 
 ### Dedicated Server 1
@@ -1487,6 +1489,126 @@ Sync latency (p99):      0.000057600 seconds
 Sync latency (stddev):   0.000166945 seconds
 Theoretical max ops/s:   18603.62
 FIO runtime:             1.675 seconds
+================================================================================
+```
+
+### Dedicated Server 10
+
+AMD Ryzen 9 9950X, 64GB, 2x 2TB NVMe (2x 2TB Samsung 990 Pro NVMe) raid 1
+
+```bash
+python /root/tools/fsync_fio.py --non-interactive --force
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            AlmaLinux 9.6 (Sage Margay)
+Kernel:        5.14.0-570.12.1.el9_6.x86_64
+CPU:           AMD Ryzen 9 9950X 16-Core Processor
+Memory:        60.18 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME     MODEL    VENDOR  SERIAL  TYPE
+---------------------------------------------------------------------
+nvme0n1  Samsung  SSD     990     PRO 2TB        S7KHNJ0WC7160XX disk
+nvme1n1  Samsung  SSD     990     PRO 2TB        S7KHNU0X42422XX disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  4096 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/md125 (determined from path)
+============================================================
+
+Running fsync test with 1000 iterations...
+Test completed successfully!
+
+================================================================================
+Test Results:
+================================================================================
+Total time:              5.95 seconds
+Operations:              1000
+Write IOPS:              175.65
+Bandwidth:               0.69 MiB/s (0.72 MB/s)
+Sync latency (min):      0.000420866 seconds
+Sync latency (avg):      0.000638931 seconds
+Sync latency (max):      0.004211945 seconds
+Sync latency (p99):      0.001826816 seconds
+Sync latency (stddev):   0.000413564 seconds
+Theoretical max ops/s:   1565.11
+FIO runtime:             5.693 seconds
+================================================================================
+```
+
+`--mmap-size 16384` 16KB test
+
+```bash
+python /root/tools/fsync_fio.py --non-interactive --force --mmap-size 16384
+------------------------------------------------------------
+WARNING: This script is running as root!
+Please be absolutely sure that the output path is correct:
+  Output file: /root/tools/testfile
+Incorrect paths can lead to severe data loss or system damage.
+------------------------------------------------------------
+
+============================================================
+System Information
+============================================================
+OS:            AlmaLinux 9.6 (Sage Margay)
+Kernel:        5.14.0-570.12.1.el9_6.x86_64
+CPU:           AMD Ryzen 9 9950X 16-Core Processor
+Memory:        60.18 GB
+============================================================
+
+============================================================
+Storage Devices
+============================================================
+NAME     MODEL    VENDOR  SERIAL  TYPE
+---------------------------------------------------------------------
+nvme0n1  Samsung  SSD     990     PRO 2TB        S7KHNJ0WC7160XX disk
+nvme1n1  Samsung  SSD     990     PRO 2TB        S7KHNU0X42422XX disk
+============================================================
+
+============================================================
+Storage Sync Performance Test
+============================================================
+Sync method:  fsync
+Memory size:  16384 bytes
+Iterations:   1000
+Output file:  testfile
+Device:       /dev/md125 (determined from path)
+============================================================
+
+Running fsync test with 1000 iterations...
+Test completed successfully!
+
+================================================================================
+Test Results:
+================================================================================
+Total time:              6.82 seconds
+Operations:              1000
+Write IOPS:              152.67
+Bandwidth:               2.39 MiB/s (2.50 MB/s)
+Sync latency (min):      0.000411118 seconds
+Sync latency (avg):      0.000858186 seconds
+Sync latency (max):      0.005569636 seconds
+Sync latency (p99):      0.001859584 seconds
+Sync latency (stddev):   0.000530325 seconds
+Theoretical max ops/s:   1165.25
+FIO runtime:             6.550 seconds
 ================================================================================
 ```
 
