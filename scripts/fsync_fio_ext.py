@@ -4,7 +4,8 @@ fsync_fio_ext.py - Benchmark tool for testing fsync/fdatasync performance on sto
 
 This script tests the performance of fsync() and fdatasync() system calls on different
 storage devices by repeatedly writing to a file and forcing the data to be synchronized
-to disk. It can also perform random read/write mixed I/O tests with sync operations.
+to disk. It can also perform random read/write mixed I/O tests with sync operations,
+and YABS-style benchmarks using libaio engine.
 It uses fio under the hood while maintaining the same interface as fsync.py.
 
 Usage examples:
@@ -37,6 +38,27 @@ Usage examples:
     
     # Run a random read/write mixed test with 50% reads and fdatasync on writes, file size 512M
     python fsync_fio_ext.py --test-type randrw --rwmixread 50 --sync-method fdatasync --file-size 512M --non-interactive --force
+    
+    # Run a YABS-style test with default parameters (2G file, libaio, 64 iodepth, 2 jobs)
+    python fsync_fio_ext.py --test-type yabs --non-interactive --force
+    
+    # Run YABS-style test with custom block size and fdatasync
+    python fsync_fio_ext.py --test-type yabs --mmap-size 65536 --sync-method fdatasync --non-interactive --force
+    
+    # Run YABS-style test with smaller file size
+    python fsync_fio_ext.py --test-type yabs --file-size 1G --non-interactive --force
+
+    # YABS-style 4K block test (default block size)
+    python fsync_fio_ext.py --test-type yabs --mmap-size 4096 --non-interactive --force
+
+    # YABS-style 64K block test
+    python fsync_fio_ext.py --test-type yabs --mmap-size 65536 --non-interactive --force
+
+    # YABS-style 512K block test
+    python fsync_fio_ext.py --test-type yabs --mmap-size 524288 --non-interactive --force
+
+    # YABS-style 1M block test
+    python fsync_fio_ext.py --test-type yabs --mmap-size 1048576 --non-interactive --force
     
     # Combine multiple options
     python fsync_fio_ext.py --sync-method fdatasync --mmap-size 4096 --iterations 500 --non-interactive --force
@@ -103,6 +125,16 @@ class TestConfig(object):
                 self.iterations = 1
             if self.file_size == '1G':  # Global default
                 self.file_size = '100M'
+        elif self.test_type == 'yabs':
+            if self.file_size == '1G':  # Global default
+                # Use YABS default file size based on architecture
+                arch = platform.machine().lower()
+                if any(arch.startswith(arm_arch) for arm_arch in ['aarch64', 'arm', 'armv']):
+                    self.file_size = '512M'
+                else:
+                    self.file_size = '2G'
+            if self.iterations == 1000:  # Global default
+                self.iterations = 1
 
 class PerformanceError(Exception):
     """Custom exception for performance test errors"""
@@ -251,7 +283,7 @@ class ConfigValidator(object):
                 raise ValueError("Invalid {}: {}".format(field, value))
         
         # Test-specific validations
-        if config.test_type not in ['sync', 'randrw']:
+        if config.test_type not in ['sync', 'randrw', 'yabs']:
             raise ValueError("Invalid test_type: {}".format(config.test_type))
             
         if config.sync_method not in ['fsync', 'fdatasync']:
@@ -493,6 +525,29 @@ write_bw_log={job_name}_write_bw.log
 write_lat_log={job_name}_write_lat.log
 write_iops_log={job_name}_write_iops.log
 log_avg_msec=1000
+""",
+        'yabs': """
+[global]
+direct=1
+ioengine=libaio
+iodepth=64
+numjobs=2
+group_reporting
+filename={output_file}
+size={file_size}
+runtime=30
+time_based=0
+gtod_reduce=1
+
+[{job_name}]
+rw=randrw
+rwmixread=50
+bs={mmap_size}
+{sync_method}=1
+write_bw_log={job_name}_bw.log
+write_lat_log={job_name}_lat.log
+write_iops_log={job_name}_iops.log
+log_avg_msec=1000
 """
     }
     
@@ -685,9 +740,15 @@ class FioRunner(object):
                 f.write("Operations: {}\n".format(self.config.iterations))
                 f.write("Block size: {} bytes\n".format(self.config.mmap_size))
                 
-                if self.config.test_type == 'randrw':
+                if self.config.test_type in ['randrw', 'yabs']:
                     f.write("File size: {}\n".format(self.config.file_size))
-                    f.write("Read mix: {}%\n".format(self.config.rwmixread))
+                    if self.config.test_type == 'randrw':
+                        f.write("Read mix: {}%\n".format(self.config.rwmixread))
+                    else:  # yabs
+                        f.write("Read mix: 50% (YABS standard)\n")
+                        f.write("IO Engine: libaio (YABS standard)\n")
+                        f.write("IO Depth: 64 (YABS standard)\n")
+                        f.write("Num Jobs: 2 (YABS standard)\n")
                 
                 f.write("\nRaw Metrics:\n")
                 for key in sorted(metrics.keys()):
@@ -724,13 +785,13 @@ class ResultsDisplay(object):
             ResultsDisplay._display_sync_performance(metrics)
         
         print("\nFIO job runtime:         {:.3f} seconds".format(
-            metrics.get('job_runtime_ms', 0) / 1000))
-        
+           metrics.get('job_runtime_ms', 0) / 1000))
+       
         if config.log_dir:
-            print("Log directory:           {}".format(config.log_dir))
-        
+           print("Log directory:           {}".format(config.log_dir))
+       
         print("="*80)
-    
+   
     @staticmethod
     def _display_write_performance(metrics):
         """Display write performance metrics"""
@@ -773,7 +834,7 @@ class ResultsDisplay(object):
         sync_mean = metrics.get('sync_lat_sec_mean', 0)
         if sync_mean > 0:
             ops_per_sec = 1.0 / sync_mean
-            print("Theoretical max sync ops/s: {:.2f} (based on avg sync latency)".format(ops_per_sec))
+            print("Theoretical max sync ops/s: {:.2f} (based on avg sync latency)".format(ops_per_sec)) 
 
 # Main Application
 class PerformanceTestApp(object):
@@ -812,8 +873,8 @@ class PerformanceTestApp(object):
             epilog='Enhanced production-ready version with improved error handling and maintainability'
         )
         
-        parser.add_argument('--test-type', choices=['sync', 'randrw'], default='sync',
-                          help='Test type: "sync" for sequential write+sync, "randrw" for random R/W mix')
+        parser.add_argument('--test-type', choices=['sync', 'randrw', 'yabs'], default='sync',
+                          help='Test type: "sync" for sequential write+sync, "randrw" for random R/W mix, "yabs" for YABS-style test')
         parser.add_argument('--sync-method', choices=['fsync', 'fdatasync'], default='fsync',
                           help='Sync method for writes (default: fsync)')
         parser.add_argument('--mmap-size', type=int, default=4096,
@@ -905,11 +966,20 @@ class PerformanceTestApp(object):
         print("Test Type:    {}".format(self.config.test_type))
         print("Sync method:  {} (for writes)".format(self.config.sync_method))
         print("Op size:      {} bytes (fio bs)".format(self.config.mmap_size))
-        print("Operations:   {} (fio loops)".format(self.config.iterations))
         
-        if self.config.test_type == 'randrw':
+        if self.config.test_type == 'sync':
+            print("Operations:   {} (fio loops)".format(self.config.iterations))
+        elif self.config.test_type == 'randrw':
+            print("Operations:   {} (fio loops)".format(self.config.iterations))
             print("File size:    {} (fio size)".format(self.config.file_size))
             print("Read mix %:   {}".format(self.config.rwmixread))
+        elif self.config.test_type == 'yabs':
+            print("File size:    {} (fio size)".format(self.config.file_size))
+            print("Read mix %:   50 (YABS standard)")
+            print("IO Engine:    libaio (YABS standard)")
+            print("IO Depth:     64 (YABS standard)")
+            print("Num Jobs:     2 (YABS standard)")
+            print("Runtime:      30 seconds (YABS standard)")
         
         print("Output file:  {}".format(self.config.output))
         
