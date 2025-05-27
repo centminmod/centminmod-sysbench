@@ -59,6 +59,10 @@ Usage examples:
 
     # YABS-style 1M block test
     python fsync_fio_ext.py --test-type yabs --mmap-size 1048576 --non-interactive --force
+
+    # YABS-style with sync testing (your original goal)
+    python fsync_fio_ext.py --test-type yabs_sync --sync-method fsync --mmap-size 4096 --non-interactive --force
+    python fsync_fio_ext.py --test-type yabs_sync --sync-method fdatasync --mmap-size 65536 --non-interactive --force
     
     # Combine multiple options
     python fsync_fio_ext.py --sync-method fdatasync --mmap-size 4096 --iterations 500 --non-interactive --force
@@ -125,7 +129,7 @@ class TestConfig(object):
                 self.iterations = 1
             if self.file_size == '1G':  # Global default
                 self.file_size = '100M'
-        elif self.test_type == 'yabs':
+        elif self.test_type in ['yabs', 'yabs_sync']:
             if self.file_size == '1G':  # Global default
                 # Use YABS default file size based on architecture
                 arch = platform.machine().lower()
@@ -283,7 +287,7 @@ class ConfigValidator(object):
                 raise ValueError("Invalid {}: {}".format(field, value))
         
         # Test-specific validations
-        if config.test_type not in ['sync', 'randrw', 'yabs']:
+        if config.test_type not in ['sync', 'randrw', 'yabs', 'yabs_sync']:
             raise ValueError("Invalid test_type: {}".format(config.test_type))
             
         if config.sync_method not in ['fsync', 'fdatasync']:
@@ -526,7 +530,31 @@ write_lat_log={job_name}_write_lat.log
 write_iops_log={job_name}_write_iops.log
 log_avg_msec=1000
 """,
-        'yabs': """
+    'yabs': """
+[global]
+direct=1
+ioengine=libaio
+iodepth=64
+numjobs=2
+group_reporting
+filename={output_file}
+size={file_size}
+runtime=30
+time_based=0
+gtod_reduce=1
+
+[{job_name}]
+rw=randrw
+rwmixread=50
+bs={mmap_size}
+fsync=0
+fdatasync=0
+write_bw_log={job_name}_bw.log
+write_lat_log={job_name}_lat.log
+write_iops_log={job_name}_iops.log
+log_avg_msec=1000
+""",
+    'yabs_sync': """
 [global]
 direct=1
 ioengine=libaio
@@ -557,15 +585,26 @@ log_avg_msec=1000
         job_name = "{}_{}_{}_test".format(config.test_type, config.sync_method, int(time.time()))
         template = FioJobGenerator.TEMPLATES[config.test_type]
         
-        return template.format(
-            job_name=job_name,
-            sync_method=config.sync_method,
-            output_file=config.output,
-            mmap_size=config.mmap_size,
-            iterations=config.iterations,
-            file_size=config.file_size,
-            rwmixread=config.rwmixread
-        )
+        # For pure yabs test, we don't use sync_method in formatting
+        if config.test_type == 'yabs':
+            return template.format(
+                job_name=job_name,
+                output_file=config.output,
+                mmap_size=config.mmap_size,
+                iterations=config.iterations,
+                file_size=config.file_size,
+                rwmixread=config.rwmixread
+            )
+        else:
+            return template.format(
+                job_name=job_name,
+                sync_method=config.sync_method,
+                output_file=config.output,
+                mmap_size=config.mmap_size,
+                iterations=config.iterations,
+                file_size=config.file_size,
+                rwmixread=config.rwmixread
+            )
 
 class FioResultsParser(object):
     """Parses and processes FIO JSON output"""
@@ -677,8 +716,12 @@ class FioRunner(object):
         cmd = ["fio", job_file_path, "--output-format=json"]
         debug_print("Running: {}".format(' '.join(cmd)), self.config.debug)
         
-        print("Running {} test (sync method: {}, ops: {})...".format(
-            self.config.test_type, self.config.sync_method, self.config.iterations))
+        if self.config.test_type == 'yabs':
+            print("Running {} test (pure I/O performance, ops: {})...".format(
+                self.config.test_type, self.config.iterations))
+        else:
+            print("Running {} test (sync method: {}, ops: {})...".format(
+                self.config.test_type, self.config.sync_method, self.config.iterations))
         
         try:
             result = safe_subprocess_run(cmd)
@@ -767,7 +810,10 @@ class ResultsDisplay(object):
     def display_results(config, elapsed_time, metrics):
         """Display comprehensive test results"""
         print("\n" + "="*80)
-        print("Test Results ({}, {}):".format(config.test_type, config.sync_method))
+        if config.test_type == 'yabs':
+            print("Test Results ({}):".format(config.test_type))
+        else:
+            print("Test Results ({}, {}):".format(config.test_type, config.sync_method))
         print("="*80)
         print("Total script time:       {:.2f} seconds".format(elapsed_time))
         print("Operations requested:    {}".format(config.iterations))
@@ -873,8 +919,8 @@ class PerformanceTestApp(object):
             epilog='Enhanced production-ready version with improved error handling and maintainability'
         )
         
-        parser.add_argument('--test-type', choices=['sync', 'randrw', 'yabs'], default='sync',
-                          help='Test type: "sync" for sequential write+sync, "randrw" for random R/W mix, "yabs" for YABS-style test')
+        parser.add_argument('--test-type', choices=['sync', 'randrw', 'yabs', 'yabs_sync'], default='sync',
+                  help='Test type: "sync" for sequential write+sync, "randrw" for random R/W mix, "yabs" for pure YABS-style test, "yabs_sync" for YABS with sync testing')
         parser.add_argument('--sync-method', choices=['fsync', 'fdatasync'], default='fsync',
                           help='Sync method for writes (default: fsync)')
         parser.add_argument('--mmap-size', type=int, default=4096,
@@ -964,7 +1010,9 @@ class PerformanceTestApp(object):
         print("FIO Storage Performance Test")
         print("="*60)
         print("Test Type:    {}".format(self.config.test_type))
-        print("Sync method:  {} (for writes)".format(self.config.sync_method))
+        # Only show sync method for tests that actually use syncing
+        if self.config.test_type != 'yabs':
+            print("Sync method:  {} (for writes)".format(self.config.sync_method))
         print("Op size:      {} bytes (fio bs)".format(self.config.mmap_size))
         
         if self.config.test_type == 'sync':
@@ -973,13 +1021,17 @@ class PerformanceTestApp(object):
             print("Operations:   {} (fio loops)".format(self.config.iterations))
             print("File size:    {} (fio size)".format(self.config.file_size))
             print("Read mix %:   {}".format(self.config.rwmixread))
-        elif self.config.test_type == 'yabs':
+        elif self.config.test_type in ['yabs', 'yabs_sync']:
             print("File size:    {} (fio size)".format(self.config.file_size))
             print("Read mix %:   50 (YABS standard)")
             print("IO Engine:    libaio (YABS standard)")
             print("IO Depth:     64 (YABS standard)")
             print("Num Jobs:     2 (YABS standard)")
             print("Runtime:      30 seconds (YABS standard)")
+            if self.config.test_type == 'yabs_sync':
+                print("Sync Mode:    {} after every write".format(self.config.sync_method))
+            else:
+                print("Sync Mode:    None (pure I/O performance)")
         
         print("Output file:  {}".format(self.config.output))
         
